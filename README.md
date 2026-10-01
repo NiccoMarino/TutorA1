@@ -6,7 +6,7 @@ sulla A4 e calcolano la tua media nel tratto, come fa il Tutor.
 **Apri l'app:** https://niccomarino.github.io/TutorA1/
 
 ## Cosa fa
-- Mostra su una mappa gli 83 tratti Tutor: 59 sulla A1 da Milano a Napoli, con le diramazioni di
+- Elenca gli 83 tratti Tutor, con portali, lunghezza e tempi minimi: 59 sulla A1 da Milano a Napoli, con le diramazioni di
   Roma e la Variante di Valico, e 24 sulla A4 tra Milano e Brescia e tra Venezia e Trieste.
 - In guida segue la posizione GPS. Avvisa prima del portale di inizio e calcola la media mentre sei
   nel tratto. Dice a quanto puoi andare per chiuderlo sotto la soglia e allarma con voce, suoni e
@@ -43,8 +43,8 @@ La posizione resta sul telefono e lo storico è salvato solo lì: [informativa](
   29 settembre 2026).
 - Tratti della A4 Venezia–Trieste: infoviaggiando.it di Autostrade Alto Adriatico (consultata il
   30 settembre 2026).
-- Tracciato delle carreggiate e mappa di sfondo: © contributori OpenStreetMap (ODbL); con la chiave CARTO,
-  mappa di sfondo © CARTO.
+- Tracciato delle carreggiate, usato per riconoscere strada e direzione: © contributori OpenStreetMap (ODbL).
+- Carattere Overpass (SIL Open Font License), incluso nella pagina: l'app non si collega a internet.
 - Chilometriche di caselli e cantieri: dati di viabilità di Autostrade per l'Italia.
 
 ## Per chi sviluppa
@@ -68,6 +68,5 @@ npm run build
 - `npm run bundle` crea l'AAB firmato per il Play Store (serve `android/keystore.properties`).
 - `npm run grafica` rifà icona, schermata di avvio e immagini per lo store.
 
-Il codice è diviso tra `src/core/` (calcolo, provato con i test, senza pagina) e `src/ui/` (pagina e
-mappa). Struttura, flusso dei dati e dove fare le modifiche: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
+Il codice è diviso tra `src/core/` (calcolo, provato con i test, senza pagina) e `src/ui/` (pagina). Struttura, flusso dei dati e dove fare le modifiche: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).
 Difetti noti e idee: [NOTE-MIGLIORIE.md](NOTE-MIGLIORIE.md).

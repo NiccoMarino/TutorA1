@@ -25,26 +25,21 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
 ## Risolti preparando il Play Store (ramo `play-store`)
 - Testo obsoleto: tolti Claude, GitHub Pages e "Scarica l'app come file HTML"; il pannello ora è
   "Dati, precisione e privacy", con link all'informativa e la versione.
-- Mappa: con la chiave CARTO (`src/tiles.js`) si usano le mappe CARTO; se le tile non si caricano si riprova
-  ogni minuto invece di arrendersi all'avvio.
+- Mappa tolta: niente fornitori di mappe da gestire, l'app non si collega a internet (carattere incluso)
+  e pesa 349 kB invece di 528. I tratti sono un elenco con la scheda di ognuno.
 - `fontScale` in `configChanges`: cambiare la dimensione del carattere non interrompe più la guida.
 - Icona e schermata di avvio proprie al posto di quelle di Capacitor.
-- La legenda della mappa non è più coperta dalla riga delle fonti.
+- Barra di stato sempre scura con icone chiare: prima, cambiando tema ad app aperta, ora e batteria
+  diventavano dello stesso colore dello sfondo. Verificata sul telefono in tema scuro; con il tema chiaro
+  è uguale per costruzione (colori fissi), da guardare una volta con il telefono in tema chiaro.
+- Schermo orizzontale: in guida cartello a sinistra e numeri a destra, niente più tagliato.
 
 ## Da sistemare, in ordine di importanza
 
-1. **Barra di stato in tema chiaro**: con il telefono in tema chiaro, ora e batteria sono
-   bianchi su sfondo bianco (illeggibili). Serve impostare colore e stile della barra di
-   stato (plugin `@capacitor/status-bar` o stile nativo) in modo coerente con l'HUD scuro.
-2. **Mappa senza chiave CARTO**: finché `CARTO_KEY` in `src/tiles.js` è vuota si usano ancora i server di
-   OpenStreetMap, non pensati per un'app distribuita. Serve la chiave gratuita prima di uscire sul Play Store.
-3. **Barra di stato da riverificare** sul telefono con la versione release (vedi punto 1).
-4. **Schermo orizzontale**: il cartello è tagliato in basso, statistiche e limiti non si
-   vedono. Se si usa il telefono in orizzontale sul supporto, serve un layout dedicato.
-5. **Carattere grande (accessibilità)**: con scala 1,4 il pulsante "Audio" esce dallo
-   schermo e statistiche e limiti finiscono nascosti sotto la mappa. Inoltre cambiare la
-   dimensione del carattere durante la guida ricreava l'activity (risolto, da riprovare sul telefono).
-6. **Riquadro PiP, stato "fuori dalla A1/A4"**: il titolo "Il monitoraggio parte quando entri
+1. **Carattere grande (accessibilità)**: con scala 1,4 il pulsante "Audio" usciva dallo
+   schermo (da riprovare ora che la guida usa tutto lo schermo). Cambiare la dimensione del carattere
+   durante la guida ricreava l'activity (risolto, da riprovare sul telefono).
+2. **Riquadro PiP, stato "fuori dalla A1/A4"**: il titolo "Il monitoraggio parte quando entri
    in una delle…" viene tagliato. Serve un testo breve per il riquadro. Confermato dal
    collaudo del riquadro (`test/fixtures/pip-layout.json`, `titleCut: true`): a 189×118 sono
    tagliati anche i tratti con nomi lunghi (es. "Casalpusterlengo → Piacenza Nord") e il
@@ -53,8 +48,6 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
 ## Piccole cose
 - Favicon mancante: 404 in console (`https://localhost/favicon.ico`). Basta un
   `<link rel="icon" href="data:,">` nella build.
-- Vista completa della mappa: i nomi delle città si sovrappongono (Novara/Milano/Lodi,
-  Reggio/Modena).
 - Da fermo e senza segnale buono (in casa, precisione 100 m) l'app mostra 12-15 km/h
   invece di 0. Idea: ignorare la velocità sotto i 3 km/h oppure quando la precisione è
   oltre 50 m.
