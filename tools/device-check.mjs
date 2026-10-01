@@ -109,7 +109,7 @@ const pipLayout = () => js(`(() => {
   const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
   const vp = {left: 0, top: 0, right: innerWidth, bottom: innerHeight};
   return {
-    visible: ['.side', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast'].filter(vis),
+    visible: ['.screen', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast'].filter(vis),
     plateInside: inside(el('plate').getBoundingClientRect(), vp),
     bigInside: inside(el('pBig').getBoundingClientRect(), document.querySelector('.plate-in').getBoundingClientRect()),
     titleCut: el('pTitle').scrollWidth > el('pTitle').clientWidth + 1
@@ -165,9 +165,19 @@ async function main(){
   let t = await waitTask(t => !t.visible);
   check('Fuori dalla guida, Home: app in secondo piano, senza riquadro', !t.visible && t.mode !== 'pinned', 'mode=' + t.mode);
   await launch();
+  // Indietro chiude prima la pagina, poi il menù; solo dalla schermata iniziale chiude l'app
+  const screen = () => js(`document.querySelector('.screen:not([hidden])').id`);
+  await js(`document.getElementById('btnMenu').click(); document.querySelector('[data-go="pSettings"]').click(); true`);
+  back(); await sleep(800);
+  const p1 = await screen();
+  back(); await sleep(800);
+  const p2 = await screen();
+  t = task();
+  check('Fuori dalla guida, Indietro da una pagina: torna al menù e poi alla schermata iniziale',
+    p1 === 'menu' && p2 === 'home' && t.visible, p1 + ' -> ' + p2);
   back();
   t = await waitTask(t => !t.visible);
-  check('Fuori dalla guida, Indietro: l\'app si chiude', !t.visible && t.mode !== 'pinned', 'mode=' + t.mode);
+  check('Fuori dalla guida, Indietro dalla schermata iniziale: l\'app si chiude', !t.visible && t.mode !== 'pinned', 'mode=' + t.mode);
   await launch();
 
   // B. In guida (simulazione) l'uscita apre il riquadro

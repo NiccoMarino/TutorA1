@@ -59,6 +59,6 @@ Prima versione: 83 tratti Tutor su A1 e A4, media in tempo reale, avvisi vocali,
 |---|---|---|
 | Icona dell'app | `icona-512.png` | 512×512 |
 | Grafica di primo piano | `grafica-1024x500.png` | 1024×500 |
-| Screenshot del telefono (da 2 a 8) | `schermata-1-tratti.png` … `schermata-5-storico.png` | 1080×1920 |
+| Screenshot del telefono (da 2 a 8) | `schermata-1-home.png` … `schermata-6-tratti.png` | 1080×1920 |
 
 Se cambi l'aspetto dell'app, rifalle con `npm run grafica`. Per tablet non servono schermate se non la pubblichi come app per tablet.

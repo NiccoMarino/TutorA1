@@ -15,7 +15,6 @@ export function createSimControls({secs, simulator, enterDrive, pushPosition, re
     });
     sel.appendChild(og);
   });
-  $('#btnSimOpen').addEventListener('click', () => { const box = $('#simSetup'); box.hidden = !box.hidden; $('#btnSimOpen').setAttribute('aria-expanded', String(!box.hidden)); });
   $('#btnSimStart').addEventListener('click', () => start(+sel.value, clamp(+$('#simV').value || 125, 50, 170)));
   [1,5,15].forEach(w => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'hchip'; b.textContent = '×' + w; b.dataset.w = w;

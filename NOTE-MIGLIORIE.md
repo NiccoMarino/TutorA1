@@ -34,6 +34,13 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
   è uguale per costruzione (colori fissi), da guardare una volta con il telefono in tema chiaro.
 - Schermo orizzontale: in guida cartello a sinistra e numeri a destra, niente più tagliato.
 
+## Nuova schermata iniziale (ramo `nuova-home`)
+- Schermata iniziale con due cartelli stradali ("Avvia guida" verde, "Prova in simulazione" blu) su una corsia
+  disegnata; nome al centro, logo a sinistra, menù a destra.
+- Menù con Home, Impostazioni di guida, Simulazione (con l'elenco dei tratti), Storico, Come funziona,
+  Privacy e diritti. Indietro (anche quello di Android) richiude pagina e menù in ordine.
+- Tema chiaro e scuro con colori "asfalto"; nelle impostazioni: come il telefono, chiaro o scuro.
+
 ## Da sistemare, in ordine di importanza
 
 1. **Carattere grande (accessibilità)**: con scala 1,4 il pulsante "Audio" usciva dallo

@@ -96,3 +96,14 @@ test('la pagina resta leggera (sotto i 450 kB)', () => {
   const {app} = buildPages();
   assert.ok(Buffer.byteLength(app) < 450*1024, Math.round(Buffer.byteLength(app)/1024) + ' kB');
 });
+
+test('schermata iniziale con i due cartelli, menù e una pagina per ogni voce', () => {
+  const {app} = buildPages();
+  for (const id of ['home', 'btnMenu', 'btnDrive', 'btnSimOpen', 'menu', 'pSettings', 'pSim', 'pHist', 'pHow', 'pInfo'])
+    assert.ok(app.includes('id="' + id + '"'), 'manca id="' + id + '"');
+  for (const id of ['pSettings', 'pSim', 'pHist', 'pHow', 'pInfo'])
+    assert.ok(app.includes('data-go="' + id + '"'), 'il menù non porta a ' + id);
+  assert.ok(app.includes('data-go="home"'), 'il menù non ha la voce Home');
+  assert.ok(app.includes('id="setTheme"'), 'manca la scelta del tema nelle impostazioni');
+  assert.ok(!app.includes('class="side"'), 'è rimasta la vecchia colonna laterale');
+});

@@ -16,3 +16,11 @@ test('la barra di stato è sempre scura con icone chiare, qualunque sia il tema 
   assert.match(noActionBar, /<item name="android:windowLightStatusBar">false<\/item>/);
   assert.match(read('android/app/src/main/res/values/colors.xml'), /<color name="barre_sistema">#0E1412<\/color>/);
 });
+
+// Senza questo, Indietro dal menù o da una pagina chiuderebbe l'app invece di tornare alla schermata iniziale
+test('il tasto Indietro di Android chiede prima alla pagina (window.tutorBack)', () => {
+  const main = read('android/app/src/main/java/it/niccomarino/tutora1a4/MainActivity.java');
+  assert.match(main, /tutorBack/);
+  const page = read('src/main.js');
+  assert.match(page, /window\.tutorBack\s*=/);
+});

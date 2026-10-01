@@ -94,10 +94,9 @@ async function main(){
       return next;
     }
 
-    // 1. Elenco dei tratti con la scheda di uno aperta
+    // 1. Schermata iniziale con i due cartelli
     await open();
-    await ev(`document.querySelector('.sec[data-id]').click(); true`);
-    await shot('schermata-1-tratti.png', 1500);
+    await shot('schermata-1-home.png', 1500);
 
     // 2. In avvicinamento: "Prossimo Tutor" con la distanza dal portale
     await ev(`document.getElementById('btnDrive').click(); true`);
@@ -125,9 +124,14 @@ async function main(){
       await feed(sc(name), `false`, 0).catch(() => {});
       await ev(`document.getElementById('hudExit').click(); true`);
     }
-    await ev(`(() => { const d = [...document.querySelectorAll('details.panel')].find(x => /Tratti percorsi/.test(x.querySelector('summary').textContent));
-      if (!d) return false; d.open = true; d.scrollIntoView({block: 'start'}); return true; })()`);
+    await ev(`document.getElementById('btnMenu').click(); document.querySelector('[data-go="pHist"]').click(); true`);
     await shot('schermata-5-storico.png', 1500);
+
+    // 6. Pagina Simulazione con l'elenco dei tratti e la scheda di uno aperta
+    await open();
+    await ev(`document.getElementById('btnSimOpen').click(); document.querySelector('.sec[data-id]').click();
+      const d = document.querySelector('.tratti'); scrollTo(0, d.getBoundingClientRect().top + scrollY - 70); true`);
+    await shot('schermata-6-tratti.png', 1500);
 
     // Solo per controllo (non per lo store): guida con il telefono in orizzontale
     if (process.argv.includes('--orizzontale')){

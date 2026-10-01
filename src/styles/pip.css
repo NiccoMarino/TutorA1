@@ -1,6 +1,6 @@
 /* Riquadro Picture-in-Picture dell'app Android: la classe "pip" su <html> la mette native/tutor-native.js */
 html.pip body.driving .app{display:block; height:100vh; min-height:0}
-html.pip .side, html.pip .hud-top, html.pip .stats, html.pip .advice,
+html.pip .screen, html.pip .hud-top, html.pip .stats, html.pip .advice,
   html.pip .hud-limits, html.pip .simbar, html.pip .toast{display:none !important}
 html.pip .hud{padding:0; gap:0; height:100vh; overflow:hidden}
 html.pip .plate{height:100vh; box-sizing:border-box; border-radius:0; padding:3px}
