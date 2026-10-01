@@ -5,3 +5,4 @@ test/fixtures/golden-check.json
 .superpowers/
 device-check/
 test/fixtures/pip-check.json
+test/fixtures/golden-orig.json

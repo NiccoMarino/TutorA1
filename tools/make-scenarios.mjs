@@ -34,11 +34,11 @@ function offset(lat, lon, brg, meters){
 }
 const r6 = x => Math.round(x*1e6)/1e6;
 
-// Una posizione al secondo. legs: pezzi a velocità costante fino al km "to".
+// Una posizione al secondo. legs: pezzi a velocità costante fino al km "to" (con "line" un pezzo può
+// passare a un'altra linea, per esempio all'altra carreggiata per un'inversione di marcia).
 // jumpAt: al km indicato arrivano 3 posizioni sballate di 5,5 km (GPS impazzito).
 // exitSeconds: alla fine si esce di lato dalla strada a 108 km/h per questi secondi.
 function scenario(name, line, from, legs, {jumpAt = null, exitSeconds = 0} = {}){
-  const pts = data.ch[line];
   const fixes = [];
   let t = T0, km = from, jumped = false, last = null;
   const push = (lat, lon, kmh, heading) => {
@@ -46,6 +46,7 @@ function scenario(name, line, from, legs, {jumpAt = null, exitSeconds = 0} = {})
     t += 1000;
   };
   for (const leg of legs){
+    const pts = data.ch[leg.line || line];
     const dir = Math.sign(leg.to - km);
     while ((leg.to - km)*dir > 0){
       const p = pointAt(pts, km);
@@ -77,7 +78,12 @@ const scenarios = [
   // si esce dal tracciato dentro All. A15-Parma: misura interrotta
   scenario('a1-sud-uscita-dal-tracciato', 'S', 103.0, [{to: 106.0, kmh: 120}], {exitSeconds: 20}),
   // A4 verso Torino (chilometri decrescenti): Ospitaletto-Rovato e Rovato-Palazzolo
-  scenario('a4-ovest-due-tratti', 'AW', 210.0, [{to: 196.0, kmh: 130}])
+  scenario('a4-ovest-due-tratti', 'AW', 210.0, [{to: 196.0, kmh: 130}]),
+  // Piacenza Nord-Piacenza Sud finisce senza un tratto subito dopo: "Fine Tutor" da solo e cartello "Tratto concluso"
+  scenario('a1-sud-tratto-che-finisce-da-solo', 'S', 47.0, [{to: 58.0, kmh: 125}]),
+  // inversione di marcia dentro Milano Sud-Lodi: misura interrotta per direzione, poi Lodi-Milano Sud preso a metà,
+  // che finisce da solo, e verso Milano non ci sono altri Tutor ("Nessun Tutor più avanti")
+  scenario('a1-inversione-di-marcia', 'S', 14.0, [{to: 16.0, kmh: 110}, {to: 9.0, kmh: 110, line: 'N'}])
 ];
 mkdirSync('test/fixtures', {recursive: true});
 writeFileSync('test/fixtures/scenarios.json', JSON.stringify(scenarios));

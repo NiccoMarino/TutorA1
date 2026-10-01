@@ -45,8 +45,10 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
    dimensione del carattere durante la guida ricrea l'activity e perde la guida
    (manca `fontScale` in `configChanges` nel manifest).
 6. **Riquadro PiP, stato "fuori dalla A1/A4"**: il titolo "Il monitoraggio parte quando entri
-   in una delle…" viene tagliato. Serve un testo breve per il riquadro. Da controllare a
-   occhio anche i tratti con nomi molto lunghi.
+   in una delle…" viene tagliato. Serve un testo breve per il riquadro. Confermato dal
+   collaudo del riquadro (`test/fixtures/pip-layout.json`, `titleCut: true`): a 189×118 sono
+   tagliati anche i tratti con nomi lunghi (es. "Casalpusterlengo → Piacenza Nord") e il
+   titolo di "Nessun Tutor più avanti".
 
 ## Piccole cose
 - Favicon mancante: 404 in console (`https://localhost/favicon.ico`). Basta un
