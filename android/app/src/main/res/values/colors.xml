@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Barre di sistema e sfondo della finestra: sempre scuri, come la schermata di guida -->
+    <color name="barre_sistema">#0E1412</color>
+</resources>
