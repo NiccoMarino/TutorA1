@@ -3,3 +3,5 @@ www/
 .idea/
 test/fixtures/golden-check.json
 .superpowers/
+device-check/
+test/fixtures/pip-check.json

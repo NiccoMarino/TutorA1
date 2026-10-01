@@ -15,6 +15,8 @@ for (const a of want){
     if (diffs++ < 5) console.log(a.name, 'posizione', i, '\n  atteso: ', JSON.stringify(fa), '\n  trovato:', JSON.stringify(b.frames[i]));
   });
   const {frames: fa, ...restA} = a, {frames: fb, ...restB} = b;
+  // la misura della finestra emulata nel browser può variare di un pixel per arrotondamento
+  if (restA.size && restB.size && Math.abs(restA.size.w - restB.size.w) <= 2 && Math.abs(restA.size.h - restB.size.h) <= 2){ delete restA.size; delete restB.size; }
   if (!isDeepStrictEqual(restA, restB)){ diffs++; console.log(a.name, 'altri campi diversi (storico, riquadro)\n  atteso: ', JSON.stringify(restA), '\n  trovato:', JSON.stringify(restB)); }
 }
 console.log(diffs ? diffs + ' differenze' : 'Identico');
