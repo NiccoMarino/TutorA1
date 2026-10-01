@@ -1,3 +1,5 @@
 node_modules/
 www/
 .idea/
+test/fixtures/golden-check.json
+.superpowers/
