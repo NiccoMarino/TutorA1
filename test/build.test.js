@@ -35,7 +35,7 @@ test('un </script> dentro il codice ferma la build (romperebbe la pagina)', () =
   assert.equal(checkInlineScript('const s = 1;'), 'const s = 1;');
 });
 
-test('tutti gli script in linea hanno data-keep (servono alla copia "Scarica l\'app come file HTML")', () => {
+test('tutti gli script in linea hanno data-keep (la build controlla la sintassi solo di quelli)', () => {
   const {web} = buildPages();
   const inline = [...web.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)].map(m => m[1]);
   assert.ok(inline.length >= 3);
@@ -55,4 +55,19 @@ test('lo stile del riquadro PiP è nella pagina e non più nel ponte nativo', ()
   assert.ok(app.includes('html.pip .plate'));
   const bridge = readFileSync(new URL('../native/tutor-native.js', import.meta.url), 'utf8');
   assert.ok(!bridge.includes('html.pip .plate'));
+});
+
+test('la pagina non parla più di Claude né offre di scaricarsi come file', () => {
+  const {web, app} = buildPages();
+  for (const page of [web, app]){
+    assert.ok(!/claude/i.test(page), 'la pagina cita ancora Claude');
+    assert.ok(!page.includes('btnDownload'));
+  }
+});
+
+test('la pagina mostra la versione di package.json', () => {
+  const {version} = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  const {web, app} = buildPages();
+  assert.ok(web.includes('Versione ' + version));
+  assert.ok(app.includes('Versione ' + version));
 });

@@ -16,11 +16,6 @@ import { createHistoryPanel } from './ui/history-panel.js';
 import { createHud } from './ui/hud.js';
 import { createAudio } from './ui/audio.js';
 import { createSimControls } from './ui/sim-controls.js';
-import { setupDownload } from './ui/download.js';
-
-// Copia della pagina com'era al caricamento, per "Scarica l'app come file HTML"
-let PRISTINE = null;
-try { PRISTINE = '<!DOCTYPE html>\n' + document.documentElement.outerHTML; } catch(e) {}
 
 function boot(){
   const DATA = JSON.parse(document.getElementById('tutor-data').textContent);
@@ -127,8 +122,6 @@ function boot(){
 
   const simControls = createSimControls({secs, simulator, enterDrive, pushPosition: tracker.pushPosition,
     resetPosition: tracker.resetPosition, say, onJump: () => mapView.setFollow(true)});
-
-  setupDownload(PRISTINE);
 
   window.__tutor = {st, sim: simulator.sim, SECS: secs, LINES: lines, thresholdFor, settings, tracker};
 }

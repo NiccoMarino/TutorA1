@@ -4,10 +4,11 @@ import { isNativeApp, gpsDeniedMessage } from '../src/platform.js';
 
 afterEach(() => { delete globalThis.window; });
 
-test("nel browser il messaggio di GPS negato parla dei permessi del browser", () => {
+test("nel browser il messaggio di GPS negato parla dei permessi del browser, non di Claude", () => {
   globalThis.window = {};
   assert.equal(isNativeApp(), false);
   assert.match(gpsDeniedMessage(), /permesso di usarla/);
+  assert.doesNotMatch(gpsDeniedMessage(), /Claude/);
 });
 
 test("nell'app il messaggio di GPS negato spiega dove trovare l'autorizzazione nel telefono", () => {
