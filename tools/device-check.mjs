@@ -109,7 +109,7 @@ const pipLayout = () => js(`(() => {
   const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
   const vp = {left: 0, top: 0, right: innerWidth, bottom: innerHeight};
   return {
-    visible: ['.mapwrap', '.side', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast'].filter(vis),
+    visible: ['.side', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast'].filter(vis),
     plateInside: inside(el('plate').getBoundingClientRect(), vp),
     bigInside: inside(el('pBig').getBoundingClientRect(), document.querySelector('.plate-in').getBoundingClientRect()),
     titleCut: el('pTitle').scrollWidth > el('pTitle').clientWidth + 1

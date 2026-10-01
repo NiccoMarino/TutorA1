@@ -33,7 +33,7 @@ PROVALA SENZA GUIDARE
 Con "Prova in simulazione" scegli un tratto e una velocità e vedi come si comporta l'app.
 
 PRIVACY
-La posizione resta sul telefono: l'app non la invia a nessuno. Niente account, niente pubblicità, niente statistiche di utilizzo.
+La posizione resta sul telefono: l'app non la invia a nessuno e funziona anche senza internet. Niente account, niente pubblicità, niente statistiche di utilizzo.
 
 DA SAPERE
 • La soglia di sanzione tiene conto della riduzione del 5% prevista dalla legge (minimo 5 km/h): con limite 130 è 136,8 km/h. È una tolleranza per gli errori di misura, non un margine garantito.
@@ -41,11 +41,11 @@ DA SAPERE
 • La posizione dei portali è ricavata dal chilometro ufficiale, con un errore tipico di circa 100 metri.
 • Non usare il telefono mentre guidi: fissalo a un supporto e lascia che ti avvisi con la voce.
 
-MediaVelocità non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato. Fonti dei tratti: autostrade.it e infoviaggiando.it. Mappa: © contributori OpenStreetMap, © CARTO.
+MediaVelocità non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato. Fonti dei tratti: autostrade.it e infoviaggiando.it. Tracciato delle autostrade: © contributori OpenStreetMap.
 
 ## Note sulla versione 1.0.0 (max 500)
 <!-- campo: note -->
-Prima versione: 83 tratti Tutor su A1 e A4, media in tempo reale, avvisi vocali, riquadro sopra il navigatore, storico dei tratti e simulazione.
+Prima versione: 83 tratti Tutor su A1 e A4, media in tempo reale, avvisi vocali, riquadro sopra il navigatore, storico dei tratti e simulazione. Funziona senza internet.
 
 ## Altri campi
 - **Categoria:** App > Mappe e navigazione
@@ -59,7 +59,6 @@ Prima versione: 83 tratti Tutor su A1 e A4, media in tempo reale, avvisi vocali,
 |---|---|---|
 | Icona dell'app | `icona-512.png` | 512×512 |
 | Grafica di primo piano | `grafica-1024x500.png` | 1024×500 |
-| Screenshot del telefono (da 2 a 8) | `schermata-1-mappa.png` … `schermata-5-storico.png` | 1080×1920 |
+| Screenshot del telefono (da 2 a 8) | `schermata-1-tratti.png` … `schermata-5-storico.png` | 1080×1920 |
 
-Le schermate sono della versione con la mappa OpenStreetMap: quando metti la chiave CARTO puoi rifarle con
-`npm run grafica`. Per tablet non servono schermate se non la pubblichi come app per tablet.
+Se cambi l'aspetto dell'app, rifalle con `npm run grafica`. Per tablet non servono schermate se non la pubblichi come app per tablet.

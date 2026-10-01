@@ -1,7 +1,7 @@
 # Risposte ai moduli di Play Console (Monitora e migliora > Norme > Contenuti dell'app)
 
-Risposte per la versione 1.0.0: gratis, senza pubblicità, senza account. Se aggiungi la pubblicità
-cambiano le sezioni **Annunci** e **Sicurezza dei dati**, e va aggiornato `privacy.html`.
+Risposte per la versione 1.0.0: gratis, senza pubblicità, senza account. Se aggiungi la pubblicità (o di nuovo una
+mappa scaricata da internet) cambiano le sezioni **Annunci** e **Sicurezza dei dati**, e va aggiornato `privacy.html`.
 I nomi delle voci possono essere leggermente diversi nella console: conta il significato.
 
 ## Norme sulla privacy
@@ -30,26 +30,11 @@ Risultato atteso: PEGI 3 / "Tutti".
 - L'app potrebbe attirare involontariamente i bambini: **No**.
 
 ## Sicurezza dei dati
-Domande generali:
-- L'app raccoglie o condivide dati utente dei tipi richiesti? **Sì** (vedi sotto, per la mappa di sfondo).
-- Tutti i dati raccolti sono criptati in transito? **Sì** (solo richieste https).
-- Offri agli utenti un modo per richiedere l'eliminazione dei dati? **No**: l'app non conserva dati fuori dal
-  telefono (lo storico si cancella dall'app o disinstallandola).
-
-Tipi di dati:
-- **Posizione > Posizione approssimativa: raccolta, non condivisa.**
-  - Elaborata in modo temporaneo: **Sì**.
-  - Obbligatoria (gli utenti non possono scegliere): **Sì**.
-  - Scopo: **Funzionalità dell'app**.
-  - Perché: per disegnare la mappa l'app scarica da CARTO o OpenStreetMap le immagini della zona visualizzata,
-    quindi chi le fornisce vede quella zona. Non è la posizione GPS e non viene conservata dall'app.
-- **Posizione precisa: non dichiararla.** È letta e usata solo sul telefono, senza mai essere inviata
-  (Google non considera "raccolti" i dati elaborati solo sul dispositivo).
-- Tutto il resto (informazioni personali, foto, contatti, identificatori, attività nelle app, dati sulle
-  prestazioni e diagnostica): **non raccolti**.
-
-Nota: è la dichiarazione prudente. Molte app con mappe non dichiarano le immagini della mappa; dichiararle
-non costa nulla e protegge da contestazioni.
+- L'app raccoglie o condivide uno dei tipi di dati utente richiesti? **No.**
+  La posizione precisa è letta e usata solo sul telefono e non viene mai inviata: Google non considera
+  "raccolti" i dati elaborati solo sul dispositivo. L'app non si collega a nessun server (niente mappa,
+  carattere incluso nell'app), quindi non c'è altro da dichiarare.
+- Con "No" la sezione si chiude: la scheda mostrerà "Nessun dato raccolto" e "Nessun dato condiviso".
 
 ## App governative / Funzionalità finanziarie / Salute / App di notizie
 **No** a tutte.

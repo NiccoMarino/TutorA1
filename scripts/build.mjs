@@ -13,11 +13,18 @@ const SRC = ROOT + 'src/';
 const NOTICE = '\n<!-- Pagina generata da scripts/build.mjs: i sorgenti sono in src/ -->';
 // La versione è una sola, in package.json: la usano la pagina e l'app Android (android/app/build.gradle)
 const VERSION = JSON.parse(readFileSync(ROOT + 'package.json', 'utf8')).version;
+// Carattere Overpass dentro la pagina (licenza SIL OFL), così l'app non scarica niente da internet
+const FONT_WEIGHTS = [400, 600, 700, 800, 900];
+const FONTS = FONT_WEIGHTS.map(w => {
+  const file = ROOT + 'node_modules/@fontsource/overpass/files/overpass-latin-' + w + '-normal.woff2';
+  return '@font-face{font-family:"Overpass";font-style:normal;font-weight:' + w + ';font-display:swap;' +
+    'src:url(data:font/woff2;base64,' + readFileSync(file).toString('base64') + ') format("woff2")}';
+}).join('\n');
 const VARS = {
-  web: {viewportFit: ', viewport-fit=cover', bridge: '', notice: NOTICE, version: VERSION},
+  web: {viewportFit: ', viewport-fit=cover', bridge: '', notice: NOTICE, version: VERSION, fonts: FONTS},
   // Senza viewport-fit=cover Capacitor lascia spazio a barra di stato e barra di navigazione,
   // così la pagina (che non usa i margini safe-area) non finisce sotto l'ora e la batteria
-  app: {viewportFit: '', bridge: '\n<script src="capacitor.js"></script>\n<script src="tutor-native.js"></script>', notice: NOTICE, version: VERSION}
+  app: {viewportFit: '', bridge: '\n<script src="capacitor.js"></script>\n<script src="tutor-native.js"></script>', notice: NOTICE, version: VERSION, fonts: FONTS}
 };
 
 export function readSource(path){

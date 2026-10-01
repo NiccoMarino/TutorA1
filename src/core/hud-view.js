@@ -1,5 +1,5 @@
 // Cosa mostrare nella schermata di guida, calcolato dallo stato del tracker. Non tocca la pagina:
-// ui/hud.js applica la vista. highlight: undefined = lascia com'è, null = togli, tratto = evidenzia.
+// ui/hud.js applica la vista.
 import { nf0, nf1, nfKm, nfL, fmtDur, fmtDist } from './format.js';
 import { thresholdFor, thrText, verdictOf } from './rules.js';
 import { RAMS } from './network.js';
@@ -17,7 +17,7 @@ export function hudView(st, settings){
       : st.onRoad && st.ram ? {title:RAMS[st.ram].name + ', km ' + nf1.format(st.km), sim,
           sub:(st.sign ? (st.sign > 0 ? RAMS[st.ram].plus : RAMS[st.ram].minus) : 'direzione da determinare') + ', precisione GPS ' + nf0.format(f.acc) + ' m'}
       : {title:'Fuori da A1 e A4', sim, sub:'Precisione GPS ' + nf0.format(f.acc) + ' m'},
-    plate: null, progress: null, advice: '', highlight: undefined
+    plate: null, progress: null, advice: ''
   };
   const plate = (cls, kicker, title, big, unit, sub) => { view.plate = {cls, kicker, title, big, unit, sub}; };
 
@@ -46,11 +46,9 @@ export function hudView(st, settings){
     const big = meters ? nf0.format(Math.max(10, Math.round(n.dist*100)*10)) : nf1.format(n.dist);
     plate(near ? 'go' : '', near ? 'Il Tutor sta per iniziare' : 'Prossimo Tutor', n.sec.name, big, meters ? 'm al portale' : 'km al portale',
       'Tratto di ' + nfL.format(n.sec.L) + ' km' + eta);
-    view.highlight = n.sec;
     view.advice = near ? 'Limite ' + lim + ': al portale di inizio parte il calcolo della media.' : '';
   } else {
     plate('', 'Nessun Tutor più avanti', 'In questa direzione non ci sono altri tratti controllati', speed, 'km/h', '');
-    view.highlight = null;
   }
   return view;
 }

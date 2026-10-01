@@ -38,7 +38,7 @@ test('un </script> dentro il codice ferma la build (romperebbe la pagina)', () =
 test('tutti gli script in linea hanno data-keep (la build controlla la sintassi solo di quelli)', () => {
   const {web} = buildPages();
   const inline = [...web.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)].map(m => m[1]);
-  assert.ok(inline.length >= 3);
+  assert.ok(inline.length >= 2);
   for (const attrs of inline) assert.match(attrs, /data-keep/);
 });
 
@@ -70,4 +70,29 @@ test('la pagina mostra la versione di package.json', () => {
   const {web, app} = buildPages();
   assert.ok(web.includes('Versione ' + version));
   assert.ok(app.includes('Versione ' + version));
+});
+
+test('niente mappa: né Leaflet né il riquadro della mappa', () => {
+  const {web, app} = buildPages();
+  for (const page of [web, app]){
+    assert.ok(!page.includes('id="map"'));
+    assert.ok(!/\bL\.(map|tileLayer)\(/.test(page));
+    assert.ok(!/leaflet/i.test(page), 'la pagina contiene ancora Leaflet');
+  }
+});
+
+test('la pagina non scarica niente da internet: script, stili e caratteri sono dentro', () => {
+  const {web, app} = buildPages();
+  for (const page of [web, app]){
+    assert.ok(!/<(script|img|iframe)[^>]+src="https?:/i.test(page), 'script o immagine esterni');
+    assert.ok(!/<link[^>]+href="https?:/i.test(page), 'stile o carattere esterno');
+    assert.ok(!/url\(\s*['"]?https?:/i.test(page), 'url() esterno nello stile');
+    assert.match(page, /@font-face\{font-family:"Overpass"/);
+    assert.match(page, /font\/woff2;base64,/);
+  }
+});
+
+test('la pagina resta leggera (sotto i 450 kB)', () => {
+  const {app} = buildPages();
+  assert.ok(Buffer.byteLength(app) < 450*1024, Math.round(Buffer.byteLength(app)/1024) + ' kB');
 });

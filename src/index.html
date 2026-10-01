@@ -5,19 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1<!--@var viewportFit-->">
 <meta name="theme-color" content="#00794C">
 <title>Tutor A1 e A4: tratti controllati e velocità media</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<style><!--@include vendor/leaflet.css--></style>
 <style>
+<!--@var fonts-->
 <!--@include styles/app.css-->
 </style>
 <style>
 <!--@include styles/pip.css-->
 </style>
-<script data-keep>
-<!--@include vendor/leaflet.js-->
-</script>
 </head>
 <body>
 <div class="app" id="app">
@@ -154,28 +148,15 @@
       <details class="panel">
         <summary>Dati, precisione e privacy</summary>
         <div class="panel-body">
-          <p>Tratti della A1 e della A4 Milano–Brescia: <a href="https://www.autostrade.it/it/tecnologia-sicurezza/sicurezza/il-tutor" target="_blank" rel="noopener">autostrade.it, pagina Il Tutor</a>, consultata il 29 settembre 2026. Tratti della A4 Venezia–Trieste: <a href="https://www.infoviaggiando.it/it/14180/tutor" target="_blank" rel="noopener">infoviaggiando.it</a> di Autostrade Alto Adriatico, consultata il 30 settembre 2026. Sulla A4 tra Torino e Milano e tra Brescia e Venezia le società che la gestiscono non indicano tratti Tutor. Tracciato delle carreggiate: © contributori OpenStreetMap (ODbL). Chilometriche di caselli e cantieri: dati di viabilità di Autostrade per l'Italia.</p>
+          <p>Tratti della A1 e della A4 Milano–Brescia: <a href="https://www.autostrade.it/it/tecnologia-sicurezza/sicurezza/il-tutor" target="_blank" rel="noopener">autostrade.it, pagina Il Tutor</a>, consultata il 29 settembre 2026. Tratti della A4 Venezia–Trieste: <a href="https://www.infoviaggiando.it/it/14180/tutor" target="_blank" rel="noopener">infoviaggiando.it</a> di Autostrade Alto Adriatico, consultata il 30 settembre 2026. Sulla A4 tra Torino e Milano e tra Brescia e Venezia le società che la gestiscono non indicano tratti Tutor. Tracciato delle carreggiate, usato per riconoscere strada e direzione: © contributori OpenStreetMap (ODbL). Chilometriche di caselli e cantieri: dati di viabilità di Autostrade per l'Italia.</p>
           <p>La posizione dei portali è ricavata dal chilometro ufficiale: su A1 e A4 l'errore tipico è di circa 100 metri, fino a 250. Sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa.</p>
-          <p>La posizione GPS resta sul telefono: l'app non la invia a nessuno e lo storico dei tratti è salvato solo qui. La mappa stradale di sfondo si scarica da internet, quindi chi la fornisce vede la zona visualizzata; se non si carica resta la mappa semplificata. <a href="https://niccomarino.github.io/TutorA1/privacy.html" target="_blank" rel="noopener">Informativa sulla privacy</a>.</p>
+          <p>La posizione GPS resta sul telefono: l'app non la invia a nessuno, funziona anche senza internet e lo storico dei tratti è salvato solo qui. Carattere Overpass (SIL Open Font License). <a href="https://niccomarino.github.io/TutorA1/privacy.html" target="_blank" rel="noopener">Informativa sulla privacy</a>.</p>
           <p>Non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato.</p>
           <p class="src">Versione <!--@var version--></p>
         </div>
       </details>
     </div>
   </aside>
-
-  <div class="mapwrap">
-    <div id="map" role="region" aria-label="Mappa dei tratti Tutor"></div>
-    <div class="maptools">
-      <button class="btn" id="btnFit" type="button">Vista completa</button>
-      <button class="btn" id="btnFollow" type="button" hidden>Ricentra su di me</button>
-    </div>
-    <div class="legend" aria-label="Legenda">
-      <div><span class="lg-line lg-sud"></span>Direzione Sud o Est</div>
-      <div><span class="lg-line lg-nord"></span>Direzione Nord o Ovest</div>
-      <div><span class="lg-g"></span>Portale di inizio <span class="lg-e"></span>fine</div>
-    </div>
-  </div>
 </div>
 
 <script data-keep type="application/json" id="tutor-data"><!--@include data/tutor-data.json--></script>

@@ -13,6 +13,13 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- Barra di stato e di navigazione sempre scure con icone chiare (con SystemBars "DARK" in
+             capacitor.config.json): se seguissero il tema, cambiandolo ad app aperta diventerebbero illeggibili -->
+        <item name="android:windowBackground">@color/barre_sistema</item>
+        <item name="android:statusBarColor">@color/barre_sistema</item>
+        <item name="android:navigationBarColor">@color/barre_sistema</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
 

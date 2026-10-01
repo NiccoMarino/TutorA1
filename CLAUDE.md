@@ -16,7 +16,8 @@ Struttura e flusso dei dati: `docs/ARCHITETTURA.md`. Difetti noti e idee: `NOTE-
 
 ## Regole
 - Non modificare `index.html` a mano: si modifica `src/` e si esegue `npm run build`.
-- `src/core/` non usa `document`, `window` né Leaflet.
+- `src/core/` non usa `document` né `window`.
+- La pagina non scarica niente da internet (un test lo controlla): niente mappa, carattere incluso.
 - Non cambiare le chiavi di localStorage né gli id usati da `native/tutor-native.js`.
 - Testi, commenti e commit in italiano.
 - La versione è solo in `package.json` (pagina e app la leggono da lì): `npm version patch` per ogni aggiornamento.

@@ -6,7 +6,7 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
 `index.html` a mano: viene riscritto dalla build.
 
 ## Le due metà
-- `src/core/`: il calcolo. Niente `document`, `window` o Leaflet: si prova con `npm test`.
+- `src/core/`: il calcolo. Niente `document` o `window`: si prova con `npm test`.
 - `src/ui/`: la pagina. Mostra quello che decide `core/`, senza calcolare.
 - `src/main.js` è l'unico file che le conosce entrambe e le collega.
 
@@ -26,7 +26,8 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
 - Regole sulla tolleranza: `rules.js` (con `test/rules.test.js`).
 - Nuovi tratti o tracciati: `src/data/tutor-data.json`; nuove linee in `LINE_DEFS` di `network.js`.
 - Differenze browser/app: `src/platform.js`. Il ponte nativo è `native/tutor-native.js`.
-- Mappa di sfondo (CARTO con chiave, altrimenti OpenStreetMap): `src/tiles.js`.
+- Niente mappa (tolta a ottobre 2026): i tratti sono un elenco (`ui/sidebar.js`), la guida usa tutto lo schermo.
+  Il carattere Overpass è dentro la pagina (`scripts/build.mjs`), quindi l'app non si collega a internet.
 - Versione: `package.json`; la build la scrive nella pagina, `android/app/build.gradle` ne ricava versionName e versionCode.
 - Icona, avvio e immagini dello store: `tools/make-icons.mjs` e `tools/store-screenshots.mjs` (`npm run grafica`).
 - Stile del riquadro Picture-in-Picture: `src/styles/pip.css`.
