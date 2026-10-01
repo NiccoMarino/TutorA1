@@ -1,0 +1,18 @@
+# Tutor A1/A4
+
+App (pagina web + app Android Capacitor) che segue i tratti Tutor di A1 e A4 e la velocità media.
+Struttura e flusso dei dati: `docs/ARCHITETTURA.md`. Difetti noti e idee: `NOTE-MIGLIORIE.md`.
+
+## Comandi
+- `npm test`: test Node (`test/*.test.js`), compreso il golden su `core/`.
+- `npm run build`: ricostruisce `index.html` (browser, GitHub Pages) e `www/` (app). Da committare.
+- `npm run serve`: server su http://localhost:5173 per provare la pagina e registrare il golden.
+- `npm run sync`: build + `npx cap sync`. Poi `cd android && ./gradlew installDebug -Pprova=true` con Java 21
+  (`JAVA_HOME="/c/Program Files/Java/jdk-21"`): installa la copia "Tutor prova" senza toccare l'app normale.
+- `npm run device-check`: collaudo sul telefono di uscita dall'app e riquadro sopra Maps (`-- --gps` per il GPS vero).
+
+## Regole
+- Non modificare `index.html` a mano: si modifica `src/` e si esegue `npm run build`.
+- `src/core/` non usa `document`, `window` né Leaflet.
+- Non cambiare le chiavi di localStorage né gli id usati da `native/tutor-native.js`.
+- Testi, commenti e commit in italiano.

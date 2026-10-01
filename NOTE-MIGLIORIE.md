@@ -36,8 +36,8 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
 3. **Testo obsoleto nell'app**: il pannello "Dati, precisione e uso fuori da Claude" parla
    di Claude e GitHub Pages, e il pulsante "Scarica l'app come file HTML" non ha senso
    dentro l'app (e il download di un file blob nella WebView di Android probabilmente non
-   funziona, da verificare). Anche il messaggio di permesso GPS negato in `index.html`
-   cita Claude (la build lo sostituisce, ma conviene pulire la sorgente).
+   funziona, da verificare). Il messaggio di permesso GPS negato nel browser cita ancora
+   Claude (`src/platform.js`).
 4. **Schermo orizzontale**: il cartello è tagliato in basso, statistiche e limiti non si
    vedono. Se si usa il telefono in orizzontale sul supporto, serve un layout dedicato.
 5. **Carattere grande (accessibilità)**: con scala 1,4 il pulsante "Audio" esce dallo
@@ -45,8 +45,10 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
    dimensione del carattere durante la guida ricrea l'activity e perde la guida
    (manca `fontScale` in `configChanges` nel manifest).
 6. **Riquadro PiP, stato "fuori dalla A1/A4"**: il titolo "Il monitoraggio parte quando entri
-   in una delle…" viene tagliato. Serve un testo breve per il riquadro. Da controllare a
-   occhio anche i tratti con nomi molto lunghi.
+   in una delle…" viene tagliato. Serve un testo breve per il riquadro. Confermato dal
+   collaudo del riquadro (`test/fixtures/pip-layout.json`, `titleCut: true`): a 189×118 sono
+   tagliati anche i tratti con nomi lunghi (es. "Casalpusterlengo → Piacenza Nord") e il
+   titolo di "Nessun Tutor più avanti".
 
 ## Piccole cose
 - Favicon mancante: 404 in console (`https://localhost/favicon.ico`). Basta un
@@ -59,8 +61,6 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
   oltre 50 m.
 - `android:allowBackup="true"`: lo storico dei tratti finirebbe nei backup di Google.
   Decidere se va bene.
-- `indexA1.html` è una copia più vecchia (solo A1) che l'app non usa: tenerla allineata o
-  toglierla.
 - `npm audit`: 3 avvisi moderati, solo nel CLI di Capacitor (strumento di sviluppo, non
   finisce nell'app).
 

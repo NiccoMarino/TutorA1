@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="it"><!--@var notice-->
+<head>
+<meta charset="utf-8"><!--@var bridge-->
+<meta name="viewport" content="width=device-width, initial-scale=1<!--@var viewportFit-->">
+<meta name="theme-color" content="#00794C">
+<title>Tutor A1 e A4: tratti controllati e velocità media</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style><!--@include vendor/leaflet.css--></style>
+<style>
+<!--@include styles/app.css-->
+</style>
+<style>
+<!--@include styles/pip.css-->
+</style>
+<script data-keep>
+<!--@include vendor/leaflet.js-->
+</script>
+</head>
+<body>
+<div class="app" id="app">
+
+  <section class="hud" id="hud" aria-label="Modalità guida">
+    <div class="hud-top">
+      <button class="hbtn" id="hudExit" type="button">Esci</button>
+      <div class="road" id="hudRoad">In attesa del segnale GPS<small id="hudRoadSub">Tieni il telefono con vista del cielo</small></div>
+      <button class="hbtn" id="hudMute" type="button" aria-pressed="false" title="Disattiva voce e suoni">Audio sì</button>
+    </div>
+
+    <div class="plate" id="plate">
+      <div class="plate-in">
+        <div class="kicker" id="pKicker">Avvio</div>
+        <div class="title" id="pTitle">Sto cercando la tua posizione</div>
+        <div class="big"><b id="pBig">–</b><span id="pUnit"></span></div>
+        <div class="sub" id="pSub"></div>
+        <div class="progress" id="pProg" hidden>
+          <div class="bar"><i id="pFill"></i></div>
+          <div class="plabels"><span id="pFrom"></span><span id="pTo"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat" id="stInst"><b id="sInst">–</b><span>km/h adesso</span></div>
+      <div class="stat"><b id="sLim">130</b><span>limite impostato</span></div>
+      <div class="stat"><b id="sThr">136,8</b><span id="sThrL">soglia con tolleranza</span></div>
+    </div>
+
+    <p class="advice" id="advice"></p>
+
+    <div class="hud-limits" id="hudLimits" role="group" aria-label="Limite di velocità">
+      <span class="lab">Limite</span>
+    </div>
+
+    <div class="simbar" id="simBar" hidden>
+      <div class="row"><label for="simSpeed">Velocità simulata</label><output id="simSpeedOut">125 km/h</output></div>
+      <input type="range" id="simSpeed" min="50" max="170" step="1" value="125">
+      <div class="row">
+        <div class="row" role="group" aria-label="Accelerazione del tempo" id="simWarp"></div>
+        <button class="hbtn" id="simJump" type="button">Vai al prossimo Tutor</button>
+      </div>
+    </div>
+
+    <p class="toast" id="toast" aria-live="polite"></p>
+  </section>
+
+  <aside class="side" id="side">
+    <div class="side-inner">
+      <header class="brand">
+        <div class="sign" aria-hidden="true"><div class="sign-in"><b>Tutor</b><small>A1 A4</small></div></div>
+        <div>
+          <h1>Tutor su A1 e A4</h1>
+          <p class="lede" id="lede">Tutti i tratti con controllo della velocità media sulla A1 e sulla A4.</p>
+        </div>
+      </header>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="btnDrive" type="button">Avvia guida</button>
+        <button class="btn" id="btnSimOpen" type="button" aria-expanded="false" aria-controls="simSetup">Prova in simulazione</button>
+      </div>
+      <p class="note" id="gpsNote" hidden></p>
+
+      <div class="simsetup" id="simSetup" hidden>
+        <label>Parti poco prima di questo tratto
+          <select id="simSec"></select>
+        </label>
+        <label>Velocità iniziale (km/h)
+          <input type="number" id="simV" min="50" max="170" value="125" inputmode="numeric">
+        </label>
+        <button class="btn btn-primary" id="btnSimStart" type="button">Avvia simulazione</button>
+      </div>
+
+      <div class="filters">
+        <div class="filter" role="group" aria-label="Filtra per autostrada" id="filterRoad">
+          <button class="chip" type="button" data-r="all" aria-pressed="true">A1 e A4</button>
+          <button class="chip" type="button" data-r="A1" aria-pressed="false">Solo A1</button>
+          <button class="chip" type="button" data-r="A4" aria-pressed="false">Solo A4</button>
+        </div>
+        <div class="filter" role="group" aria-label="Filtra per direzione" id="filter">
+          <button class="chip" type="button" data-f="all" aria-pressed="true">Entrambe le direzioni</button>
+          <button class="chip" type="button" data-f="pos" aria-pressed="false"><i class="dot sud"></i>Sud o Est</button>
+          <button class="chip" type="button" data-f="neg" aria-pressed="false"><i class="dot nord"></i>Nord o Ovest</button>
+        </div>
+      </div>
+      <div id="list"></div>
+
+      <details class="panel" id="settings">
+        <summary>Impostazioni di guida</summary>
+        <div class="panel-body">
+          <div class="field">
+            <span>Limite di velocità</span>
+            <div class="seg" id="setLimits"></div>
+            <small>Segui sempre i cartelli: con pioggia il limite in autostrada scende a 110, nei cantieri può essere più basso.</small>
+          </div>
+          <div class="field">
+            <span>Margine di sicurezza sull'allarme: <output id="marginOut"></output></span>
+            <input type="range" id="setMargin" min="0" max="5" step="1">
+            <small id="marginHelp"></small>
+          </div>
+          <label class="field">
+            <span>Preavviso prima del portale</span>
+            <select class="sel" id="setPre">
+              <option value="0.5">500 m</option>
+              <option value="1">1 km</option>
+              <option value="2">2 km</option>
+            </select>
+          </label>
+          <label class="switch">Avvisi vocali <input type="checkbox" id="setVoice"></label>
+          <label class="switch">Segnali acustici <input type="checkbox" id="setBeep"></label>
+          <label class="switch">Avvisa anche se la velocità istantanea supera la soglia <input type="checkbox" id="setInst"></label>
+        </div>
+      </details>
+
+      <details class="panel" id="histPanel">
+        <summary>Tratti percorsi</summary>
+        <div class="panel-body">
+          <ul class="hist" id="hist"></ul>
+          <div><button class="btn btn-small" id="histClear" type="button">Cancella lo storico</button></div>
+        </div>
+      </details>
+
+      <details class="panel">
+        <summary>Come funziona il calcolo</summary>
+        <div class="panel-body">
+          <p>Il Tutor fotografa il veicolo al portale di inizio e a quello di fine e divide la lunghezza del tratto per il tempo impiegato. L'app fa lo stesso con il GPS del telefono: dal momento in cui passi il primo portale somma la strada percorsa e la divide per il tempo trascorso.</p>
+          <p>Sulla velocità misurata la legge applica una riduzione del 5%, e comunque non meno di 5 km/h. La sanzione scatta solo se la velocità ridotta supera il limite: con 130 km/h la soglia è quindi 136,8 km/h, con 110 è 115,7, con 90 è 95. È una tolleranza per gli errori di misura, non un margine garantito.</p>
+          <p>Se entri in autostrada dopo il portale di inizio o esci prima di quello di fine, il Tutor non può abbinare i due passaggi: l'app mostra comunque la media, ma la segna come parziale.</p>
+          <p>L'accensione del Tutor dipende dalla Polizia Stradale: un tratto segnato qui può essere spento in quel momento.</p>
+        </div>
+      </details>
+
+      <details class="panel">
+        <summary>Dati, precisione e uso fuori da Claude</summary>
+        <div class="panel-body">
+          <p>Tratti della A1 e della A4 Milano–Brescia: <a href="https://www.autostrade.it/it/tecnologia-sicurezza/sicurezza/il-tutor" target="_blank" rel="noopener">autostrade.it, pagina Il Tutor</a>, consultata il 29 settembre 2026. Tratti della A4 Venezia–Trieste: <a href="https://www.infoviaggiando.it/it/14180/tutor" target="_blank" rel="noopener">infoviaggiando.it</a> di Autostrade Alto Adriatico, consultata il 30 settembre 2026. Sulla A4 tra Torino e Milano e tra Brescia e Venezia le società che la gestiscono non indicano tratti Tutor. Tracciato delle carreggiate: © contributori OpenStreetMap (ODbL). Chilometriche di caselli e cantieri: dati di viabilità di Autostrade per l'Italia.</p>
+          <p>La posizione dei portali è ricavata dal chilometro ufficiale: su A1 e A4 l'errore tipico è di circa 100 metri, fino a 250. Sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa.</p>
+          <p>Per usarla dal telefono senza Claude, metti il file online gratis con GitHub Pages e aprilo dal browser: il GPS funziona solo su pagine https, non aprendo il file dalla memoria. La mappa stradale di sfondo è di OpenStreetMap; se non si carica resta la mappa semplificata.</p>
+          <div><button class="btn btn-small" id="btnDownload" type="button">Scarica l'app come file HTML</button></div>
+          <p class="src" id="dlMsg" hidden></p>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <div class="mapwrap">
+    <div id="map" role="region" aria-label="Mappa dei tratti Tutor"></div>
+    <div class="maptools">
+      <button class="btn" id="btnFit" type="button">Vista completa</button>
+      <button class="btn" id="btnFollow" type="button" hidden>Ricentra su di me</button>
+    </div>
+    <div class="legend" aria-label="Legenda">
+      <div><span class="lg-line lg-sud"></span>Direzione Sud o Est</div>
+      <div><span class="lg-line lg-nord"></span>Direzione Nord o Ovest</div>
+      <div><span class="lg-g"></span>Portale di inizio <span class="lg-e"></span>fine</div>
+    </div>
+  </div>
+</div>
+
+<script data-keep type="application/json" id="tutor-data"><!--@include data/tutor-data.json--></script>
+<script data-keep>
+<!--@include main.js-->
+</script>
+</body>
+</html>

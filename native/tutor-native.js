@@ -130,29 +130,8 @@
 
   /* ---------- Riquadro Picture-in-Picture ----------
    * Durante la guida, uscendo dall'app (per aprire Maps o Waze) resta una finestrella
-   * con il cartello del Tutor: prossimo tratto e km al portale, oppure la media nel tratto. */
-  var css = document.createElement('style');
-  css.textContent = [
-    'html.pip body.driving .app{display:block; height:100vh; min-height:0}',
-    'html.pip body.driving .mapwrap, html.pip .side, html.pip .hud-top, html.pip .stats, html.pip .advice,',
-    '  html.pip .hud-limits, html.pip .simbar, html.pip .toast{display:none !important}',
-    'html.pip .hud{padding:0; gap:0; height:100vh; overflow:hidden}',
-    'html.pip .plate{height:100vh; box-sizing:border-box; border-radius:0; padding:3px}',
-    'html.pip .plate-in{height:100%; box-sizing:border-box; min-height:0; padding:5px 8px; gap:0; border-width:2px; border-radius:8px; align-content:center}',
-    'html.pip .plate .kicker{font-size:10px}',
-    'html.pip .plate .title, html.pip .plate .sub{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}',
-    'html.pip .plate .title{font-size:12.5px}',
-    'html.pip .plate .title{line-height:1.25}',
-    'html.pip .plate .big{margin-top:4px; gap:5px}',
-    'html.pip .plate .big b{font-size:min(36vh,22vw); letter-spacing:-1px}',
-    // dentro il tratto la barra di avanzamento basta: la riga descrittiva non ci sta
-    'html.pip .plate-in:has(#pProg:not([hidden])) .sub{display:none}',
-    'html.pip .plate .big span{font-size:10.5px; max-width:10ch}',
-    'html.pip .plate .sub{font-size:10px}',
-    'html.pip .progress{margin-top:3px}',
-    'html.pip .bar{height:5px}',
-    'html.pip .plabels{font-size:9px; margin-top:2px}'
-  ].join('\n');
+   * con il cartello del Tutor: prossimo tratto e km al portale, oppure la media nel tratto.
+   * Lo stile del riquadro è in src/styles/pip.css (attivo con la classe "pip" su <html>). */
 
   window.addEventListener('tutorpip', function (e) {
     document.documentElement.classList.toggle('pip', !!e.detail);
@@ -167,8 +146,6 @@
   });
 
   document.addEventListener('DOMContentLoaded', function () {
-    document.head.appendChild(css);
-
     // Il riquadro si attiva solo in modalità guida (classe "driving" sul body)
     var driving = null;
     function sync() {
