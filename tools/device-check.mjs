@@ -227,8 +227,10 @@ async function main(){
   await sleep(2500);
   await launch();
   const s6 = await pageState();
-  if (s6.origin !== s5.origin) note('Dopo la X la pagina è stata ricaricata', 'controllo della guida poco significativo');
-  check('X sul riquadro: la guida finisce', !s6.running && !s6.driving, 'chiuso con ' + how);
+  // Vale solo se è la stessa pagina a fermare la guida: una pagina ricaricata parte comunque ferma
+  const samePage = s6.origin === s5.origin;
+  check('X sul riquadro: la guida finisce', samePage && !s6.running && !s6.driving,
+    (samePage ? 'stessa pagina, ' : 'pagina ricaricata, non dimostrato, ') + 'chiuso con ' + how);
 
   // C. Con il GPS vero: dopo la X il servizio della posizione non deve restare acceso
   if (withGps){
