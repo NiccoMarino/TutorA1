@@ -6,3 +6,8 @@ test/fixtures/golden-check.json
 device-check/
 test/fixtures/pip-check.json
 test/fixtures/golden-orig.json
+
+# Chiave di firma per il Play Store: mai nel repository
+keystore.properties
+*.jks
+*.keystore

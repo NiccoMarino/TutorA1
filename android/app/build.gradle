@@ -1,5 +1,18 @@
 apply plugin: 'com.android.application'
 
+import groovy.json.JsonSlurper
+
+// Versione da package.json (una sola per pagina e app): 1.2.3 diventa versionName "1.2.3" e versionCode 10203.
+// Per ogni aggiornamento sul Play Store va aumentata (npm version patch|minor|major).
+def appVersion = new JsonSlurper().parse(file('../../package.json')).version
+def appVersionCode = appVersion.tokenize('.').collect { it as int }.inject(0) { acc, n -> acc * 100 + n }
+
+// Firma per il Play Store: android/keystore.properties (fuori da git) con storeFile, storePassword, keyAlias,
+// keyPassword. Un altro file si indica con -PkeystoreProperties=percorso. Senza file la release resta non firmata.
+def keystorePropsFile = file(project.findProperty('keystoreProperties') ?: '../keystore.properties')
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) keystorePropsFile.withInputStream { keystoreProps.load(it) }
+
 android {
     namespace = "it.niccomarino.tutora1a4"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,14 +20,24 @@ android {
         applicationId "it.niccomarino.tutora1a4"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode appVersionCode
+        versionName appVersion
         manifestPlaceholders = [appLabel: "@string/app_name"]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        release {
+            if (keystoreProps['storeFile']) {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
         }
     }
     buildTypes {
@@ -26,6 +49,7 @@ android {
             }
         }
         release {
+            if (keystoreProps['storeFile']) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

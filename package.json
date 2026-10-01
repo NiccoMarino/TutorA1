@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "App Android/iOS dei Tutor A1 e A4, costruita con Capacitor a partire da index.html",
+  "description": "App Android dei tratti Tutor di A1 e A4 (MediaVelocità), costruita con Capacitor a partire da src/",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test \"test/*.test.js\"",
@@ -11,7 +11,8 @@
     "device-check": "node tools/device-check.mjs",
     "sync": "npm run build && npx cap sync",
     "android": "npm run sync && npx cap open android",
-    "apk": "npm run sync && cd android && gradlew assembleDebug"
+    "apk": "npm run sync && cd android && gradlew assembleDebug",
+    "bundle": "npm run sync && cd android && gradlew bundleRelease"
   },
   "dependencies": {
     "@capacitor-community/background-geolocation": "^1.2.26",

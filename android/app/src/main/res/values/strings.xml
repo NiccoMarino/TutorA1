@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Tutor A1 A4</string>
-    <string name="title_activity_main">Tutor A1 A4</string>
+    <string name="app_name">MediaVelocità</string>
+    <string name="title_activity_main">MediaVelocità</string>
     <string name="package_name">it.niccomarino.tutora1a4</string>
     <string name="custom_url_scheme">it.niccomarino.tutora1a4</string>
     <string name="capacitor_background_geolocation_notification_channel_name">Tutor in viaggio</string>
