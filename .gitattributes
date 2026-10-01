@@ -3,4 +3,4 @@
 test/fixtures/*.json -diff
 src/vendor/** -diff
 src/data/** -diff
-index.html -diff
+/index.html -diff
