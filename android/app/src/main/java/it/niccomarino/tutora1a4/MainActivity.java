@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Rational;
+import android.webkit.WebView;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
@@ -55,5 +56,18 @@ public class MainActivity extends BridgeActivity {
         if (bridge == null || bridge.getWebView() == null) return;
         bridge.getWebView().evaluateJavascript(
             "window.dispatchEvent(new CustomEvent('tutorpip', {detail: " + isInPictureInPictureMode + "}))", null);
+        // Nella finestrella la WebView cambia zoom e al ritorno lo tiene: lo riporto al 100% (più volte,
+        // perché l'animazione di uscita dal riquadro dura qualche istante)
+        if (!isInPictureInPictureMode) {
+            WebView wv = bridge.getWebView();
+            for (int delay : new int[] {200, 600, 1200}) wv.postDelayed(() -> resetZoom(wv), delay);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void resetZoom(WebView wv) {
+        float target = getResources().getDisplayMetrics().density;
+        float cur = wv.getScale();
+        if (cur > 0 && Math.abs(cur - target) > 0.02f) wv.zoomBy(target / cur);
     }
 }
