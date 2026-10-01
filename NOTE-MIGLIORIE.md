@@ -22,28 +22,28 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
 - **X sul riquadro**: chiudere la finestrella termina la guida (come "Esci") e il GPS si ferma.
   Verificato: espandere il riquadro o spegnere lo schermo con il riquadro aperto NON ferma la guida.
 
+## Risolti preparando il Play Store (ramo `play-store`)
+- Testo obsoleto: tolti Claude, GitHub Pages e "Scarica l'app come file HTML"; il pannello ora è
+  "Dati, precisione e privacy", con link all'informativa e la versione.
+- Mappa: con la chiave CARTO (`src/tiles.js`) si usano le mappe CARTO; se le tile non si caricano si riprova
+  ogni minuto invece di arrendersi all'avvio.
+- `fontScale` in `configChanges`: cambiare la dimensione del carattere non interrompe più la guida.
+- Icona e schermata di avvio proprie al posto di quelle di Capacitor.
+- La legenda della mappa non è più coperta dalla riga delle fonti.
+
 ## Da sistemare, in ordine di importanza
 
 1. **Barra di stato in tema chiaro**: con il telefono in tema chiaro, ora e batteria sono
    bianchi su sfondo bianco (illeggibili). Serve impostare colore e stile della barra di
    stato (plugin `@capacitor/status-bar` o stile nativo) in modo coerente con l'HUD scuro.
-2. **Mappa a rischio con OpenStreetMap**: i server `tile.openstreetmap.org` non sono pensati
-   per un'app distribuita (regole d'uso, possibili blocchi). Per uso personale va bene;
-   per diffonderla serve un fornitore di tile con chiave (MapTiler, Stadia, ecc.).
-   Inoltre il controllo "le tile funzionano?" avviene una sola volta all'avvio: se parti
-   senza rete, la mappa resta quella vettoriale finché non riavvii. Meglio riprovare
-   periodicamente.
-3. **Testo obsoleto nell'app**: il pannello "Dati, precisione e uso fuori da Claude" parla
-   di Claude e GitHub Pages, e il pulsante "Scarica l'app come file HTML" non ha senso
-   dentro l'app (e il download di un file blob nella WebView di Android probabilmente non
-   funziona, da verificare). Il messaggio di permesso GPS negato nel browser cita ancora
-   Claude (`src/platform.js`).
+2. **Mappa senza chiave CARTO**: finché `CARTO_KEY` in `src/tiles.js` è vuota si usano ancora i server di
+   OpenStreetMap, non pensati per un'app distribuita. Serve la chiave gratuita prima di uscire sul Play Store.
+3. **Barra di stato da riverificare** sul telefono con la versione release (vedi punto 1).
 4. **Schermo orizzontale**: il cartello è tagliato in basso, statistiche e limiti non si
    vedono. Se si usa il telefono in orizzontale sul supporto, serve un layout dedicato.
 5. **Carattere grande (accessibilità)**: con scala 1,4 il pulsante "Audio" esce dallo
    schermo e statistiche e limiti finiscono nascosti sotto la mappa. Inoltre cambiare la
-   dimensione del carattere durante la guida ricrea l'activity e perde la guida
-   (manca `fontScale` in `configChanges` nel manifest).
+   dimensione del carattere durante la guida ricreava l'activity (risolto, da riprovare sul telefono).
 6. **Riquadro PiP, stato "fuori dalla A1/A4"**: il titolo "Il monitoraggio parte quando entri
    in una delle…" viene tagliato. Serve un testo breve per il riquadro. Confermato dal
    collaudo del riquadro (`test/fixtures/pip-layout.json`, `titleCut: true`): a 189×118 sono
@@ -53,9 +53,8 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
 ## Piccole cose
 - Favicon mancante: 404 in console (`https://localhost/favicon.ico`). Basta un
   `<link rel="icon" href="data:,">` nella build.
-- Icona e schermata di avvio sono quelle predefinite di Capacitor.
 - Vista completa della mappa: i nomi delle città si sovrappongono (Novara/Milano/Lodi,
-  Reggio/Modena) e la legenda è tagliata in basso dalla riga delle fonti.
+  Reggio/Modena).
 - Da fermo e senza segnale buono (in casa, precisione 100 m) l'app mostra 12-15 km/h
   invece di 0. Idea: ignorare la velocità sotto i 3 km/h oppure quando la precisione è
   oltre 50 m.
@@ -74,10 +73,7 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
   più invasivo; Android 12+ ha limiti su questi overlay.
 - **Prova su strada**: GPS vero, gallerie (il controllo "segnale assente" c'è ma non è stato
   provato), consumo di batteria in 1 ora di guida, voce e vibrazione.
-- **Pubblicazione**: ora l'APK è di debug. Per distribuirlo servono una chiave di firma, un
-  numero di versione da aumentare e un APK/AAB "release". Se si va sul Play Store: scheda
-  con spiegazione dell'uso della posizione e valutazione delle regole sulle app di
-  controllo velocità.
+- **Pubblicazione**: preparata, vedi `docs/play-store/PUBBLICAZIONE.md`.
 - **Android 8-11**: il riquadro usa `onUserLeaveHint` invece dell'apertura automatica;
   non è stato provato.
 - **Spazio su disco**: il disco C: del PC è quasi pieno (circa 5 GB liberi), l'emulatore

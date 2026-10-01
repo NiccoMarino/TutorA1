@@ -19,7 +19,8 @@ sulla A4 e calcolano la tua media nel tratto, come fa il Tutor.
 ## Come si usa
 - **Dal browser del telefono:** apri il link qui sopra e premi "Avvia guida". Il GPS funziona solo
   sulle pagine https, quindi non aprendo il file dalla memoria del telefono.
-- **App Android:** si compila da questo repository (vedi sotto). Non è sul Play Store.
+- **App Android (MediaVelocità):** si compila da questo repository (vedi sotto). La pubblicazione sul Play Store
+  è in preparazione: guida in [docs/play-store/PUBBLICAZIONE.md](docs/play-store/PUBBLICAZIONE.md).
 
 ## Come calcola
 - Come il Tutor, divide la strada percorsa dal portale di inizio per il tempo trascorso.
@@ -34,12 +35,16 @@ sulla A4 e calcolano la tua media nel tratto, come fa il Tutor.
 - La posizione dei portali è ricavata dal chilometro ufficiale: l'errore tipico è di circa 100 metri,
   fino a 250. Sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa.
 
+## Privacy
+La posizione resta sul telefono e lo storico è salvato solo lì: [informativa](https://niccomarino.github.io/TutorA1/privacy.html).
+
 ## Fonti dei dati
 - Tratti della A1 e della A4 Milano–Brescia: autostrade.it, pagina "Il Tutor" (consultata il
   29 settembre 2026).
 - Tratti della A4 Venezia–Trieste: infoviaggiando.it di Autostrade Alto Adriatico (consultata il
   30 settembre 2026).
-- Tracciato delle carreggiate e mappa di sfondo: © contributori OpenStreetMap (ODbL).
+- Tracciato delle carreggiate e mappa di sfondo: © contributori OpenStreetMap (ODbL); con la chiave CARTO,
+  mappa di sfondo © CARTO.
 - Chilometriche di caselli e cantieri: dati di viabilità di Autostrade per l'Italia.
 
 ## Per chi sviluppa
@@ -60,6 +65,8 @@ npm run build
   la installa sul telefono collegato via USB. Con `-Pprova=true` si installa invece una copia
   separata, "Tutor prova", accanto all'app normale.
 - `npm run device-check` collauda sul telefono l'uscita dall'app e il riquadro sopra Maps.
+- `npm run bundle` crea l'AAB firmato per il Play Store (serve `android/keystore.properties`).
+- `npm run grafica` rifà icona, schermata di avvio e immagini per lo store.
 
 Il codice è diviso tra `src/core/` (calcolo, provato con i test, senza pagina) e `src/ui/` (pagina e
 mappa). Struttura, flusso dei dati e dove fare le modifiche: [docs/ARCHITETTURA.md](docs/ARCHITETTURA.md).

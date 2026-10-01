@@ -26,6 +26,9 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
 - Regole sulla tolleranza: `rules.js` (con `test/rules.test.js`).
 - Nuovi tratti o tracciati: `src/data/tutor-data.json`; nuove linee in `LINE_DEFS` di `network.js`.
 - Differenze browser/app: `src/platform.js`. Il ponte nativo è `native/tutor-native.js`.
+- Mappa di sfondo (CARTO con chiave, altrimenti OpenStreetMap): `src/tiles.js`.
+- Versione: `package.json`; la build la scrive nella pagina, `android/app/build.gradle` ne ricava versionName e versionCode.
+- Icona, avvio e immagini dello store: `tools/make-icons.mjs` e `tools/store-screenshots.mjs` (`npm run grafica`).
 - Stile del riquadro Picture-in-Picture: `src/styles/pip.css`.
 - Ottimizzazioni: l'aggancio alla strada (`matchPoint`) scorre tutti i segmenti con un filtro per
   riquadro; se servisse più velocità, un indice spaziale va costruito in `buildNetwork`.
@@ -46,7 +49,7 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
   `test/fixtures/pip-layout.json`.
 
 ## Il golden
-`test/fixtures/golden.json` è il comportamento dell'app registrato su 5 percorsi GPS fissi
+`test/fixtures/golden.json` è il comportamento dell'app registrato su 7 percorsi GPS fissi
 (`test/fixtures/scenarios.json`): schermata, avvisi, vibrazioni e storico, posizione per posizione.
 `test/golden.test.js` lo confronta con `core/`. Se cambi un comportamento di proposito, il test fallisce:
 rigenera il golden e controlla che le differenze siano solo quelle volute.
