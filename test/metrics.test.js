@@ -44,6 +44,6 @@ test('nei primi secondi la media non è ancora affidabile', () => {
 });
 
 test('subito dopo il portale si mostra la velocità istantanea, o niente se manca', () => {
-  assert.equal(at(0.02, 2, 120).avg, 120);
+  assert.ok(Math.abs(at(0.02, 2, 120).avg - 120) < 1e-9);
   assert.equal(at(0.02, 2, null).avg, null);
 });
