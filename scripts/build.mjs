@@ -1,0 +1,76 @@
+// Costruisce le pagine a partire da src/:
+//   index.html   pagina per il browser (GitHub Pages): un solo file con tutto dentro
+//   www/         pagina per l'app Capacitor, con il ponte nativo (capacitor.js e tutor-native.js)
+// Il modello src/index.html contiene i segnaposto <!--@include percorso--> (un file di src/)
+// e <!--@var nome--> (testo diverso tra browser e app). Un segnaposto sconosciuto ferma la build.
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { buildSync } from 'esbuild';
+
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
+const SRC = ROOT + 'src/';
+
+const NOTICE = '\n<!-- Pagina generata da scripts/build.mjs: i sorgenti sono in src/ -->';
+const VARS = {
+  web: {viewportFit: ', viewport-fit=cover', bridge: '', notice: NOTICE},
+  // Senza viewport-fit=cover Capacitor lascia spazio a barra di stato e barra di navigazione,
+  // così la pagina (che non usa i margini safe-area) non finisce sotto l'ora e la batteria
+  app: {viewportFit: '', bridge: '\n<script src="capacitor.js"></script>\n<script src="tutor-native.js"></script>', notice: NOTICE}
+};
+
+export function readSource(path){
+  return readFileSync(SRC + path, 'utf8').replace(/\r\n/g, '\n').replace(/\n$/, '');
+}
+
+export function render(template, vars, include = readSource){
+  let out = template.replace(/<!--@include ([\w./-]+)-->/g, (_, path) => include(path));
+  out = out.replace(/<!--@var (\w+)-->/g, (_, name) => {
+    if (!(name in vars)) throw new Error('Variabile sconosciuta nel modello: ' + name);
+    return vars[name];
+  });
+  const left = out.indexOf('<!--@');
+  if (left >= 0) throw new Error('Segnaposto non risolto: ' + out.slice(left, left + 60));
+  return out;
+}
+
+// Controllo di sintassi degli script della pagina, per non installare un'app che si blocca all'avvio
+function checkScripts(html){
+  for (const [, code] of html.matchAll(/<script data-keep>([\s\S]*?)<\/script>/g)){
+    try { new Function(code); } catch (e) { throw new Error('Errore di sintassi JavaScript nella pagina: ' + e.message); }
+  }
+}
+
+export function checkInlineScript(code){
+  if (/<\/script/i.test(code)) throw new Error('Il codice contiene "</script": chiuderebbe lo script a metà pagina');
+  return code;
+}
+
+// Tutti i moduli di src/ partendo da main.js, in un unico script da mettere nella pagina
+function bundleMain(){
+  const r = buildSync({entryPoints: [SRC + 'main.js'], bundle: true, format: 'iife', charset: 'utf8',
+                       legalComments: 'inline', write: false, logLevel: 'silent'});
+  return checkInlineScript(r.outputFiles[0].text.replace(/\n$/, ''));
+}
+
+export function buildPages(){
+  const main = bundleMain();
+  const include = path => path === 'main.js' ? main : readSource(path);
+  const template = readSource('index.html');
+  const web = render(template, VARS.web, include);
+  const app = render(template, VARS.app, include);
+  checkScripts(web);
+  checkScripts(app);
+  return {web, app};
+}
+
+function main(){
+  const {web, app} = buildPages();
+  writeFileSync(ROOT + 'index.html', web + '\n');
+  mkdirSync(ROOT + 'www', {recursive: true});
+  writeFileSync(ROOT + 'www/index.html', app + '\n');
+  copyFileSync(ROOT + 'node_modules/@capacitor/core/dist/capacitor.js', ROOT + 'www/capacitor.js');
+  copyFileSync(ROOT + 'native/tutor-native.js', ROOT + 'www/tutor-native.js');
+  console.log('Pronte: index.html (browser) e www/ (app)');
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
