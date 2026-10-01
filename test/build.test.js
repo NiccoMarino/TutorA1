@@ -41,3 +41,18 @@ test('tutti gli script in linea hanno data-keep (servono alla copia "Scarica l\'
   assert.ok(inline.length >= 3);
   for (const attrs of inline) assert.match(attrs, /data-keep/);
 });
+
+test('ogni id cercato dal ponte nativo esiste nella pagina dell\'app', () => {
+  const bridge = readFileSync(new URL('../native/tutor-native.js', import.meta.url), 'utf8');
+  const ids = [...bridge.matchAll(/getElementById\('([^']+)'\)/g)].map(m => m[1]);
+  assert.ok(ids.includes('hudExit') && ids.includes('hudMute'));
+  const {app} = buildPages();
+  for (const id of ids) assert.ok(app.includes('id="' + id + '"'), 'manca id="' + id + '"');
+});
+
+test('lo stile del riquadro PiP è nella pagina e non più nel ponte nativo', () => {
+  const {app} = buildPages();
+  assert.ok(app.includes('html.pip .plate'));
+  const bridge = readFileSync(new URL('../native/tutor-native.js', import.meta.url), 'utf8');
+  assert.ok(!bridge.includes('html.pip .plate'));
+});

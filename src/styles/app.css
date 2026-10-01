@@ -222,3 +222,5 @@ body.driving .app{grid-template-columns:minmax(360px,48%) 1fr}
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important; transition:none !important}
 }
+/* Mappa di sfondo OpenStreetMap nel tema scuro (classe messa da ui/map.js) */
+.tiles-dark { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.9) saturate(.6); }
