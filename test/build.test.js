@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildPages, render } from '../scripts/build.mjs';
+import { buildPages, render, checkInlineScript } from '../scripts/build.mjs';
 
 const saved = readFileSync(new URL('../index.html', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
@@ -28,4 +28,16 @@ test('un segnaposto con variabile sconosciuta ferma la build', () => {
 
 test('un segnaposto scritto male ferma la build', () => {
   assert.throws(() => render('<p><!--@includi x--></p>', {}), /Segnaposto non risolto/);
+});
+
+test('un </script> dentro il codice ferma la build (romperebbe la pagina)', () => {
+  assert.throws(() => checkInlineScript('const s = "</script>";'), /<\/script/);
+  assert.equal(checkInlineScript('const s = 1;'), 'const s = 1;');
+});
+
+test('tutti gli script in linea hanno data-keep (servono alla copia "Scarica l\'app come file HTML")', () => {
+  const {web} = buildPages();
+  const inline = [...web.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)].map(m => m[1]);
+  assert.ok(inline.length >= 3);
+  for (const attrs of inline) assert.match(attrs, /data-keep/);
 });

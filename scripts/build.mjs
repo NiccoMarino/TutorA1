@@ -5,15 +5,17 @@
 // e <!--@var nome--> (testo diverso tra browser e app). Un segnaposto sconosciuto ferma la build.
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { buildSync } from 'esbuild';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const SRC = ROOT + 'src/';
 
+const NOTICE = '\n<!-- Pagina generata da scripts/build.mjs: i sorgenti sono in src/ -->';
 const VARS = {
-  web: {viewportFit: ', viewport-fit=cover', bridge: ''},
+  web: {viewportFit: ', viewport-fit=cover', bridge: '', notice: NOTICE},
   // Senza viewport-fit=cover Capacitor lascia spazio a barra di stato e barra di navigazione,
   // così la pagina (che non usa i margini safe-area) non finisce sotto l'ora e la batteria
-  app: {viewportFit: '', bridge: '\n<script src="capacitor.js"></script>\n<script src="tutor-native.js"></script>'}
+  app: {viewportFit: '', bridge: '\n<script src="capacitor.js"></script>\n<script src="tutor-native.js"></script>', notice: NOTICE}
 };
 
 export function readSource(path){
@@ -38,18 +40,24 @@ function checkScripts(html){
   }
 }
 
-// Nell'app il messaggio "permesso negato" deve parlare delle impostazioni del telefono, non del browser
-// (provvisorio: al Compito 2 lo sostituisce src/platform.js)
-function nativeGpsMessage(html){
-  const gpsDenied = /gpsNote\('La posizione è bloccata\.[^\n]*?'\);/;
-  if (!gpsDenied.test(html)){ console.warn('Attenzione: messaggio di GPS bloccato non trovato, lasciato com\'è.'); return html; }
-  return html.replace(gpsDenied, () => "gpsNote('La posizione è bloccata. Apri le impostazioni del telefono, vai su App &gt; Tutor A1 A4 &gt; Autorizzazioni &gt; Posizione e scegli <b>Consenti solo mentre l’app è in uso</b> o <b>Consenti sempre</b>. Intanto puoi usare la simulazione.');");
+export function checkInlineScript(code){
+  if (/<\/script/i.test(code)) throw new Error('Il codice contiene "</script": chiuderebbe lo script a metà pagina');
+  return code;
+}
+
+// Tutti i moduli di src/ partendo da main.js, in un unico script da mettere nella pagina
+function bundleMain(){
+  const r = buildSync({entryPoints: [SRC + 'main.js'], bundle: true, format: 'iife', charset: 'utf8',
+                       legalComments: 'inline', write: false, logLevel: 'silent'});
+  return checkInlineScript(r.outputFiles[0].text.replace(/\n$/, ''));
 }
 
 export function buildPages(){
+  const main = bundleMain();
+  const include = path => path === 'main.js' ? main : readSource(path);
   const template = readSource('index.html');
-  const web = render(template, VARS.web);
-  const app = nativeGpsMessage(render(template, VARS.app));
+  const web = render(template, VARS.web, include);
+  const app = render(template, VARS.app, include);
   checkScripts(web);
   checkScripts(app);
   return {web, app};

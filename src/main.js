@@ -1,3 +1,4 @@
+import { gpsDeniedMessage } from './platform.js';
 (function(){
 'use strict';
 var PRISTINE = null;
@@ -463,7 +464,7 @@ $('#btnDrive').addEventListener('click', () => {
 function onGpsError(e){
   if (e && e.code === 1){
     stopDrive();
-    gpsNote('La posizione è bloccata. Controlla che il browser abbia il permesso di usarla. Se stai usando l\'app dentro Claude, il visualizzatore può non concederla: scarica l\'app dalla sezione <b>Dati, precisione e uso fuori da Claude</b> e aprila dal browser del telefono. Intanto puoi usare la simulazione.');
+    gpsNote(gpsDeniedMessage());
     $('#side').scrollTo && $('#side').scrollTo(0, 0);
   } else if (st.running){
     $('#hudRoad').firstChild.textContent = e && e.code === 3 ? 'Segnale GPS lento ad arrivare' : 'GPS non disponibile al momento';
