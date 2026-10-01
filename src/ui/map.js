@@ -18,6 +18,11 @@ export function createMapView({data, secs, lines, isDriving, currentFix, onSecti
   L.control.zoom({position:'topright', zoomInTitle:'Ingrandisci', zoomOutTitle:'Riduci'}).addTo(map);
   map.attributionControl.setPrefix(false);
   map.attributionControl.addAttribution('Tracciato © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, tratti Tutor da autostrade.it e infoviaggiando.it');
+  // La legenda sta sopra la riga delle fonti, che sui telefoni va spesso su due righe
+  try {
+    const attr = map.attributionControl.getContainer();
+    new ResizeObserver(() => document.documentElement.style.setProperty('--attr-h', attr.offsetHeight + 'px')).observe(attr);
+  } catch(e){}
 
   const regions = L.polygon(data.reg.map(r => [r]), {interactive:false, weight:1, fillOpacity:1});
   regions.addTo(map);

@@ -12,7 +12,8 @@
     "sync": "npm run build && npx cap sync",
     "android": "npm run sync && npx cap open android",
     "apk": "npm run sync && cd android && gradlew assembleDebug",
-    "bundle": "npm run sync && cd android && gradlew bundleRelease"
+    "bundle": "npm run sync && cd android && gradlew bundleRelease",
+    "grafica": "node tools/make-icons.mjs && npm run build && node tools/store-screenshots.mjs"
   },
   "dependencies": {
     "@capacitor-community/background-geolocation": "^1.2.26",
