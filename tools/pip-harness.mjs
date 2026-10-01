@@ -30,7 +30,7 @@ export async function run(name = 'pip-layout.json'){
   const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
   const cut = id => el(id).scrollWidth > el(id).clientWidth + 1;
   const measure = () => ({
-    visible: ['.side', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast'].filter(vis),
+    visible: ['.screen', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast'].filter(vis),
     plateInside: inside(el('plate').getBoundingClientRect(), {left: 0, top: 0, right: innerWidth, bottom: innerHeight}),
     bigInside: inside(el('pBig').getBoundingClientRect(), document.querySelector('.plate-in').getBoundingClientRect()),
     titleCut: cut('pTitle'), subCut: cut('pSub'),

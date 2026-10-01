@@ -26,7 +26,14 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
 - Regole sulla tolleranza: `rules.js` (con `test/rules.test.js`).
 - Nuovi tratti o tracciati: `src/data/tutor-data.json`; nuove linee in `LINE_DEFS` di `network.js`.
 - Differenze browser/app: `src/platform.js`. Il ponte nativo è `native/tutor-native.js`.
-- Niente mappa (tolta a ottobre 2026): i tratti sono un elenco (`ui/sidebar.js`), la guida usa tutto lo schermo.
+- Niente mappa (tolta a ottobre 2026): i tratti sono un elenco (`ui/sidebar.js`, nella pagina Simulazione),
+  la guida usa tutto lo schermo.
+- Schermate fuori dalla guida: la schermata iniziale (`#home`, due cartelli: "Avvia guida" e "Prova in
+  simulazione"), il menù (`#menu`) e una pagina per voce (`#pSettings`, `#pSim`, `#pHist`, `#pHow`, `#pInfo`).
+  Un elemento con `data-go="id"` apre quella schermata, `data-back` torna indietro; la cronologia è in
+  `ui/nav.js`. Il tasto Indietro di Android chiede prima alla pagina (`window.tutorBack`, da `MainActivity.java`).
+- Tema: `settings.theme` (`auto`, `light`, `dark`), applicato da `ui/theme.js` con `data-theme` su `<html>`;
+  i colori sono in cima a `styles/app.css`. La schermata di guida resta scura in entrambi i temi.
   Il carattere Overpass è dentro la pagina (`scripts/build.mjs`), quindi l'app non si collega a internet.
 - Versione: `package.json`; la build la scrive nella pagina, `android/app/build.gradle` ne ricava versionName e versionCode.
 - Icona, avvio e immagini dello store: `tools/make-icons.mjs` e `tools/store-screenshots.mjs` (`npm run grafica`).

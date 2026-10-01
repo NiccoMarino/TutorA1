@@ -1,4 +1,4 @@
-// Elenco dei tratti con filtri; toccando un tratto se ne apre la scheda sotto la riga
+// Elenco dei tratti con filtri (pagina Simulazione); toccando un tratto se ne apre la scheda sotto la riga
 import { esc, nfKm, nfL, fmtDur } from '../core/format.js';
 import { thresholdFor, thrText } from '../core/rules.js';
 import { GROUPS, isPos, roadOf } from '../core/network.js';

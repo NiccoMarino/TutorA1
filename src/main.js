@@ -15,6 +15,8 @@ import { createHistoryPanel } from './ui/history-panel.js';
 import { createHud } from './ui/hud.js';
 import { createAudio } from './ui/audio.js';
 import { createSimControls } from './ui/sim-controls.js';
+import { createNav } from './ui/nav.js';
+import { applyTheme } from './ui/theme.js';
 
 function boot(){
   const DATA = JSON.parse(document.getElementById('tutor-data').textContent);
@@ -23,6 +25,7 @@ function boot(){
   try { storage = window.localStorage; } catch(e){}
   const store = createStore(storage);
   const settings = store.settings;
+  applyTheme(document.documentElement, settings.theme);
   const tracker = createTracker({secs, lines, settings});
   const st = tracker.st;
   const simulator = createSimulator({secs, lines});
@@ -45,6 +48,16 @@ function boot(){
     const v = hudView(st, settings);
     hud.render(v);
   }
+
+  /* ---------- schermate fuori dalla guida ---------- */
+  const nav = createNav({win: window, show: id => document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; })});
+  document.addEventListener('click', e => {
+    const go = e.target.closest('[data-go]');
+    if (go){ nav.go(go.dataset.go); return; }
+    if (e.target.closest('[data-back]')) nav.back();
+  });
+  // Tasto Indietro di Android (MainActivity.java): true se la pagina ha chiuso il menù o una pagina
+  window.tutorBack = () => !document.body.classList.contains('driving') && nav.back();
 
   createSidebar({secs, settings, onSimulate: (id, v) => simControls.start(id, v)});
   createSettingsPanel({settings, save: () => store.saveSettings(), onChange: () => { tracker.refresh(); render(); }, say});
@@ -99,7 +112,7 @@ function boot(){
     if (e && e.code === 1){
       stopDrive();
       gpsNote(gpsDeniedMessage());
-      $('#side').scrollTo && $('#side').scrollTo(0, 0);
+      nav.home();
     } else if (st.running){
       hud.gpsTrouble(e && e.code === 3 ? 'Segnale GPS lento ad arrivare' : 'GPS non disponibile al momento');
     }

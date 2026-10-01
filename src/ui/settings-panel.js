@@ -1,7 +1,8 @@
-// Impostazioni di guida: pannello laterale, limiti nella schermata di guida, pulsante Audio
+// Impostazioni: pagina Impostazioni di guida (con il tema), limiti nella schermata di guida, pulsante Audio
 import { nf1 } from '../core/format.js';
 import { LIMITS, thresholdFor, thrText } from '../core/rules.js';
 import { $ } from './dom.js';
+import { THEMES, applyTheme } from './theme.js';
 
 export function createSettingsPanel({settings, save, onChange, say}){
   function renderLimitChips(){
@@ -42,5 +43,15 @@ export function createSettingsPanel({settings, save, onChange, say}){
     settings.voice = !on; settings.beep = !on; save();
     $('#setVoice').checked = settings.voice; $('#setBeep').checked = settings.beep; renderMute();
   });
-  renderLimitChips(); renderMargin(); renderMute();
+  function renderTheme(){
+    const box = $('#setTheme'); box.innerHTML = '';
+    const cur = THEMES.some(t => t[0] === settings.theme) ? settings.theme : 'auto';
+    THEMES.forEach(([v, lab]) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
+      b.setAttribute('aria-pressed', String(cur === v)); b.textContent = lab;
+      b.addEventListener('click', () => { settings.theme = v; save(); applyTheme(document.documentElement, v); renderTheme(); });
+      box.appendChild(b);
+    });
+  }
+  renderLimitChips(); renderMargin(); renderMute(); renderTheme();
 }

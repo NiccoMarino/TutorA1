@@ -22,6 +22,20 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(TutorPipPlugin.class);
         super.onCreate(savedInstanceState);
+        // Fuori dalla guida Indietro chiude prima il menù o la pagina aperta (window.tutorBack in main.js);
+        // solo dalla schermata iniziale fa quello che fa di solito Android
+        OnBackPressedCallback backInPage = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                WebView wv = bridge == null ? null : bridge.getWebView();
+                if (wv == null) { systemBack(this); return; }
+                wv.evaluateJavascript("!!(window.tutorBack && window.tutorBack())", r -> {
+                    if (!"true".equals(r)) systemBack(this);
+                });
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, backInPage);
+        // Aggiunto dopo, ha la precedenza durante la guida
         backWhileDriving = new OnBackPressedCallback(false) {
             @Override
             public void handleOnBackPressed() {
@@ -30,6 +44,12 @@ public class MainActivity extends BridgeActivity {
             }
         };
         getOnBackPressedDispatcher().addCallback(this, backWhileDriving);
+    }
+
+    private void systemBack(OnBackPressedCallback self) {
+        self.setEnabled(false);
+        getOnBackPressedDispatcher().onBackPressed();
+        self.setEnabled(true);
     }
 
     boolean isPipSupported() {

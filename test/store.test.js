@@ -14,7 +14,7 @@ test('le chiavi di localStorage non cambiano (ci sono i dati di chi usa già l\'
 
 test('senza dati salvati usa le impostazioni predefinite', () => {
   const s = createStore(memoryStorage());
-  assert.deepEqual(s.settings, {limit:130, margin:2, preAlert:1, voice:true, beep:true, instWarn:true});
+  assert.deepEqual(s.settings, {limit:130, margin:2, preAlert:1, voice:true, beep:true, instWarn:true, theme:'auto'});
   assert.deepEqual(s.history, []);
 });
 
