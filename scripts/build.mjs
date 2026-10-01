@@ -11,11 +11,13 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const SRC = ROOT + 'src/';
 
 const NOTICE = '\n<!-- Pagina generata da scripts/build.mjs: i sorgenti sono in src/ -->';
+// La versione è una sola, in package.json: la usano la pagina e l'app Android (android/app/build.gradle)
+const VERSION = JSON.parse(readFileSync(ROOT + 'package.json', 'utf8')).version;
 const VARS = {
-  web: {viewportFit: ', viewport-fit=cover', bridge: '', notice: NOTICE},
+  web: {viewportFit: ', viewport-fit=cover', bridge: '', notice: NOTICE, version: VERSION},
   // Senza viewport-fit=cover Capacitor lascia spazio a barra di stato e barra di navigazione,
   // così la pagina (che non usa i margini safe-area) non finisce sotto l'ora e la batteria
-  app: {viewportFit: '', bridge: '\n<script src="capacitor.js"></script>\n<script src="tutor-native.js"></script>', notice: NOTICE}
+  app: {viewportFit: '', bridge: '\n<script src="capacitor.js"></script>\n<script src="tutor-native.js"></script>', notice: NOTICE, version: VERSION}
 };
 
 export function readSource(path){

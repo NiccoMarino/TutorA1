@@ -3,6 +3,7 @@
 import { esc, nfKm } from '../core/format.js';
 import { pointAtKm } from '../core/network.js';
 import { $ } from './dom.js';
+import { tileSource } from '../tiles.js';
 
 const CITIES = [['Milano',45.4642,9.19],['Lodi',45.314,9.503],['Piacenza',45.0526,9.693],['Parma',44.8015,10.3279],['Reggio Emilia',44.6983,10.6312],['Modena',44.6471,10.9252],['Bologna',44.4949,11.3426],['Firenze',43.7696,11.2558],['Arezzo',43.4633,11.8796],['Orvieto',42.7185,12.1107],['Roma',41.9028,12.4964],['Frosinone',41.64,13.351],['Cassino',41.492,13.831],['Caserta',41.0726,14.3323],['Napoli',40.8518,14.2681],['Torino',45.0703,7.6869],['Novara',45.4469,8.6219],['Bergamo',45.6983,9.6773],['Brescia',45.5416,10.2118],['Verona',45.4384,10.9916],['Vicenza',45.5455,11.5354],['Padova',45.4064,11.8768],['Venezia',45.4408,12.3155],['Udine',46.0711,13.2346],['Trieste',45.6495,13.7768]];
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -17,6 +18,11 @@ export function createMapView({data, secs, lines, isDriving, currentFix, onSecti
   L.control.zoom({position:'topright', zoomInTitle:'Ingrandisci', zoomOutTitle:'Riduci'}).addTo(map);
   map.attributionControl.setPrefix(false);
   map.attributionControl.addAttribution('Tracciato © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, tratti Tutor da autostrade.it e infoviaggiando.it');
+  // La legenda sta sopra la riga delle fonti, che sui telefoni va spesso su due righe
+  try {
+    const attr = map.attributionControl.getContainer();
+    new ResizeObserver(() => document.documentElement.style.setProperty('--attr-h', attr.offsetHeight + 'px')).observe(attr);
+  } catch(e){}
 
   const regions = L.polygon(data.reg.map(r => [r]), {interactive:false, weight:1, fillOpacity:1});
   regions.addTo(map);
@@ -60,8 +66,7 @@ export function createMapView({data, secs, lines, isDriving, currentFix, onSecti
   });
   CITIES.forEach(c => L.marker([c[1], c[2]], {interactive:false, keyboard:false, icon:L.divIcon({className:'', html:'<div class="city">' + c[0] + '</div>', iconSize:[0,0]})}).addTo(map));
 
-  // Mappa stradale di sfondo (OpenStreetMap; nel tema scuro è scurita con un filtro CSS). Nel visualizzatore di Claude le immagini
-  // esterne sono bloccate: in quel caso resta la mappa vettoriale disegnata qui sopra.
+  // Mappa stradale di sfondo (fonte in tiles.js). Senza rete resta la mappa vettoriale disegnata qui sopra.
   let tileLayer = null, tileDark = null, tilesOk = false;
   function setTiles(){
     if (!tilesOk) return;
@@ -70,9 +75,10 @@ export function createMapView({data, secs, lines, isDriving, currentFix, onSecti
     if (tileLayer) map.removeLayer(tileLayer);
     tileDark = dark;
     let errors = 0, loads = 0;
-    tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, className: dark ? 'tiles-dark' : '', attribution:'Mappa © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'});
+    const src = tileSource(dark);
+    tileLayer = L.tileLayer(src.url, {maxZoom:19, subdomains: src.subdomains || 'abc', className: src.className, attribution: src.attribution});
     tileLayer.on('tileload', () => { loads++; });
-    tileLayer.on('tileerror', () => { errors++; if (errors > 12 && loads === 0 && tileLayer){ map.removeLayer(tileLayer); tileLayer = null; tilesOk = false; document.body.classList.remove('has-tiles'); } });
+    tileLayer.on('tileerror', () => { errors++; if (errors > 12 && loads === 0 && tileLayer){ map.removeLayer(tileLayer); tileLayer = null; tilesOk = false; document.body.classList.remove('has-tiles'); probeTiles(); } });
     tileLayer.addTo(map).bringToBack();
     document.body.classList.add('has-tiles');
   }
@@ -113,13 +119,18 @@ export function createMapView({data, secs, lines, isDriving, currentFix, onSecti
   fitAll(); zoomClass(); applyMapTheme();
   try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyMapTheme); } catch(e){}
   new MutationObserver(applyMapTheme).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme','class']});
-  (function probeTiles(){
+  // Prova a scaricare una tile: se non ci riesce (per esempio si parte senza rete) riprova ogni minuto
+  let probeTimer = null;
+  function probeTiles(){
+    if (probeTimer) return;
     const img = new Image(); let done = false;
-    img.onload = () => { if (done) return; done = true; if (img.naturalWidth >= 200){ tilesOk = true; setTiles(); } };
-    img.onerror = () => { done = true; };
-    setTimeout(() => { done = true; }, 8000);
-    img.src = 'https://tile.openstreetmap.org/6/34/23.png';
-  })();
+    const retry = () => { probeTimer = setTimeout(() => { probeTimer = null; probeTiles(); }, 60000); };
+    img.onload = () => { if (done) return; done = true; if (img.naturalWidth >= 200){ tilesOk = true; setTiles(); } else retry(); };
+    img.onerror = () => { if (done) return; done = true; retry(); };
+    setTimeout(() => { if (done) return; done = true; retry(); }, 8000);
+    img.src = tileSource(false).probe;
+  }
+  probeTiles();
 
   // posizione dell'utente
   const meIcon = L.divIcon({className:'', iconSize:[40,40], iconAnchor:[20,20],

@@ -124,7 +124,7 @@ select.sel{padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); 
 /* ---------- map overlays ---------- */
 .maptools{position:absolute; left:12px; top:12px; z-index:500; display:flex; gap:8px; flex-wrap:wrap}
 .maptools .btn{background:var(--panel); box-shadow:0 1px 4px rgba(0,0,0,.18); min-height:38px; padding:8px 12px 6px; font-size:14px}
-.legend{position:absolute; left:12px; bottom:22px; z-index:500; background:var(--panel); color:var(--ink); border-radius:10px; padding:9px 12px 7px; font-size:12.5px; box-shadow:0 1px 4px rgba(0,0,0,.18); display:grid; gap:4px}
+.legend{position:absolute; left:12px; bottom:calc(var(--attr-h, 16px) + 8px); z-index:500; background:var(--panel); color:var(--ink); border-radius:10px; padding:9px 12px 7px; font-size:12.5px; box-shadow:0 1px 4px rgba(0,0,0,.18); display:grid; gap:4px}
 .legend div{display:flex; align-items:center; gap:8px}
 .lg-line{display:inline-block; width:26px; border-radius:4px}
 .lg-sud{height:7px; background:var(--sud)} .lg-nord{height:4px; background:var(--nord)}
@@ -211,7 +211,7 @@ body.driving .app{grid-template-columns:minmax(360px,48%) 1fr}
   .mapwrap{order:-1; height:54vh; min-height:300px}
   .side{border-right:0; overflow:visible}
   .side-inner{padding:18px 16px 28px}
-  .legend{bottom:16px; font-size:12px}
+  .legend{font-size:12px}
 }
 @media (max-width:1100px) and (orientation:portrait), (max-width:820px) and (orientation:portrait){
   body.driving{height:100%}
@@ -402,13 +402,13 @@ html.pip .plabels{font-size:9px; margin-top:2px}
       </details>
 
       <details class="panel">
-        <summary>Dati, precisione e uso fuori da Claude</summary>
+        <summary>Dati, precisione e privacy</summary>
         <div class="panel-body">
           <p>Tratti della A1 e della A4 Milano–Brescia: <a href="https://www.autostrade.it/it/tecnologia-sicurezza/sicurezza/il-tutor" target="_blank" rel="noopener">autostrade.it, pagina Il Tutor</a>, consultata il 29 settembre 2026. Tratti della A4 Venezia–Trieste: <a href="https://www.infoviaggiando.it/it/14180/tutor" target="_blank" rel="noopener">infoviaggiando.it</a> di Autostrade Alto Adriatico, consultata il 30 settembre 2026. Sulla A4 tra Torino e Milano e tra Brescia e Venezia le società che la gestiscono non indicano tratti Tutor. Tracciato delle carreggiate: © contributori OpenStreetMap (ODbL). Chilometriche di caselli e cantieri: dati di viabilità di Autostrade per l'Italia.</p>
           <p>La posizione dei portali è ricavata dal chilometro ufficiale: su A1 e A4 l'errore tipico è di circa 100 metri, fino a 250. Sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa.</p>
-          <p>Per usarla dal telefono senza Claude, metti il file online gratis con GitHub Pages e aprilo dal browser: il GPS funziona solo su pagine https, non aprendo il file dalla memoria. La mappa stradale di sfondo è di OpenStreetMap; se non si carica resta la mappa semplificata.</p>
-          <div><button class="btn btn-small" id="btnDownload" type="button">Scarica l'app come file HTML</button></div>
-          <p class="src" id="dlMsg" hidden></p>
+          <p>La posizione GPS resta sul telefono: l'app non la invia a nessuno e lo storico dei tratti è salvato solo qui. La mappa stradale di sfondo si scarica da internet, quindi chi la fornisce vede la zona visualizzata; se non si carica resta la mappa semplificata. <a href="https://niccomarino.github.io/TutorA1/privacy.html" target="_blank" rel="noopener">Informativa sulla privacy</a>.</p>
+          <p>Non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato.</p>
+          <p class="src">Versione 1.0.0</p>
         </div>
       </details>
     </div>
@@ -1078,13 +1078,39 @@ html.pip .plabels{font-size:9px; margin-top:2px}
       return false;
     }
   }
+  var APP_NAME = "MediaVelocità";
   function gpsDeniedMessage() {
-    if (isNativeApp()) return "La posizione è bloccata. Apri le impostazioni del telefono, vai su App &gt; Tutor A1 A4 &gt; Autorizzazioni &gt; Posizione e scegli <b>Consenti solo mentre l’app è in uso</b> o <b>Consenti sempre</b>. Intanto puoi usare la simulazione.";
-    return "La posizione è bloccata. Controlla che il browser abbia il permesso di usarla. Se stai usando l'app dentro Claude, il visualizzatore può non concederla: scarica l'app dalla sezione <b>Dati, precisione e uso fuori da Claude</b> e aprila dal browser del telefono. Intanto puoi usare la simulazione.";
+    if (isNativeApp()) return "La posizione è bloccata. Apri le impostazioni del telefono, vai su App &gt; " + APP_NAME + " &gt; Autorizzazioni &gt; Posizione e scegli <b>Consenti solo mentre l’app è in uso</b> o <b>Consenti sempre</b>. Intanto puoi usare la simulazione.";
+    return "La posizione è bloccata. Controlla che il browser abbia il permesso di usarla (di solito nel lucchetto accanto all'indirizzo) e che la pagina sia aperta da un indirizzo https. Intanto puoi usare la simulazione.";
   }
 
   // src/ui/dom.js
   var $ = (s, r) => (r || document).querySelector(s);
+
+  // src/tiles.js
+  var CARTO_KEY = "";
+  var OSM_ATTR = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+  function tileSource(dark, key = CARTO_KEY) {
+    if (key) {
+      const k = "?key=" + encodeURIComponent(key);
+      const style = dark ? "dark_all" : "rastertiles/voyager";
+      return {
+        url: "https://{s}.basemaps.cartocdn.com/" + style + "/{z}/{x}/{y}{r}.png" + k,
+        subdomains: "abcd",
+        className: "",
+        attribution: "Mappa " + OSM_ATTR + ', © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
+        probe: "https://a.basemaps.cartocdn.com/rastertiles/voyager/6/34/23.png" + k
+      };
+    }
+    return {
+      url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      subdomains: "",
+      // Nel tema scuro le tile chiare di OpenStreetMap sono scurite con un filtro CSS
+      className: dark ? "tiles-dark" : "",
+      attribution: "Mappa " + OSM_ATTR,
+      probe: "https://tile.openstreetmap.org/6/34/23.png"
+    };
+  }
 
   // src/ui/map.js
   var CITIES = [["Milano", 45.4642, 9.19], ["Lodi", 45.314, 9.503], ["Piacenza", 45.0526, 9.693], ["Parma", 44.8015, 10.3279], ["Reggio Emilia", 44.6983, 10.6312], ["Modena", 44.6471, 10.9252], ["Bologna", 44.4949, 11.3426], ["Firenze", 43.7696, 11.2558], ["Arezzo", 43.4633, 11.8796], ["Orvieto", 42.7185, 12.1107], ["Roma", 41.9028, 12.4964], ["Frosinone", 41.64, 13.351], ["Cassino", 41.492, 13.831], ["Caserta", 41.0726, 14.3323], ["Napoli", 40.8518, 14.2681], ["Torino", 45.0703, 7.6869], ["Novara", 45.4469, 8.6219], ["Bergamo", 45.6983, 9.6773], ["Brescia", 45.5416, 10.2118], ["Verona", 45.4384, 10.9916], ["Vicenza", 45.5455, 11.5354], ["Padova", 45.4064, 11.8768], ["Venezia", 45.4408, 12.3155], ["Udine", 46.0711, 13.2346], ["Trieste", 45.6495, 13.7768]];
@@ -1103,6 +1129,11 @@ html.pip .plabels{font-size:9px; margin-top:2px}
     L.control.zoom({ position: "topright", zoomInTitle: "Ingrandisci", zoomOutTitle: "Riduci" }).addTo(map);
     map.attributionControl.setPrefix(false);
     map.attributionControl.addAttribution('Tracciato © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, tratti Tutor da autostrade.it e infoviaggiando.it');
+    try {
+      const attr = map.attributionControl.getContainer();
+      new ResizeObserver(() => document.documentElement.style.setProperty("--attr-h", attr.offsetHeight + "px")).observe(attr);
+    } catch (e) {
+    }
     const regions = L.polygon(data.reg.map((r) => [r]), { interactive: false, weight: 1, fillOpacity: 1 });
     regions.addTo(map);
     const allRoad = [data.ch.S, data.ch.N, data.ch.D18, data.ch.D19, data.ch.VAR, data.ch.AE, data.ch.AW].map((p) => p.map((q) => [q[0], q[1]]));
@@ -1151,7 +1182,8 @@ html.pip .plabels{font-size:9px; margin-top:2px}
       if (tileLayer) map.removeLayer(tileLayer);
       tileDark = dark;
       let errors = 0, loads = 0;
-      tileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, className: dark ? "tiles-dark" : "", attribution: 'Mappa © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' });
+      const src = tileSource(dark);
+      tileLayer = L.tileLayer(src.url, { maxZoom: 19, subdomains: src.subdomains || "abc", className: src.className, attribution: src.attribution });
       tileLayer.on("tileload", () => {
         loads++;
       });
@@ -1162,6 +1194,7 @@ html.pip .plabels{font-size:9px; margin-top:2px}
           tileLayer = null;
           tilesOk = false;
           document.body.classList.remove("has-tiles");
+          probeTiles();
         }
       });
       tileLayer.addTo(map).bringToBack();
@@ -1224,25 +1257,38 @@ html.pip .plabels{font-size:9px; margin-top:2px}
     } catch (e) {
     }
     new MutationObserver(applyMapTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class"] });
-    (function probeTiles() {
+    let probeTimer = null;
+    function probeTiles() {
+      if (probeTimer) return;
       const img = new Image();
       let done = false;
+      const retry = () => {
+        probeTimer = setTimeout(() => {
+          probeTimer = null;
+          probeTiles();
+        }, 6e4);
+      };
       img.onload = () => {
         if (done) return;
         done = true;
         if (img.naturalWidth >= 200) {
           tilesOk = true;
           setTiles();
-        }
+        } else retry();
       };
       img.onerror = () => {
+        if (done) return;
         done = true;
+        retry();
       };
       setTimeout(() => {
+        if (done) return;
         done = true;
+        retry();
       }, 8e3);
-      img.src = "https://tile.openstreetmap.org/6/34/23.png";
-    })();
+      img.src = tileSource(false).probe;
+    }
+    probeTiles();
     const meIcon = L.divIcon({
       className: "",
       iconSize: [40, 40],
@@ -1677,79 +1723,7 @@ html.pip .plabels{font-size:9px; margin-top:2px}
     return { start: start2, stopTimer };
   }
 
-  // src/ui/download.js
-  function setupDownload(PRISTINE2) {
-    let dlCap = null, dlProbe = false;
-    function probeDownloads() {
-      if (dlProbe) return;
-      const c = window.claude;
-      if (c && typeof c.use === "function") {
-        dlProbe = true;
-        c.use("downloads").then((ns) => {
-          dlCap = ns || null;
-        }).catch(() => {
-          dlCap = null;
-        });
-      }
-    }
-    probeDownloads();
-    setTimeout(probeDownloads, 1500);
-    function exportHTML() {
-      if (!PRISTINE2) return null;
-      try {
-        const doc = new DOMParser().parseFromString(PRISTINE2, "text/html");
-        doc.querySelectorAll("script:not([data-keep])").forEach((s) => s.remove());
-        return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
-      } catch (e) {
-        return PRISTINE2;
-      }
-    }
-    $("#btnDownload").addEventListener("click", async () => {
-      const msg = $("#dlMsg");
-      const html = exportHTML();
-      if (!html) {
-        msg.hidden = false;
-        msg.textContent = "Non riesco a preparare il file in questa vista.";
-        return;
-      }
-      probeDownloads();
-      if (window.claude && typeof window.claude.use === "function") {
-        const ns = dlCap || await window.claude.use("downloads").catch(() => null);
-        if (ns) {
-          try {
-            await ns.save({ filename: "tutor-a1.html", data: html });
-            msg.hidden = false;
-            msg.textContent = "File tutor-a1.html pronto. Caricalo su Netlify Drop o GitHub Pages e aprilo dal telefono.";
-          } catch (e) {
-            if (!e || e.code !== "declined") {
-              msg.hidden = false;
-              msg.textContent = "Il download non è disponibile in questa vista.";
-            }
-          }
-          return;
-        }
-      }
-      const blob = new Blob([html], { type: "text/html" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "tutor-a1.html";
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        URL.revokeObjectURL(a.href);
-        a.remove();
-      }, 1500);
-      msg.hidden = false;
-      msg.textContent = "File tutor-a1.html scaricato.";
-    });
-  }
-
   // src/main.js
-  var PRISTINE = null;
-  try {
-    PRISTINE = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-  } catch (e) {
-  }
   function boot() {
     const DATA = JSON.parse(document.getElementById("tutor-data").textContent);
     const { secs, lines } = buildNetwork(DATA);
@@ -1910,7 +1884,6 @@ html.pip .plabels{font-size:9px; margin-top:2px}
       say,
       onJump: () => mapView.setFollow(true)
     });
-    setupDownload(PRISTINE);
     window.__tutor = { st, sim: simulator.sim, SECS: secs, LINES: lines, thresholdFor, settings, tracker };
   }
   function start() {
