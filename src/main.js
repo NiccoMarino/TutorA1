@@ -9,7 +9,6 @@ import { hudView } from './core/hud-view.js';
 import { createSimulator } from './core/simulator.js';
 import { gpsDeniedMessage } from './platform.js';
 import { $ } from './ui/dom.js';
-import { createMapView } from './ui/map.js';
 import { createSidebar } from './ui/sidebar.js';
 import { createSettingsPanel } from './ui/settings-panel.js';
 import { createHistoryPanel } from './ui/history-panel.js';
@@ -45,22 +44,18 @@ function boot(){
     if (!st.running) return;
     const v = hudView(st, settings);
     hud.render(v);
-    if (v.highlight !== undefined) mapView.highlight(v.highlight);
   }
 
-  const mapView = createMapView({data:DATA, secs, lines, isDriving: () => st.running, currentFix: () => st.fix,
-    onSectionClick: (s, at) => sidebar.selectSection(s, false, at)});
-  const sidebar = createSidebar({secs, settings, mapView, onSimulate: (id, v) => simControls.start(id, v)});
+  createSidebar({secs, settings, onSimulate: (id, v) => simControls.start(id, v)});
   createSettingsPanel({settings, save: () => store.saveSettings(), onChange: () => { tracker.refresh(); render(); }, say});
   const historyPanel = createHistoryPanel(store);
 
   tracker.on(ev => {
     switch (ev.type){
-      case 'section-start': mapView.highlight(ev.sec); hud.flash(); break;
+      case 'section-start': hud.flash(); break;
       case 'section-finish': store.addHistory(toHistoryEntry(ev.result, Date.now())); historyPanel.render(); hud.flash(); break;
       case 'pre-alert': hud.flash(); break;
-      case 'section-abort': mapView.highlight(null); break;
-      case 'position': mapView.updateMe(ev.fix); render(); break;
+      case 'position': render(); break;
     }
     announce(announcementFor(ev));
   });
@@ -73,11 +68,8 @@ function boot(){
   function enterDrive(source){
     audio.init();
     tracker.start(source);
-    mapView.setFollow(true);
     document.body.classList.add('driving');
     $('#simBar').hidden = source !== 'sim';
-    mapView.map.closePopup();
-    setTimeout(() => mapView.map.invalidateSize(), 60);
     keepAwake(); render();
     window.scrollTo(0, 0);
     if (run.dog) clearInterval(run.dog);
@@ -91,8 +83,6 @@ function boot(){
     try { if (run.wake) run.wake.release(); } catch(e){} run.wake = null;
     audio.cancel();
     document.body.classList.remove('driving');
-    mapView.highlight(null);
-    setTimeout(() => mapView.map.invalidateSize(), 60);
   }
   $('#hudExit').addEventListener('click', stopDrive);
 
@@ -121,17 +111,9 @@ function boot(){
   }
 
   const simControls = createSimControls({secs, simulator, enterDrive, pushPosition: tracker.pushPosition,
-    resetPosition: tracker.resetPosition, say, onJump: () => mapView.setFollow(true)});
+    resetPosition: tracker.resetPosition, say});
 
   window.__tutor = {st, sim: simulator.sim, SECS: secs, LINES: lines, thresholdFor, settings, tracker};
 }
 
-function start(){
-  if (window.L) { boot(); return; }
-  const s = document.createElement('script');
-  s.src = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js';
-  s.onload = boot;
-  s.onerror = () => { const m = document.getElementById('map'); if (m) m.innerHTML = '<p style="padding:20px">La libreria della mappa non si è caricata. Controlla la connessione e ricarica la pagina.</p>'; };
-  document.head.appendChild(s);
-}
-start();
+boot();

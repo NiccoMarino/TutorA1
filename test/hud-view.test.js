@@ -9,7 +9,6 @@ test('prima del primo segnale GPS', () => {
   assert.equal(v.road.title, 'In attesa del segnale GPS');
   assert.equal(v.plate.kicker, 'Avvio');
   assert.equal(v.progress, null);
-  assert.equal(v.highlight, undefined);
   assert.equal(v.stats.inst, '–');
 });
 

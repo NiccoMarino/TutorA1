@@ -3,7 +3,7 @@ import { clamp } from '../core/format.js';
 import { GROUPS } from '../core/network.js';
 import { $ } from './dom.js';
 
-export function createSimControls({secs, simulator, enterDrive, pushPosition, resetPosition, say, onJump}){
+export function createSimControls({secs, simulator, enterDrive, pushPosition, resetPosition, say}){
   const sim = simulator.sim;
   let timer = null;
 
@@ -30,7 +30,6 @@ export function createSimControls({secs, simulator, enterDrive, pushPosition, re
     if (!n){ say('Nessun altro Tutor in questa direzione.', null, true); return; }
     resetPosition();
     simulator.jumpBefore(n);
-    onJump();
   });
 
   function stopTimer(){ if (timer){ clearInterval(timer); timer = null; } }

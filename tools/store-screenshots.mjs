@@ -1,6 +1,7 @@
 // Schermate per il Play Store (1080×1920): apre la pagina in Chrome senza finestra con la misura di un telefono,
 // le passa i percorsi GPS di test/fixtures/scenarios.json come se arrivassero dal GPS e fotografa i momenti scelti.
 // Uso: npm run build && node tools/store-screenshots.mjs   (scrive in docs/play-store/grafica/)
+// Con --orizzontale fotografa anche la guida in orizzontale, in device-check/ (solo per controllo).
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -93,9 +94,10 @@ async function main(){
       return next;
     }
 
-    // 1. Mappa con tutti i tratti
+    // 1. Elenco dei tratti con la scheda di uno aperta
     await open();
-    await shot('schermata-1-mappa.png', 4000);
+    await ev(`document.querySelector('.sec[data-id]').click(); true`);
+    await shot('schermata-1-tratti.png', 1500);
 
     // 2. In avvicinamento: "Prossimo Tutor" con la distanza dal portale
     await ev(`document.getElementById('btnDrive').click(); true`);
@@ -126,6 +128,17 @@ async function main(){
     await ev(`(() => { const d = [...document.querySelectorAll('details.panel')].find(x => /Tratti percorsi/.test(x.querySelector('summary').textContent));
       if (!d) return false; d.open = true; d.scrollIntoView({block: 'start'}); return true; })()`);
     await shot('schermata-5-storico.png', 1500);
+
+    // Solo per controllo (non per lo store): guida con il telefono in orizzontale
+    if (process.argv.includes('--orizzontale')){
+      await c.send('Emulation.setDeviceMetricsOverride', {width: 800, height: 360, deviceScaleFactor: 2, mobile: true});
+      await ev(`document.getElementById('btnDrive').click(); true`);
+      await feed(sc('a1-sud-allarme-e-rientro'), `el('plate').className.includes('alarm')`, 15);
+      const {data} = await c.send('Page.captureScreenshot', {format: 'png'});
+      mkdirSync(ROOT + 'device-check', {recursive: true});
+      writeFileSync(ROOT + 'device-check/controllo-orizzontale.png', Buffer.from(data, 'base64'));
+      console.log('device-check/controllo-orizzontale.png (solo controllo)');
+    }
     c.close();
   } finally {
     chrome.kill(); server.kill();
