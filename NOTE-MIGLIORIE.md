@@ -13,40 +13,38 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
   (bug dello zoom risolto in `fb76ab8`).
 - Rotazione schermo e tema chiaro/scuro: nessun crash, la pagina resta larga quanto lo schermo.
 
+## Risolti (stesso giorno, commit successivo al collaudo)
+- **Tasto Indietro in guida**: ora non chiude l'app né ferma il GPS, apre il riquadro (come Home);
+  se il telefono non lo supporta manda l'app in secondo piano. Fuori dalla guida Indietro
+  funziona come prima (non verificato sul telefono dopo la modifica).
+- **Notifica del servizio GPS**: il permesso notifiche (Android 13+) viene chiesto all'avvio della
+  guida, prima di quello della posizione. Verificato: concesso il permesso, la notifica fissa è visibile.
+- **X sul riquadro**: chiudere la finestrella termina la guida (come "Esci") e il GPS si ferma.
+  Verificato: espandere il riquadro o spegnere lo schermo con il riquadro aperto NON ferma la guida.
+
 ## Da sistemare, in ordine di importanza
 
-1. **Tasto Indietro durante la guida**: ferma in silenzio il GPS (il servizio sparisce) e al
-   rientro l'app riparte da zero, con la guida persa. Succede anche col gesto "indietro".
-   Idea: in guida, Indietro non chiude ma manda l'app in secondo piano (`moveTaskToBack`),
-   oppure chiede "Terminare la guida?".
-2. **Notifica del servizio GPS invisibile**: `POST_NOTIFICATIONS` è dichiarato ma mai
-   richiesto (Android 13+), quindi la notifica fissa "Tutor A1 e A4 attivo" non si vede
-   (`importance=NONE`). Va richiesto il permesso al primo "Avvia guida".
-3. **Chiudere il riquadro con la X non ferma il tracciamento**: la pagina continua a girare
-   e il GPS resta acceso. Insieme al punto 2 l'utente non ha modo di accorgersene.
-   Idea: notifica con pulsante "Termina guida", oppure fermare la guida quando il riquadro
-   viene chiuso.
-4. **Barra di stato in tema chiaro**: con il telefono in tema chiaro, ora e batteria sono
+1. **Barra di stato in tema chiaro**: con il telefono in tema chiaro, ora e batteria sono
    bianchi su sfondo bianco (illeggibili). Serve impostare colore e stile della barra di
    stato (plugin `@capacitor/status-bar` o stile nativo) in modo coerente con l'HUD scuro.
-5. **Mappa a rischio con OpenStreetMap**: i server `tile.openstreetmap.org` non sono pensati
+2. **Mappa a rischio con OpenStreetMap**: i server `tile.openstreetmap.org` non sono pensati
    per un'app distribuita (regole d'uso, possibili blocchi). Per uso personale va bene;
    per diffonderla serve un fornitore di tile con chiave (MapTiler, Stadia, ecc.).
    Inoltre il controllo "le tile funzionano?" avviene una sola volta all'avvio: se parti
    senza rete, la mappa resta quella vettoriale finché non riavvii. Meglio riprovare
    periodicamente.
-6. **Testo obsoleto nell'app**: il pannello "Dati, precisione e uso fuori da Claude" parla
+3. **Testo obsoleto nell'app**: il pannello "Dati, precisione e uso fuori da Claude" parla
    di Claude e GitHub Pages, e il pulsante "Scarica l'app come file HTML" non ha senso
    dentro l'app (e il download di un file blob nella WebView di Android probabilmente non
    funziona, da verificare). Anche il messaggio di permesso GPS negato in `index.html`
    cita Claude (la build lo sostituisce, ma conviene pulire la sorgente).
-7. **Schermo orizzontale**: il cartello è tagliato in basso, statistiche e limiti non si
+4. **Schermo orizzontale**: il cartello è tagliato in basso, statistiche e limiti non si
    vedono. Se si usa il telefono in orizzontale sul supporto, serve un layout dedicato.
-8. **Carattere grande (accessibilità)**: con scala 1,4 il pulsante "Audio" esce dallo
+5. **Carattere grande (accessibilità)**: con scala 1,4 il pulsante "Audio" esce dallo
    schermo e statistiche e limiti finiscono nascosti sotto la mappa. Inoltre cambiare la
    dimensione del carattere durante la guida ricrea l'activity e perde la guida
    (manca `fontScale` in `configChanges` nel manifest).
-9. **Riquadro PiP, stato "fuori dalla A1/A4"**: il titolo "Il monitoraggio parte quando entri
+6. **Riquadro PiP, stato "fuori dalla A1/A4"**: il titolo "Il monitoraggio parte quando entri
    in una delle…" viene tagliato. Serve un testo breve per il riquadro. Da controllare a
    occhio anche i tratti con nomi molto lunghi.
 

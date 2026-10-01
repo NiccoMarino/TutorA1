@@ -18,6 +18,9 @@
   }
   function ignore() {}
 
+  // Plugin nostro (Picture-in-Picture e permesso notifiche), vedi TutorPipPlugin.java
+  var Pip = Cap.registerPlugin('TutorPip');
+
   /* ---------- GPS ---------- */
   var BG = Cap.registerPlugin('BackgroundGeolocation');
   var watches = new Map();
@@ -46,13 +49,18 @@
       opts.backgroundTitle = 'Tutor A1 e A4 attivo';
       opts.backgroundMessage = 'Sto seguendo la posizione per calcolare la velocità media nei tratti.';
     }
-    BG.addWatcher(opts, function (loc, e) {
+    // Android 13+: prima il permesso per la notifica fissa, altrimenti il GPS gira senza che si veda
+    var ready = background ? Pip.requestNotifications().catch(ignore) : Promise.resolve();
+    ready.then(function () {
       if (entry.cancelled) return;
-      if (e) { if (err) err(toError(e)); return; }
-      if (loc) ok(toPosition(loc));
-    }).then(function (nativeId) {
-      entry.nativeId = nativeId;
-      if (entry.cancelled) BG.removeWatcher({ id: nativeId }).catch(ignore);
+      return BG.addWatcher(opts, function (loc, e) {
+        if (entry.cancelled) return;
+        if (e) { if (err) err(toError(e)); return; }
+        if (loc) ok(toPosition(loc));
+      }).then(function (nativeId) {
+        entry.nativeId = nativeId;
+        if (entry.cancelled) BG.removeWatcher({ id: nativeId }).catch(ignore);
+      });
     }).catch(function (e) { if (err) err(toError(e)); });
     return id;
   }
@@ -123,8 +131,6 @@
   /* ---------- Riquadro Picture-in-Picture ----------
    * Durante la guida, uscendo dall'app (per aprire Maps o Waze) resta una finestrella
    * con il cartello del Tutor: prossimo tratto e km al portale, oppure la media nel tratto. */
-  var Pip = Cap.registerPlugin('TutorPip');
-
   var css = document.createElement('style');
   css.textContent = [
     'html.pip body.driving .app{display:block; height:100vh; min-height:0}',
@@ -152,6 +158,12 @@
     document.documentElement.classList.toggle('pip', !!e.detail);
     // Tornando a schermo intero la mappa deve ricalcolare le sue dimensioni
     if (!e.detail) setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 300);
+  });
+
+  // Chiusa la finestrella con la X: la guida finisce (come premere "Esci"), niente GPS acceso di nascosto
+  window.addEventListener('tutorpipclosed', function () {
+    var exit = document.getElementById('hudExit');
+    if (document.body.classList.contains('driving') && exit) exit.click();
   });
 
   document.addEventListener('DOMContentLoaded', function () {
