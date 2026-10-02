@@ -1,6 +1,6 @@
 // Media nel tratto in corso, proiezione all'arrivo e consiglio di velocità
 import { clamp } from './format.js';
-import { thresholdFor } from './rules.js';
+import { thresholdFor, overLimit } from './rules.js';
 import { secRel } from './network.js';
 
 export function computeMetrics(a, f, km, settings){
@@ -17,7 +17,7 @@ export function computeMetrics(a, f, km, settings){
   const proj = vNow && vNow > 10 && elapsed > 0 ? (dist/1000 + remKm)/((elapsed + remKm/vNow*3600)/3600) : null;
   let status = 'ok';
   if (settled && avg >= warnAt) status = 'alarm';
-  else if (settled && (avg > lim || (proj != null && proj >= warnAt))) status = 'warn';
+  else if (settled && (overLimit(avg, lim) || (proj != null && proj >= warnAt))) status = 'warn';
   return {elapsed, dist, rel, remKm, vNow, avg, lim, thr, warnAt, vMaxRest, proj, status, settled};
 }
 
@@ -28,6 +28,6 @@ export function adviceText(m){
     if (isFinite(m.vMaxRest) && m.vMaxRest >= 60) return 'Media oltre la soglia: rallenta e resta sotto ' + Math.floor(Math.min(m.vMaxRest, lim)) + ' km/h fino al portale.';
     return 'Media oltre la soglia: rallenta, più tempo resti sotto il limite più la media scende.';
   }
-  if (!isFinite(m.vMaxRest) || m.vMaxRest >= lim) return m.avg > lim ? 'Media sopra ' + lim + ' ma entro la tolleranza. Rispetta il limite fino al portale.' : 'Rispettando il limite di ' + lim + ' chiudi il tratto in regola.';
+  if (!isFinite(m.vMaxRest) || m.vMaxRest >= lim) return overLimit(m.avg, lim) ? 'Media sopra ' + lim + ' ma entro la tolleranza. Rispetta il limite fino al portale.' : 'Rispettando il limite di ' + lim + ' chiudi il tratto in regola.';
   return 'Per chiudere sotto la soglia resta sotto ' + Math.floor(m.vMaxRest) + ' km/h fino al portale.';
 }

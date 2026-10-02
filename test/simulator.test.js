@@ -54,3 +54,35 @@ test('a fine tracciato step() restituisce null', () => {
   s.sim.km = 761.5;
   assert.equal(s.step(), null);
 });
+
+// Il pulsante "Simula questo tratto" c'è per tutti i tratti: la simulazione deve arrivare al portale e chiudere la misura
+test('ogni tratto si può simulare dall\'inizio alla fine, anche a tempo accelerato', async () => {
+  const { createTracker } = await import('../src/core/tracker.js');
+  const { DEFAULT_SETTINGS } = await import('../src/core/store.js');
+  for (const sec of secs){
+    const s = createSimulator({secs, lines, random: () => 0.5});
+    assert.equal(s.setup(sec.id, 125, 1790000000), true, sec.id + ' ' + sec.name);
+    s.sim.warp = 5;
+    const tracker = createTracker({secs, lines, settings: {...DEFAULT_SETTINGS}});
+    let start = null, end = null;
+    tracker.on(e => {
+      if (e.type === 'section-start' && e.sec.id === sec.id) start = e;
+      if (e.type === 'section-finish' && e.result.sec.id === sec.id) end = e.result;
+    });
+    tracker.start('sim');
+    for (let i = 0; i < 20000 && !end; i++){ const p = s.step(); if (!p) break; tracker.pushPosition(p); }
+    assert.ok(start && !start.mid, sec.id + ' ' + sec.name + ': il tratto non parte dal portale');
+    assert.ok(end && Math.abs(end.avg - 125) < 2, sec.id + ' ' + sec.name + ': media ' + (end && end.avg));
+  }
+});
+
+test('"prossimo Tutor" su un\'autostrada nuova, con i chilometri decrescenti (A14 verso Bologna)', () => {
+  const s = make();
+  const first = secs.find(x => x.r === 'A14' && x.da === 'Valle del Rubicone' && x.sign === -1);
+  s.setup(first.id, 120, 1000);
+  s.sim.km = first.kb - 1;
+  const n = s.nextSection();
+  assert.equal(n.r, 'A14');
+  assert.equal(n.sign, -1);
+  assert.ok(n.ka < first.kb, n.name);
+});

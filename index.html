@@ -449,6 +449,7 @@ html.pip .plabels{font-size:9px; margin-top:2px}
 (() => {
   // src/core/format.js
   var nf1 = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  var nf12 = new Intl.NumberFormat("it-IT", { minimumFractionDigits: 1, maximumFractionDigits: 2 });
   var nf0 = new Intl.NumberFormat("it-IT", { maximumFractionDigits: 0 });
   var nfKm = new Intl.NumberFormat("it-IT", { maximumFractionDigits: 3 });
   var nfL = new Intl.NumberFormat("it-IT", { maximumFractionDigits: 2 });
@@ -639,13 +640,22 @@ html.pip .plabels{font-size:9px; margin-top:2px}
   function thrText(limit) {
     return nf1.format(Math.floor(thresholdFor(limit) * 10) / 10);
   }
+  var EPS = 1e-3;
+  var overLimit = (avg, lim) => avg > lim + EPS;
   function verdictOf(avg, lim) {
     if (avg == null) return ["n/d", ""];
-    if (avg <= lim) return ["in regola", "ok"];
-    if (avg <= thresholdFor(lim)) return ["sopra il limite, entro la tolleranza", "tol"];
+    if (!overLimit(avg, lim)) return ["in regola", "ok"];
+    if (avg <= thresholdFor(lim) + EPS) return ["sopra il limite, entro la tolleranza", "tol"];
     return ["oltre la soglia di sanzione", "bad"];
   }
   var LIMITS = [[130, ""], [110, "pioggia"], [100, "neopatentati"], [90, ""], [80, "rimorchio"]];
+  function avgValue(avg, lim, decimals) {
+    if (avg == null) return null;
+    const k = 10 ** decimals, r = Math.round(avg * k) / k;
+    if (verdictOf(r, lim)[1] === verdictOf(avg, lim)[1]) return r;
+    const k1 = k * 10;
+    return r > avg ? Math.floor(avg * k1 + 1e-9) / k1 : Math.ceil(avg * k1 - 1e-9) / k1;
+  }
 
   // src/core/store.js
   var SKEY = "tutorA1.v1.settings";
@@ -704,7 +714,7 @@ html.pip .plabels{font-size:9px; margin-top:2px}
     const proj = vNow && vNow > 10 && elapsed > 0 ? (dist / 1e3 + remKm) / ((elapsed + remKm / vNow * 3600) / 3600) : null;
     let status = "ok";
     if (settled && avg >= warnAt) status = "alarm";
-    else if (settled && (avg > lim || proj != null && proj >= warnAt)) status = "warn";
+    else if (settled && (overLimit(avg, lim) || proj != null && proj >= warnAt)) status = "warn";
     return { elapsed, dist, rel, remKm, vNow, avg, lim, thr, warnAt, vMaxRest, proj, status, settled };
   }
   function adviceText(m) {
@@ -714,7 +724,7 @@ html.pip .plabels{font-size:9px; margin-top:2px}
       if (isFinite(m.vMaxRest) && m.vMaxRest >= 60) return "Media oltre la soglia: rallenta e resta sotto " + Math.floor(Math.min(m.vMaxRest, lim)) + " km/h fino al portale.";
       return "Media oltre la soglia: rallenta, più tempo resti sotto il limite più la media scende.";
     }
-    if (!isFinite(m.vMaxRest) || m.vMaxRest >= lim) return m.avg > lim ? "Media sopra " + lim + " ma entro la tolleranza. Rispetta il limite fino al portale." : "Rispettando il limite di " + lim + " chiudi il tratto in regola.";
+    if (!isFinite(m.vMaxRest) || m.vMaxRest >= lim) return overLimit(m.avg, lim) ? "Media sopra " + lim + " ma entro la tolleranza. Rispetta il limite fino al portale." : "Rispettando il limite di " + lim + " chiudi il tratto in regola.";
     return "Per chiudere sotto la soglia resta sotto " + Math.floor(m.vMaxRest) + " km/h fino al portale.";
   }
 
@@ -790,7 +800,8 @@ html.pip .plabels{font-size:9px; margin-top:2px}
       st.lastWall = Date.now() / 1e3;
       if (prev) {
         const dt = t - prev.t, dPos = hav(prev.lat, prev.lon, fix.lat, fix.lon);
-        if (dt > 0 && dPos / dt > 75 && dPos > 150) {
+        const vMax = Math.max(75, fix.v != null ? fix.v * 1.3 : 0);
+        if (dt > 0 && dPos / dt > vMax && dPos > 150) {
           st.jumps++;
           if (st.jumps < 3) return;
           st.jumps = 0;
@@ -801,8 +812,10 @@ html.pip .plabels{font-size:9px; margin-top:2px}
           return;
         }
         st.jumps = 0;
-        if (fix.v == null) fix.v = dt > 0 ? dPos / dt : 0;
-        if (fix.v > 75) fix.v = prev.v != null ? prev.v : 0;
+        if (fix.v == null) {
+          fix.v = dt > 0 ? dPos / dt : 0;
+          if (fix.v > 75) fix.v = prev.v != null ? prev.v : 0;
+        }
         if (fix.heading == null && dPos > 8) fix.heading = bearing(prev.lat, prev.lon, fix.lat, fix.lon);
         st.odo += dt <= 10 && prev.v != null ? (prev.v + fix.v) / 2 * dt : dPos;
       }
@@ -996,7 +1009,7 @@ html.pip .plabels{font-size:9px; margin-top:2px}
   };
   function endText(r) {
     const [vt] = verdictOf(r.avg, r.lim);
-    return "Fine Tutor. Media " + (r.avg != null ? Math.round(r.avg) + " chilometri orari, " + vt : "non disponibile") + ".";
+    return "Fine Tutor. Media " + (r.avg != null ? nfL.format(avgValue(r.avg, r.lim, 0)) + " chilometri orari, " + vt : "non disponibile") + ".";
   }
   function announcementFor(ev) {
     switch (ev.type) {
@@ -1055,7 +1068,7 @@ html.pip .plabels{font-size:9px; margin-top:2px}
         m.status,
         a.mid ? "Tutor in corso, media parziale" : "Tutor in corso",
         s.name,
-        m.avg != null ? nf0.format(m.avg) : "–",
+        m.avg != null ? nfL.format(avgValue(m.avg, lim, 0)) : "–",
         "km/h di media",
         nf1.format(m.dist / 1e3) + " km percorsi in " + fmtDur(m.elapsed) + (m.proj != null && m.settled ? ", a questo ritmo chiudi a " + nf0.format(m.proj) : "")
       );
@@ -1067,7 +1080,7 @@ html.pip .plabels{font-size:9px; margin-top:2px}
         vc === "ok" ? "done-ok" : vc === "tol" ? "done-tol" : "done-bad",
         "Tratto concluso" + (r.partial ? ", misura parziale" : ""),
         r.sec.name,
-        r.avg != null ? nf1.format(r.avg) : "–",
+        r.avg != null ? nf12.format(avgValue(r.avg, r.lim, 1)) : "–",
         "km/h di media",
         vt.charAt(0).toUpperCase() + vt.slice(1) + ", tempo " + fmtDur(r.dur)
       );
@@ -1349,7 +1362,7 @@ html.pip .plabels{font-size:9px; margin-top:2px}
         const d = new Date(h.t);
         const [vt, vc] = verdictOf(h.avg, h.lim);
         const li = document.createElement("li");
-        li.innerHTML = "<b>" + esc(h.da + " → " + h.a) + "</b><br>" + d.toLocaleDateString("it-IT", { day: "numeric", month: "short" }) + ", " + d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" }) + ': media <span class="v ' + vc + '">' + (h.avg != null ? nf1.format(h.avg) + " km/h" : "n/d") + "</span>, " + vt + " (limite " + h.lim + ")" + (h.partial ? ", misura parziale" : "") + (h.sim ? ", simulazione" : "");
+        li.innerHTML = "<b>" + esc(h.da + " → " + h.a) + "</b><br>" + d.toLocaleDateString("it-IT", { day: "numeric", month: "short" }) + ", " + d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" }) + ': media <span class="v ' + vc + '">' + (h.avg != null ? nf12.format(avgValue(h.avg, h.lim, 1)) + " km/h" : "n/d") + "</span>, " + vt + " (limite " + h.lim + ")" + (h.partial ? ", misura parziale" : "") + (h.sim ? ", simulazione" : "");
         ul.appendChild(li);
       });
     }

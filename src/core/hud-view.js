@@ -1,7 +1,7 @@
 // Cosa mostrare nella schermata di guida, calcolato dallo stato del tracker. Non tocca la pagina:
 // ui/hud.js applica la vista.
-import { nf0, nf1, nfKm, nfL, fmtDur, fmtDist } from './format.js';
-import { thresholdFor, thrText, verdictOf } from './rules.js';
+import { nf0, nf1, nf12, nfKm, nfL, fmtDur, fmtDist } from './format.js';
+import { thresholdFor, thrText, verdictOf, avgValue } from './rules.js';
 import { RAMS } from './network.js';
 import { computeMetrics, adviceText } from './metrics.js';
 
@@ -24,14 +24,14 @@ export function hudView(st, settings){
   if (st.active){
     const a = st.active, s = a.sec, m = computeMetrics(a, f, st.km, settings);
     plate(m.status, a.mid ? 'Tutor in corso, media parziale' : 'Tutor in corso', s.name,
-      m.avg != null ? nf0.format(m.avg) : '–', 'km/h di media',
+      m.avg != null ? nfL.format(avgValue(m.avg, lim, 0)) : '–', 'km/h di media',
       nf1.format(m.dist/1000) + ' km percorsi in ' + fmtDur(m.elapsed) + (m.proj != null && m.settled ? ', a questo ritmo chiudi a ' + nf0.format(m.proj) : ''));
     view.progress = {fill:(m.rel / s.L * 100).toFixed(1) + '%', from:'km ' + nfKm.format(s.ka), to:'mancano ' + fmtDist(m.remKm)};
     view.advice = adviceText(m);
   } else if (st.result && f && f.t < st.result.until){
     const r = st.result, [vt, vc] = verdictOf(r.avg, r.lim);
     plate(vc === 'ok' ? 'done-ok' : vc === 'tol' ? 'done-tol' : 'done-bad', 'Tratto concluso' + (r.partial ? ', misura parziale' : ''), r.sec.name,
-      r.avg != null ? nf1.format(r.avg) : '–', 'km/h di media', vt.charAt(0).toUpperCase() + vt.slice(1) + ', tempo ' + fmtDur(r.dur));
+      r.avg != null ? nf12.format(avgValue(r.avg, r.lim, 1)) : '–', 'km/h di media', vt.charAt(0).toUpperCase() + vt.slice(1) + ', tempo ' + fmtDur(r.dur));
     view.advice = st.next ? 'Prossimo Tutor tra ' + fmtDist(st.next.dist) + '.' : '';
   } else if (!f){
     plate('', 'Avvio', 'Sto cercando la tua posizione', '–', '', 'Il monitoraggio parte appena il GPS ti trova su un\'autostrada dell\'elenco.');
