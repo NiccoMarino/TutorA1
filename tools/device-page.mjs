@@ -9,7 +9,8 @@ export function pageFingerprint(){
   return [...document.querySelectorAll('script[data-keep]')].map(s => h(s.textContent.trim())).join(',');
 }
 
-// Cosa c'è di storto nella parte visibile: uscite dallo schermo, contrasto, testi rotti, pulsanti piccoli, testo tagliato
+// Cosa c'è di storto nella parte visibile: uscite dallo schermo, contrasto sotto 4,5 (3 per i testi grandi), testi rotti,
+// cose da toccare sotto i 48 px consigliati da Android, testo tagliato
 export function pageAudit(){
   const W = innerWidth, out = {overflowX: document.documentElement.scrollWidth > W + 1, outside: [], contrast: [], broken: [], small: [], clipped: [], tiny: []};
   const name = e => e.id ? '#' + e.id : e.tagName.toLowerCase() + (typeof e.className === 'string' && e.className.trim() ? '.' + e.className.trim().split(/\s+/)[0] : '');
@@ -44,7 +45,7 @@ export function pageAudit(){
     // i collegamenti dentro una frase sono alti quanto il testo, ed è normale
     if (!shown(t) || (t.tagName === 'A' && getComputedStyle(t).display === 'inline')) continue;
     const r = t.getBoundingClientRect();
-    if (r.height < 40 || r.width < 40) out.small.push(label(t) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height));
+    if (r.height < 47.5 || r.width < 47.5) out.small.push(label(t) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height));
   }
   return out;
 }
