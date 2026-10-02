@@ -16,7 +16,7 @@ export function hudView(st, settings){
     road: !f ? {title:'In attesa del segnale GPS', sim, sub:'Tieni il telefono con vista del cielo'}
       : st.onRoad && st.ram ? {title:RAMS[st.ram].name + ', km ' + nf1.format(st.km), sim,
           sub:(st.sign ? (st.sign > 0 ? RAMS[st.ram].plus : RAMS[st.ram].minus) : 'direzione da determinare') + ', precisione GPS ' + nf0.format(f.acc) + ' m'}
-      : {title:'Fuori da A1 e A4', sim, sub:'Precisione GPS ' + nf0.format(f.acc) + ' m'},
+      : {title:'Fuori dalle autostrade seguite', sim, sub:'Precisione GPS ' + nf0.format(f.acc) + ' m'},
     plate: null, progress: null, advice: ''
   };
   const plate = (cls, kicker, title, big, unit, sub) => { view.plate = {cls, kicker, title, big, unit, sub}; };
@@ -34,9 +34,9 @@ export function hudView(st, settings){
       r.avg != null ? nf1.format(r.avg) : '–', 'km/h di media', vt.charAt(0).toUpperCase() + vt.slice(1) + ', tempo ' + fmtDur(r.dur));
     view.advice = st.next ? 'Prossimo Tutor tra ' + fmtDist(st.next.dist) + '.' : '';
   } else if (!f){
-    plate('', 'Avvio', 'Sto cercando la tua posizione', '–', '', 'Il monitoraggio parte appena il GPS ti trova sulla A1 o sulla A4.');
+    plate('', 'Avvio', 'Sto cercando la tua posizione', '–', '', 'Il monitoraggio parte appena il GPS ti trova su un\'autostrada dell\'elenco.');
   } else if (!st.onRoad){
-    plate('', 'Fuori da A1 e A4', 'Il monitoraggio parte quando entri in una delle due autostrade', speed, 'km/h', '');
+    plate('', 'Fuori dalle autostrade seguite', 'Il monitoraggio parte quando entri in un\'autostrada dell\'elenco', speed, 'km/h', '');
   } else if (!st.sign){
     plate('', 'Sulla ' + RAMS[st.ram].name, 'Sto capendo in che direzione vai', speed, 'km/h', '');
   } else if (st.next){

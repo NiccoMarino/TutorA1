@@ -1,6 +1,7 @@
 # Tutor A1/A4
 
-App (pagina web + app Android Capacitor) che segue i tratti Tutor di A1 e A4 e la velocità media.
+App (pagina web + app Android Capacitor) che segue i tratti Tutor di 14 autostrade (A1, A4 e le altre
+di Autostrade per l'Italia) e la velocità media.
 Struttura e flusso dei dati: `docs/ARCHITETTURA.md`. Difetti noti e idee: `NOTE-MIGLIORIE.md`.
 
 ## Comandi

@@ -11,3 +11,4 @@ test/fixtures/golden-orig.json
 keystore.properties
 *.jks
 *.keystore
+tools/.cache/

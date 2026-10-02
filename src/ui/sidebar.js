@@ -1,13 +1,18 @@
 // Elenco dei tratti con filtri (pagina Simulazione); toccando un tratto se ne apre la scheda sotto la riga
 import { esc, nfKm, nfL, fmtDur } from '../core/format.js';
 import { thresholdFor, thrText } from '../core/rules.js';
-import { GROUPS, isPos, roadOf } from '../core/network.js';
+import { GROUPS, ROADS, isPos, roadOf } from '../core/network.js';
 import { $ } from './dom.js';
 
 export function createSidebar({secs, settings, onSimulate}){
-  const nA1 = secs.filter(s => roadOf(s) === 'A1').length, nA4 = secs.length - nA1;
-  $('#lede').textContent = secs.length + ' tratti con controllo della velocità media: ' + nA1 + ' sulla A1 da Milano a Napoli, con diramazioni di Roma e Variante di Valico, e ' + nA4 + ' sulla A4 tra Milano e Brescia e tra Venezia e Trieste.';
+  const roads = ROADS.filter(r => secs.some(s => roadOf(s) === r));
+  $('#lede').textContent = secs.length + ' tratti con controllo della velocità media su ' + roads.length + ' autostrade: ' +
+    roads.slice(0, -1).join(', ') + ' e ' + roads[roads.length-1] + '.';
   let filterDir = 'all', filterRoad = 'all';
+  const roadSel = $('#filterRoad');
+  [['all', 'Tutte le autostrade'], ...roads.map(r => [r, r + ' (' + secs.filter(s => roadOf(s) === r).length + ' tratti)'])].forEach(([v, t]) => {
+    const o = document.createElement('option'); o.value = v; o.textContent = t; roadSel.appendChild(o);
+  });
 
   function minTimeText(s, v){ return fmtDur(s.L / v * 3600); }
   function detailHTML(s){
@@ -63,11 +68,6 @@ export function createSidebar({secs, settings, onSimulate}){
     document.querySelectorAll('#filter .chip').forEach(c => c.setAttribute('aria-pressed', String(c === b)));
     renderList();
   });
-  $('#filterRoad').addEventListener('click', e => {
-    const b = e.target.closest('[data-r]'); if (!b) return;
-    filterRoad = b.dataset.r;
-    document.querySelectorAll('#filterRoad .chip').forEach(c => c.setAttribute('aria-pressed', String(c === b)));
-    renderList();
-  });
+  roadSel.addEventListener('change', () => { filterRoad = roadSel.value; renderList(); });
   renderList();
 }

@@ -4,7 +4,7 @@
 <meta charset="utf-8"><!--@var bridge-->
 <meta name="viewport" content="width=device-width, initial-scale=1<!--@var viewportFit-->">
 <meta name="theme-color" content="#00794C">
-<title>MediaVelocità: la velocità media nei tratti Tutor di A1 e A4</title>
+<title>MediaVelocità: la velocità media nei tratti Tutor delle autostrade</title>
 <style>
 <!--@var fonts-->
 <!--@include styles/app.css-->
@@ -150,11 +150,7 @@
         <h3 class="sect">Tratti</h3>
         <p class="lede" id="lede"></p>
         <div class="filters">
-          <div class="filter" role="group" aria-label="Filtra per autostrada" id="filterRoad">
-            <button class="chip" type="button" data-r="all" aria-pressed="true">A1 e A4</button>
-            <button class="chip" type="button" data-r="A1" aria-pressed="false">Solo A1</button>
-            <button class="chip" type="button" data-r="A4" aria-pressed="false">Solo A4</button>
-          </div>
+          <select class="sel" id="filterRoad" aria-label="Filtra per autostrada"></select>
           <div class="filter" role="group" aria-label="Filtra per direzione" id="filter">
             <button class="chip" type="button" data-f="all" aria-pressed="true">Entrambe le direzioni</button>
             <button class="chip" type="button" data-f="pos" aria-pressed="false"><i class="dot sud"></i>Sud o Est</button>
@@ -191,8 +187,8 @@
     <div class="page-body">
       <div class="card prose">
         <p>La posizione GPS resta sul telefono: l'app non la invia a nessuno, funziona anche senza internet e lo storico dei tratti è salvato solo qui. <a href="https://niccomarino.github.io/TutorA1/privacy.html" target="_blank" rel="noopener">Informativa sulla privacy</a>.</p>
-        <p>Tratti della A1 e della A4 Milano–Brescia: <a href="https://www.autostrade.it/it/tecnologia-sicurezza/sicurezza/il-tutor" target="_blank" rel="noopener">autostrade.it, pagina Il Tutor</a>, consultata il 29 settembre 2026. Tratti della A4 Venezia–Trieste: <a href="https://www.infoviaggiando.it/it/14180/tutor" target="_blank" rel="noopener">infoviaggiando.it</a> di Autostrade Alto Adriatico, consultata il 30 settembre 2026. Sulla A4 tra Torino e Milano e tra Brescia e Venezia le società che la gestiscono non indicano tratti Tutor. Tracciato delle carreggiate, usato per riconoscere strada e direzione: © contributori OpenStreetMap (ODbL). Chilometriche di caselli e cantieri: dati di viabilità di Autostrade per l'Italia.</p>
-        <p>La posizione dei portali è ricavata dal chilometro ufficiale: su A1 e A4 l'errore tipico è di circa 100 metri, fino a 250. Sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa.</p>
+        <p>Tratti della rete di Autostrade per l'Italia (A1, A4 Milano–Brescia, A7, A8, A9, A10, A11, A13, A14, A16, A23, A26, A27 e A30): <a href="https://www.autostrade.it/it/tecnologia-sicurezza/sicurezza/il-tutor" target="_blank" rel="noopener">autostrade.it, pagina Il Tutor</a>, consultata il 29 settembre 2026 per A1 e A4 e il 2 ottobre 2026 per le altre. Tratti della A4 Venezia–Trieste: <a href="https://www.infoviaggiando.it/it/14180/tutor" target="_blank" rel="noopener">infoviaggiando.it</a> di Autostrade Alto Adriatico, consultata il 30 settembre 2026. Sulla A4 tra Torino e Milano e tra Brescia e Venezia le società che la gestiscono non indicano tratti Tutor. Tracciato delle carreggiate, usato per riconoscere strada e direzione: © contributori OpenStreetMap (ODbL). Chilometriche di caselli, cantieri, webcam e aree di servizio: dati di viabilità di Autostrade per l'Italia.</p>
+        <p>La posizione dei portali è ricavata dal chilometro ufficiale. Su A1 e A4 l'errore tipico è di circa 100 metri, fino a 250; sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa. Sulle altre autostrade il chilometro è interpolato tra webcam, aree di servizio e caselli di cui si conosce la posizione: di solito l'errore resta sotto i 100 metri, di più dove questi punti sono lontani tra loro.</p>
         <p>Carattere Overpass (SIL Open Font License).</p>
         <p>Non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato.</p>
       </div>

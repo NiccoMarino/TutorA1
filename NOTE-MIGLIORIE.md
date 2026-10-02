@@ -41,13 +41,24 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
   Privacy e diritti. Indietro (anche quello di Android) richiude pagina e menù in ordine.
 - Tema chiaro e scuro con colori "asfalto"; nelle impostazioni: come il telefono, chiaro o scuro.
 
+## Tutte le autostrade di Autostrade per l'Italia (ramo `tutte-le-autostrade`)
+- 103 tratti in più, presi dalla pagina "Il Tutor" di autostrade.it il 2 ottobre 2026: A7, A8, A9, A10, A11, A13,
+  A14, A16, A23, A26, A27 e A30. In tutto 186 tratti su 14 autostrade.
+- Dati ricavati da `tools/make-tratti.mjs`: tracciato da OpenStreetMap, chilometri interpolati tra webcam, aree di
+  servizio e caselli di Autostrade per l'Italia. Provato sulla A1, dove i dati c'erano già: stessi portali entro 80 m
+  di mediana (massimo 290 m, al portale di Lodi, dove il nuovo metodo ha una webcam proprio al km 24).
+- Da controllare su strada: i tratti dove i punti di riferimento sono più lontani dai portali (il controllo li
+  stampa): A14 tra Foggia e Cerignola (fino a 7 km), Bari Sud, Predosa sulla A26, Padova Zona Industriale.
+- Elenco: il filtro per autostrada è un menù a tendina. Tolto il tracciato di ogni tratto (`g`), che serviva
+  solo alla mappa: la pagina resta sotto i 450 kB.
+
 ## Da sistemare, in ordine di importanza
 
 1. **Carattere grande (accessibilità)**: con scala 1,4 il pulsante "Audio" usciva dallo
    schermo (da riprovare ora che la guida usa tutto lo schermo). Cambiare la dimensione del carattere
    durante la guida ricreava l'activity (risolto, da riprovare sul telefono).
-2. **Riquadro PiP, stato "fuori dalla A1/A4"**: il titolo "Il monitoraggio parte quando entri
-   in una delle…" viene tagliato. Serve un testo breve per il riquadro. Confermato dal
+2. **Riquadro PiP, stato "fuori dalle autostrade seguite"**: il titolo "Il monitoraggio parte quando entri
+   in un'autostrada…" viene tagliato. Serve un testo breve per il riquadro. Confermato dal
    collaudo del riquadro (`test/fixtures/pip-layout.json`, `titleCut: true`): a 189×118 sono
    tagliati anche i tratti con nomi lunghi (es. "Casalpusterlengo → Piacenza Nord") e il
    titolo di "Nessun Tutor più avanti".

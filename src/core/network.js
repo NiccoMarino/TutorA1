@@ -2,23 +2,45 @@
 import { clamp } from './format.js';
 import { D2R, bearing, angDiff } from './geo.js';
 
+// Rami con i codici dei dati di viabilità di Autostrade per l'Italia; road è l'autostrada a cui appartengono.
+// plus è la direzione dei chilometri crescenti.
 export const RAMS = {
-  A01:{name:'A1', plus:'verso Napoli', minus:'verso Milano'},
-  D18:{name:'A1 Diramazione Roma Nord', plus:'verso Roma', minus:'verso la A1'},
-  D19:{name:'A1 Diramazione Roma Sud', plus:'verso Roma', minus:'verso la A1'},
-  VAR:{name:'A1 Variante di Valico', plus:'verso Firenze', minus:'verso Bologna'},
-  A04:{name:'A4', plus:'verso Trieste', minus:'verso Torino'}
+  A01:{name:'A1', road:'A1', plus:'verso Napoli', minus:'verso Milano'},
+  D18:{name:'A1 Diramazione Roma Nord', road:'A1', plus:'verso Roma', minus:'verso la A1'},
+  D19:{name:'A1 Diramazione Roma Sud', road:'A1', plus:'verso Roma', minus:'verso la A1'},
+  VAR:{name:'A1 Variante di Valico', road:'A1', plus:'verso Firenze', minus:'verso Bologna'},
+  A04:{name:'A4', road:'A4', plus:'verso Trieste', minus:'verso Torino'},
+  A07:{name:'A7', road:'A7', plus:'verso Genova', minus:'verso Milano'},
+  A08:{name:'A8', road:'A8', plus:'verso Varese', minus:'verso Milano'},
+  A09:{name:'A9', road:'A9', plus:'verso Como', minus:'verso Milano'},
+  A10:{name:'A10', road:'A10', plus:'verso Savona', minus:'verso Genova'},
+  A11:{name:'A11', road:'A11', plus:'verso Pisa', minus:'verso Firenze'},
+  A13:{name:'A13', road:'A13', plus:'verso Padova', minus:'verso Bologna'},
+  A14:{name:'A14', road:'A14', plus:'verso Taranto', minus:'verso Bologna'},
+  A16:{name:'A16', road:'A16', plus:'verso Canosa', minus:'verso Napoli'},
+  A23:{name:'A23', road:'A23', plus:'verso Tarvisio', minus:'verso Udine'},
+  A26:{name:'A26', road:'A26', plus:'verso Alessandria', minus:'verso Genova'},
+  A27:{name:'A27', road:'A27', plus:'verso Belluno', minus:'verso Venezia'},
+  A30:{name:'A30', road:'A30', plus:'verso Salerno', minus:'verso Caserta'}
 };
-export const GROUPS = ['A1 Milano-Bologna','A1 Bologna-Firenze','A1 Variante di Valico','A1 Firenze-Roma','A1 Diramazione Roma Nord','A1 Roma-Napoli','A1 Diramazione Roma Sud','A4 Milano-Brescia','A4 Venezia-Trieste'];
+export const ROADS = [...new Set(Object.values(RAMS).map(r => r.road))];
+export const GROUPS = ['A1 Milano-Bologna','A1 Bologna-Firenze','A1 Variante di Valico','A1 Firenze-Roma','A1 Diramazione Roma Nord','A1 Roma-Napoli','A1 Diramazione Roma Sud','A4 Milano-Brescia','A4 Venezia-Trieste',
+  'A7 Genova-Serravalle','A8 Milano-Varese','A9 Lainate-Como-Chiasso','A10 Genova-Savona','A11 Firenze-Pisa Nord','A13 Bologna-Padova',
+  'A14 Bologna-Ancona','A14 Ancona-Pescara','A14 Pescara-Canosa','A14 Canosa-Bari-Taranto','A16 Napoli-Canosa','A23 Udine-Tarvisio',
+  'A26 Voltri-Alessandria','A27 Venezia-Belluno','A30 Caserta-Salerno'];
 export const isPos = d => d === 'Sud' || d === 'Est';
-export const roadOf = s => s.r === 'A04' ? 'A4' : 'A1';
+export const roadOf = s => RAMS[s.r].road;
 export const secRel = (s, km) => (km - s.ka) * s.sign;
 
-// [id, ramo, chiave in data.ch, verso fisso (+1, -1, 0 = entrambi), distanza massima dall'asse in metri]
+// [id, ramo, chiave in data.ch, verso fisso (+1, -1, 0 = entrambi), distanza massima dall'asse in metri].
+// Le carreggiate dopo la A4 sono ricavate da tools/make-tratti.mjs (chiave = id).
 const LINE_DEFS = [
   ['A01S','A01','S',+1,55], ['A01N','A01','N',-1,55],
   ['D18','D18','D18',0,320], ['D19','D19','D19',0,220], ['VAR','VAR','VAR',0,260],
-  ['A04E','A04','AE',+1,55], ['A04W','A04','AW',-1,55]
+  ['A04E','A04','AE',+1,55], ['A04W','A04','AW',-1,55],
+  ...[['A07','S','N'], ['A08','N','S'], ['A09','N','S'], ['A10','O','E'], ['A13','N','S'], ['A11','O','E'], ['A14','S','N'],
+    ['A16','E','O'], ['A23','N','S'], ['A26','N','S'], ['A27','N','S'], ['A30','S','N']]
+    .flatMap(([r, p, m]) => [[r + p, r, r + p, +1, 55], [r + m, r, r + m, -1, 55]])
 ];
 
 function makeLine(id, ram, pts, fixedSign, maxDist){
