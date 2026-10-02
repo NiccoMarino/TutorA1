@@ -121,3 +121,8 @@ test('il gancio window.__tutor espone quello che usano i collaudi (golden, riqua
   const keys = hook[1].split(',').map(p => p.split(':')[0].trim());
   for (const k of ['st', 'SECS', 'settings', 'tracker', 'simulator', 'simControls']) assert.ok(keys.includes(k), 'manca ' + k);
 });
+
+test("la pagina ha un'icona dentro di sé: il browser non cerca favicon.ico (errore 404 nell'app)", () => {
+  const {web, app} = buildPages();
+  for (const page of [web, app]) assert.match(page, /<link rel="icon" href="data:image\/svg\+xml,/);
+});

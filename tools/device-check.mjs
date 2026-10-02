@@ -103,7 +103,7 @@ async function connect(){
     try {
       const pid = adb('shell', 'pidof', PKG).split(/\s+/)[0];
       if (pid){
-        try { adb('forward', '--remove', 'tcp:' + PORT); } catch(e){}
+        try { execFileSync(ADB, ['forward', '--remove', 'tcp:' + PORT], {stdio: 'ignore'}); } catch(e){}
         adb('forward', 'tcp:' + PORT, 'localabstract:webview_devtools_remote_' + pid);
         const pages = await (await fetch('http://127.0.0.1:' + PORT + '/json')).json();
         const page = pages.find(t => t.type === 'page' && t.webSocketDebuggerUrl);
