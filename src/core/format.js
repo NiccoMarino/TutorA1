@@ -1,5 +1,7 @@
 // Formattazione di numeri, distanze e durate in italiano, e nomi adatti alla voce
 export const nf1 = new Intl.NumberFormat('it-IT', {minimumFractionDigits:1, maximumFractionDigits:1});
+// Medie a fine tratto: almeno un decimale, due quando servono (136,85 oltre la soglia di 136,84)
+export const nf12 = new Intl.NumberFormat('it-IT', {minimumFractionDigits:1, maximumFractionDigits:2});
 export const nf0 = new Intl.NumberFormat('it-IT', {maximumFractionDigits:0});
 export const nfKm = new Intl.NumberFormat('it-IT', {maximumFractionDigits:3});
 export const nfL = new Intl.NumberFormat('it-IT', {maximumFractionDigits:2});

@@ -34,8 +34,9 @@ export function createTracker({secs, lines, settings}){
     st.lastWall = Date.now()/1000;
     if (prev){
       const dt = t - prev.t, dPos = hav(prev.lat, prev.lon, fix.lat, fix.lon);
-      // scarta i salti di posizione impossibili (oltre 270 km/h), salvo che si ripetano
-      if (dt > 0 && dPos/dt > 75 && dPos > 150){
+      // scarta i salti di posizione impossibili (oltre 270 km/h, o ben oltre la velocità data dal GPS), salvo che si ripetano
+      const vMax = Math.max(75, fix.v != null ? fix.v*1.3 : 0);
+      if (dt > 0 && dPos/dt > vMax && dPos > 150){
         st.jumps++;
         if (st.jumps < 3) return;
         st.jumps = 0; st.fix = null; st.prevFix = null; st.matchStreak = 0;
@@ -43,8 +44,8 @@ export function createTracker({secs, lines, settings}){
         return;
       }
       st.jumps = 0;
-      if (fix.v == null) fix.v = dt > 0 ? dPos/dt : 0;
-      if (fix.v > 75) fix.v = prev.v != null ? prev.v : 0;
+      // senza la velocità del GPS la si ricava dallo spostamento, scartando i valori impossibili
+      if (fix.v == null){ fix.v = dt > 0 ? dPos/dt : 0; if (fix.v > 75) fix.v = prev.v != null ? prev.v : 0; }
       if (fix.heading == null && dPos > 8) fix.heading = bearing(prev.lat, prev.lon, fix.lat, fix.lon);
       st.odo += (dt <= 10 && prev.v != null) ? (prev.v + fix.v)/2*dt : dPos;
     }

@@ -1,6 +1,6 @@
 // Pannello "Tratti percorsi"
-import { esc, nf1 } from '../core/format.js';
-import { verdictOf } from '../core/rules.js';
+import { esc, nf12 } from '../core/format.js';
+import { verdictOf, avgValue } from '../core/rules.js';
 import { $ } from './dom.js';
 
 export function createHistoryPanel(store){
@@ -13,7 +13,7 @@ export function createHistoryPanel(store){
       const [vt, vc] = verdictOf(h.avg, h.lim);
       const li = document.createElement('li');
       li.innerHTML = '<b>' + esc(h.da + ' → ' + h.a) + '</b><br>' + d.toLocaleDateString('it-IT', {day:'numeric', month:'short'}) + ', ' + d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}) +
-        ': media <span class="v ' + vc + '">' + (h.avg != null ? nf1.format(h.avg) + ' km/h' : 'n/d') + '</span>, ' + vt + ' (limite ' + h.lim + ')' +
+        ': media <span class="v ' + vc + '">' + (h.avg != null ? nf12.format(avgValue(h.avg, h.lim, 1)) + ' km/h' : 'n/d') + '</span>, ' + vt + ' (limite ' + h.lim + ')' +
         (h.partial ? ', misura parziale' : '') + (h.sim ? ', simulazione' : '');
       ul.appendChild(li);
     });

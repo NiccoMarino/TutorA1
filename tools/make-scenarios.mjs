@@ -38,9 +38,10 @@ const r6 = x => Math.round(x*1e6)/1e6;
 // passare a un'altra linea, per esempio all'altra carreggiata per un'inversione di marcia).
 // jumpAt: al km indicato arrivano 3 posizioni sballate di 5,5 km (GPS impazzito).
 // exitSeconds: alla fine si esce di lato dalla strada a 108 km/h per questi secondi.
-function scenario(name, line, from, legs, {jumpAt = null, exitSeconds = 0} = {}){
+// gapAt: dal km indicato il GPS tace per gapSeconds secondi (galleria), poi riprende più avanti.
+function scenario(name, line, from, legs, {jumpAt = null, exitSeconds = 0, gapAt = null, gapSeconds = 0} = {}){
   const fixes = [];
-  let t = T0, km = from, jumped = false, last = null;
+  let t = T0, km = from, jumped = false, gapped = false, last = null;
   const push = (lat, lon, kmh, heading) => {
     fixes.push({lat: r6(lat), lon: r6(lon), speed: Math.round(kmh/3.6*1000)/1000, heading: Math.round(heading*10)/10, accuracy: 6, t});
     t += 1000;
@@ -54,6 +55,11 @@ function scenario(name, line, from, legs, {jumpAt = null, exitSeconds = 0} = {})
       if (jumpAt != null && !jumped && (km - jumpAt)*dir >= 0){
         jumped = true;
         for (let k = 0; k < 3; k++){ const [la, lo] = offset(p.lat, p.lon, 0, 5500); push(la, lo, leg.kmh, heading); }
+      }
+      if (gapAt != null && !gapped && (km - gapAt)*dir >= 0){
+        gapped = true;
+        t += gapSeconds*1000; km += dir*leg.kmh/3600*gapSeconds;
+        continue;
       }
       push(p.lat, p.lon, leg.kmh, heading);
       last = {lat: p.lat, lon: p.lon, heading};
@@ -83,7 +89,11 @@ const scenarios = [
   scenario('a1-sud-tratto-che-finisce-da-solo', 'S', 47.0, [{to: 58.0, kmh: 125}]),
   // inversione di marcia dentro Milano Sud-Lodi: misura interrotta per direzione, poi Lodi-Milano Sud preso a metà,
   // che finisce da solo, e verso Milano non ci sono altri Tutor ("Nessun Tutor più avanti")
-  scenario('a1-inversione-di-marcia', 'S', 14.0, [{to: 16.0, kmh: 110}, {to: 9.0, kmh: 110, line: 'N'}])
+  scenario('a1-inversione-di-marcia', 'S', 14.0, [{to: 16.0, kmh: 110}, {to: 9.0, kmh: 110, line: 'N'}]),
+  // A14 verso sud, Faenza-Forlì a 130,4 km/h: cartello giallo e media detta "130,4", non "130"
+  scenario('a14-sud-di-poco-sopra-il-limite', 'A14S', 61.0, [{to: 81.0, kmh: 130.4}]),
+  // Frosinone-Ceprano a 250 km/h con 4 secondi senza GPS in galleria: allarmi ripetuti, la misura non si interrompe
+  scenario('a1-sud-molto-veloce-con-galleria', 'S', 620.0, [{to: 642.0, kmh: 250}], {gapAt: 630.0, gapSeconds: 4})
 ];
 mkdirSync('test/fixtures', {recursive: true});
 writeFileSync('test/fixtures/scenarios.json', JSON.stringify(scenarios));

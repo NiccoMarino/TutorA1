@@ -60,7 +60,7 @@ npm test
 npm run build
 ```
 
-- `npm test` esegue i test, compreso il "golden": il comportamento registrato su 7 percorsi GPS
+- `npm test` esegue i test, compreso il "golden": il comportamento registrato su 9 percorsi GPS
   fissi, che ogni modifica deve riprodurre identico.
 - `npm run build` ricostruisce `index.html` (la pagina di GitHub Pages) e `www/` (l'app) da `src/`.
   Non modificare `index.html` a mano.
@@ -68,7 +68,8 @@ npm run build
 - `npm run sync` prepara l'app Android. Poi, dalla cartella `android/`, `./gradlew installDebug`
   la installa sul telefono collegato via USB. Con `-Pprova=true` si installa invece una copia
   separata, "Tutor prova", accanto all'app normale.
-- `npm run device-check` collauda sul telefono l'uscita dall'app e il riquadro sopra Maps.
+- `npm run device-check` collauda sul telefono le schermate, la guida simulata in tutti i tratti, l'uscita
+  dall'app e il riquadro sopra Maps.
 - `npm run bundle` crea l'AAB firmato per il Play Store (serve `android/keystore.properties`).
 - `npm run grafica` rifà icona, schermata di avvio e immagini per lo store.
 

@@ -126,7 +126,8 @@ function boot(){
   const simControls = createSimControls({secs, simulator, enterDrive, pushPosition: tracker.pushPosition,
     resetPosition: tracker.resetPosition, say});
 
-  window.__tutor = {st, sim: simulator.sim, SECS: secs, LINES: lines, thresholdFor, settings, tracker};
+  // Per i collaudi (golden, riquadro, telefono): stato e pezzi della guida
+  window.__tutor = {st, sim: simulator.sim, SECS: secs, LINES: lines, thresholdFor, settings, tracker, simulator, simControls};
 }
 
 boot();

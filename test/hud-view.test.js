@@ -21,3 +21,19 @@ test('soglia e margine nelle statistiche', () => {
 test('in simulazione la riga della strada lo segnala', () => {
   assert.equal(hudView({...emptyState, source:'sim'}, {limit:130, margin:2, preAlert:1}).road.sim, true);
 });
+
+test('sulle autostrade nuove la riga della strada dice il nome e la direzione giusti', () => {
+  const st = {...emptyState, fix:{v:120/3.6, acc:5, t:0}, onRoad:true, ram:'A14', km:70.25, sign:1};
+  const v = hudView(st, {limit:130, margin:2, preAlert:1});
+  assert.equal(v.road.title, 'A14, km 70,3');
+  assert.equal(v.road.sub, 'verso Taranto, precisione GPS 5 m');
+  assert.equal(v.plate.kicker, 'Nessun Tutor più avanti');
+  assert.equal(hudView({...st, ram:'A10', sign:-1}, {limit:130, margin:2, preAlert:1}).road.sub, 'verso Genova, precisione GPS 5 m');
+});
+
+test('fuori dalle autostrade seguite', () => {
+  const v = hudView({...emptyState, fix:{v:20, acc:12, t:0}}, {limit:130, margin:2, preAlert:1});
+  assert.equal(v.road.title, 'Fuori dalle autostrade seguite');
+  assert.equal(v.plate.title, 'Il monitoraggio parte quando entri in un\'autostrada dell\'elenco');
+  assert.equal(v.stats.inst, '72');
+});

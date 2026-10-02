@@ -1,7 +1,7 @@
 // Cosa dire (e con quale segnale e vibrazione) per ogni evento del tracker.
 // Restituisce {text, tone, silentVoice?, vibrate?} oppure null se l'evento non va annunciato.
-import { speakDist, spk } from './format.js';
-import { verdictOf } from './rules.js';
+import { speakDist, spk, nfL } from './format.js';
+import { verdictOf, avgValue } from './rules.js';
 
 const ALARM_VIBRATION = [220,100,220];
 const ABORT_TEXT = {
@@ -12,7 +12,7 @@ const ABORT_TEXT = {
 
 export function endText(r){
   const [vt] = verdictOf(r.avg, r.lim);
-  return 'Fine Tutor. Media ' + (r.avg != null ? Math.round(r.avg) + ' chilometri orari, ' + vt : 'non disponibile') + '.';
+  return 'Fine Tutor. Media ' + (r.avg != null ? nfL.format(avgValue(r.avg, r.lim, 0)) + ' chilometri orari, ' + vt : 'non disponibile') + '.';
 }
 
 export function announcementFor(ev){
