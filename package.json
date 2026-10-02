@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "App Android dei tratti Tutor di A1 e A4 (MediaVelocità), costruita con Capacitor a partire da src/",
+  "description": "App Android dei tratti Tutor in autostrada (MediaVelocità), costruita con Capacitor a partire da src/",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test \"test/*.test.js\"",

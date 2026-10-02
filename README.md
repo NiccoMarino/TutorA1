@@ -1,13 +1,14 @@
-# Tutor A1 e A4
+# MediaVelocità: Tutor A1, A4 e altre autostrade
 
-Pagina web e app Android che seguono i tratti con controllo della velocità media (Tutor) sulla A1 e
-sulla A4 e calcolano la tua media nel tratto, come fa il Tutor.
+Pagina web e app Android che seguono i tratti con controllo della velocità media (Tutor) su 14 autostrade
+e calcolano la tua media nel tratto, come fa il Tutor.
 
 **Apri l'app:** https://niccomarino.github.io/TutorA1/
 
 ## Cosa fa
-- Elenca gli 83 tratti Tutor, con portali, lunghezza e tempi minimi: 59 sulla A1 da Milano a Napoli, con le diramazioni di
-  Roma e la Variante di Valico, e 24 sulla A4 tra Milano e Brescia e tra Venezia e Trieste.
+- Elenca i 186 tratti Tutor, con portali, lunghezza e tempi minimi: 59 sulla A1 da Milano a Napoli, con le diramazioni di
+  Roma e la Variante di Valico, 24 sulla A4 tra Milano e Brescia e tra Venezia e Trieste, e 103 su A7, A8, A9, A10,
+  A11, A13, A14, A16, A23, A26, A27 e A30 (tutti quelli indicati da Autostrade per l'Italia).
 - In guida segue la posizione GPS. Avvisa prima del portale di inizio e calcola la media mentre sei
   nel tratto. Dice a quanto puoi andare per chiuderlo sotto la soglia e allarma con voce, suoni e
   vibrazione se la media la supera.
@@ -32,20 +33,23 @@ sulla A4 e calcolano la tua media nel tratto, come fa il Tutor.
 ## Attenzione
 - È uno strumento di aiuto: valgono sempre i cartelli e il limite indicato sulla strada.
 - L'accensione del Tutor dipende dalla Polizia Stradale: un tratto segnato qui può essere spento.
-- La posizione dei portali è ricavata dal chilometro ufficiale: l'errore tipico è di circa 100 metri,
-  fino a 250. Sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa.
+- La posizione dei portali è ricavata dal chilometro ufficiale: su A1 e A4 l'errore tipico è di circa 100 metri,
+  fino a 250, e sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa. Sulle altre autostrade
+  il chilometro è interpolato tra webcam, aree di servizio e caselli di posizione nota: di solito l'errore resta
+  sotto i 100 metri, di più dove questi punti sono lontani tra loro.
 
 ## Privacy
 La posizione resta sul telefono e lo storico è salvato solo lì: [informativa](https://niccomarino.github.io/TutorA1/privacy.html).
 
 ## Fonti dei dati
-- Tratti della A1 e della A4 Milano–Brescia: autostrade.it, pagina "Il Tutor" (consultata il
-  29 settembre 2026).
+- Tratti della rete di Autostrade per l'Italia: autostrade.it, pagina "Il Tutor" (consultata il
+  29 settembre 2026 per A1 e A4 Milano–Brescia, il 2 ottobre 2026 per le altre autostrade).
 - Tratti della A4 Venezia–Trieste: infoviaggiando.it di Autostrade Alto Adriatico (consultata il
   30 settembre 2026).
 - Tracciato delle carreggiate, usato per riconoscere strada e direzione: © contributori OpenStreetMap (ODbL).
 - Carattere Overpass (SIL Open Font License), incluso nella pagina: l'app non si collega a internet.
-- Chilometriche di caselli e cantieri: dati di viabilità di Autostrade per l'Italia.
+- Chilometriche di caselli, cantieri, webcam e aree di servizio: dati di viabilità di Autostrade per l'Italia.
+  `node tools/make-tratti.mjs` le scarica insieme al tracciato e ricostruisce le autostrade dopo la A4.
 
 ## Per chi sviluppa
 Serve Node 22. Per l'app Android servono anche Android Studio (SDK) e Java 21.

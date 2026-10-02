@@ -2,7 +2,7 @@
 // la schermata di guida, gli avvisi e le vibrazioni; alla fine lo storico. Salva in test/fixtures/<nome>.
 // Uso nel browser integrato, sulla pagina servita da tools/serve.mjs:
 //   (await import('/tools/golden-harness.mjs?' + Date.now())).run('golden.json')
-export const GOLDEN_SETTINGS = {limit:130, margin:2, preAlert:1, voice:false, beep:false, instWarn:true};
+export const GOLDEN_SETTINGS = {limit:130, margin:2, preAlert:1, voice:false, beep:false, instWarn:true, theme:'auto'};
 
 export async function run(name = 'golden.json'){
   const SKEY = 'tutorA1.v1.settings';

@@ -9,11 +9,11 @@ MediaVelocità
 
 ## Descrizione breve (max 80)
 <!-- campo: breve -->
-La tua velocità media nei tratti Tutor di A1 e A4, con avvisi vocali
+La tua velocità media nei tratti Tutor in autostrada, con avvisi vocali
 
 ## Descrizione completa (max 4000)
 <!-- campo: completa -->
-MediaVelocità ti dice qual è la tua velocità media nei tratti controllati dal Tutor sulla A1 e sulla A4, mentre guidi, e ti avvisa prima che superi la soglia.
+MediaVelocità ti dice qual è la tua velocità media nei tratti controllati dal Tutor in autostrada, mentre guidi, e ti avvisa prima che superi la soglia.
 
 COSA FA
 • Riconosce da sola l'autostrada, la direzione e il prossimo tratto controllato.
@@ -26,8 +26,8 @@ COSA FA
 USALA INSIEME AL NAVIGATORE
 Durante la guida puoi passare al tuo navigatore: MediaVelocità resta visibile in un piccolo riquadro sopra le altre app, con il cartello del tratto e la media, e continua a funzionare anche a schermo spento.
 
-83 TRATTI
-59 sulla A1 da Milano a Napoli, comprese le diramazioni di Roma e la Variante di Valico, e 24 sulla A4 tra Milano e Brescia e tra Venezia e Trieste. Limite e margine di avviso si impostano (130, 110, 100, 90, 80 km/h).
+186 TRATTI SU 14 AUTOSTRADE
+A1 da Milano a Napoli (con le diramazioni di Roma e la Variante di Valico), A4 tra Milano e Brescia e tra Venezia e Trieste, A7, A8, A9, A10, A11, A13, A14, A16, A23, A26, A27 e A30: tutti i tratti indicati da Autostrade per l'Italia. Limite e margine di avviso si impostano (130, 110, 100, 90, 80 km/h).
 
 PROVALA SENZA GUIDARE
 Con "Prova in simulazione" scegli un tratto e una velocità e vedi come si comporta l'app.
@@ -45,7 +45,7 @@ MediaVelocità non è un'app ufficiale di Autostrade per l'Italia, di Autostrade
 
 ## Note sulla versione 1.0.0 (max 500)
 <!-- campo: note -->
-Prima versione: 83 tratti Tutor su A1 e A4, media in tempo reale, avvisi vocali, riquadro sopra il navigatore, storico dei tratti e simulazione. Funziona senza internet.
+Prima versione: 186 tratti Tutor su 14 autostrade, media in tempo reale, avvisi vocali, riquadro sopra il navigatore, storico dei tratti e simulazione. Funziona senza internet.
 
 ## Altri campi
 - **Categoria:** App > Mappe e navigazione

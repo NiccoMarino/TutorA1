@@ -46,7 +46,7 @@
     watches.set(id, entry);
     var opts = { requestPermissions: true, stale: false, distanceFilter: 0 };
     if (background) {
-      opts.backgroundTitle = 'Tutor A1 e A4 attivo';
+      opts.backgroundTitle = 'Monitoraggio Tutor attivo';
       opts.backgroundMessage = 'Sto seguendo la posizione per calcolare la velocità media nei tratti.';
     }
     // Android 13+: prima il permesso per la notifica fissa, altrimenti il GPS gira senza che si veda

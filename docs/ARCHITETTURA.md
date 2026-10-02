@@ -24,7 +24,11 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
   `test/messages.test.js` e uno in `test/tracker.test.js`.
 - Cambiare un testo della schermata di guida: `hud-view.js`.
 - Regole sulla tolleranza: `rules.js` (con `test/rules.test.js`).
-- Nuovi tratti o tracciati: `src/data/tutor-data.json`; nuove linee in `LINE_DEFS` di `network.js`.
+- Nuovi tratti o tracciati: `src/data/tutor-data.json`; nuove linee in `LINE_DEFS` di `network.js` e il ramo in `RAMS`.
+  Le autostrade dopo la A4 (A7 … A30) le scrive `node tools/make-tratti.mjs` dall'elenco `tools/tratti-autostrade.json`:
+  scarica il tracciato da OpenStreetMap e i chilometri di webcam, aree di servizio e caselli dai dati di viabilità di
+  Autostrade per l'Italia (in `tools/.cache/`), interpola il chilometro lungo le due carreggiate e stampa per ogni tratto
+  quanto sono lontani i punti di riferimento. A1 e A4 restano come sono.
 - Differenze browser/app: `src/platform.js`. Il ponte nativo è `native/tutor-native.js`.
 - Niente mappa (tolta a ottobre 2026): i tratti sono un elenco (`ui/sidebar.js`, nella pagina Simulazione),
   la guida usa tutto lo schermo.

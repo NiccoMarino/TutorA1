@@ -101,7 +101,7 @@ function main(){
   shoot(page(`<div style="display:flex;align-items:center;gap:56px;padding:0 72px;color:#fff">
       <div style="width:300px;height:300px;flex:none">${iconSvg({shape: 'circle', view: '17 17 74 74'})}</div>
       <div><div style="font-size:84px;font-weight:700;letter-spacing:-1px">MediaVelocità</div>
-      <div style="font-size:38px;margin-top:14px;line-height:1.25;color:#CFE9DD">La tua velocità media nei tratti Tutor di A1 e A4</div></div>
+      <div style="font-size:38px;margin-top:14px;line-height:1.25;color:#CFE9DD">La tua velocità media nei tratti Tutor in autostrada</div></div>
     </div>`, `linear-gradient(135deg, ${GREEN}, #004D30)`), 1024, 500, STORE + 'grafica-1024x500.png');
   rmSync(TMP, {recursive: true, force: true});
 }
