@@ -197,6 +197,13 @@ const back = () => adb('shell', 'input', 'keyevent', 'KEYCODE_BACK');
 
 /* ---------- fasi ---------- */
 
+// Esito di pageAudit: errore se qualcosa esce dallo schermo, ha valori rotti, contrasto basso o è troppo piccolo da toccare
+const auditProblems = (a, extra = []) => [...extra, ...(a.overflowX ? ['la pagina scorre di lato'] : []),
+  ...a.outside.map(x => 'fuori schermo ' + x), ...a.broken.map(x => 'valore rotto ' + x),
+  ...a.contrast.map(c => 'contrasto ' + c.ratio + ' ' + c.what), ...a.small.map(x => 'sotto 48 px ' + x)];
+const auditOk = (a, extra) => !auditProblems(a, extra).length;
+const auditText = (a, extra) => list(auditProblems(a, extra));
+
 async function phasePage(){
   await freshStart();
   const www = readFileSync(join(process.cwd(), 'www', 'index.html'), 'utf8');
@@ -217,18 +224,27 @@ async function phasePage(){
       bgs[theme] = s.bg;
       const a = await call(pageAudit);
       const where = id + ' (' + theme.toLowerCase() + ')';
-      const bad = a.contrast.filter(c => c.bad), weak = a.contrast.filter(c => !c.bad);
-      const problems = [...(s.shown === id ? [] : ['si vede ' + s.shown]), ...(a.overflowX ? ['la pagina scorre di lato'] : []),
-        ...a.outside.map(x => 'fuori schermo ' + x), ...a.broken.map(x => 'valore rotto ' + x), ...bad.map(c => 'contrasto ' + c.ratio + ' ' + c.what)];
-      check('Schermata ' + where, !problems.length, list(problems));
-      if (weak.length) note('Contrasto sotto 4,5 in ' + where, list(weak.map(c => c.ratio + ' ' + c.what)));
-      if (a.small.length) note('Pulsanti sotto 40 px in ' + where, list(a.small));
+      check('Schermata ' + where, auditOk(a, s.shown === id ? [] : ['si vede ' + s.shown]), auditText(a));
       if (a.clipped.length) note('Testo tagliato in ' + where, list(a.clipped));
       if (a.tiny.length) note('Testo sotto 11 px in ' + where, list(a.tiny));
     }
   }
   check('Il tema chiaro e quello scuro hanno sfondi diversi', bgs.Chiaro !== bgs.Scuro, bgs.Chiaro + ' / ' + bgs.Scuro);
   await call(showScreen, 'pSettings', 'Come il telefono');
+
+  // Schermata di guida in tre momenti: prima del portale, in allarme, a fine tratto (simulazione a 160 km/h)
+  await call(showScreen, 'pSim', 'Come il telefono');
+  await js(`(() => { document.getElementById('simSec').value = '15'; document.getElementById('simV').value = '160';
+    document.getElementById('btnSimStart').click(); window.__tutor.simControls.stopTimer(); return true; })()`);
+  for (const [moment, until] of [['prima del portale', 'p === "go"'], ['in allarme', 'p === "alarm"'], ['a fine tratto', 'p.startsWith("done")']]){
+    const reached = await js(`(() => { const T = window.__tutor, el = document.getElementById('plate');
+      for (let i = 0; i < 3000; i++){ const p = el.className.replace(' flash', '').replace('plate ', ''); if (${until}) return true;
+        const q = T.simulator.step(); if (!q) return false; T.tracker.pushPosition(q); } return false; })()`);
+    const a = await call(pageAudit);
+    check('Schermata di guida, ' + moment, reached && auditOk(a), reached ? auditText(a) : 'momento non raggiunto');
+    if (a.clipped.length) note('Testo tagliato nella guida, ' + moment, list(a.clipped));
+  }
+  await js(`document.getElementById('hudExit').click(); true`);
 
   // Impostazioni: cambiano subito i testi e restano dopo il riavvio della pagina
   const set = await js(`(() => { const c = [...document.querySelectorAll('#setLimits .chip')].find(b => b.textContent.startsWith('110')); c.click();
@@ -284,8 +300,12 @@ async function phasePage(){
   const h = await js(`(() => { const s = JSON.parse(localStorage.getItem('tutorA1.v1.history') || '[]'); return {saved: s.length, items: document.querySelectorAll('#hist li').length}; })()`);
   check('Storico: gli ultimi 60 tratti salvati, 30 mostrati', h.saved === Math.min(60, secs.length) && h.items === 30, JSON.stringify(h));
   await call(showScreen, 'pHist', 'Come il telefono');
-  const ha = await call(pageAudit);
-  check('Storico pieno: niente fuori schermo né valori rotti', !ha.overflowX && !ha.outside.length && !ha.broken.length, list([...ha.outside, ...ha.broken]));
+  for (const theme of ['Chiaro', 'Scuro']){
+    await call(showScreen, 'pHist', theme);
+    const ha = await call(pageAudit);
+    check('Storico pieno (' + theme.toLowerCase() + '): niente fuori schermo, valori rotti o medie poco leggibili', auditOk(ha), auditText(ha));
+  }
+  await call(showScreen, 'pHist', 'Come il telefono');
   await reload();
   const h2 = await js(`({saved: JSON.parse(localStorage.getItem('tutorA1.v1.history') || '[]').length, items: document.querySelectorAll('#hist li').length})`);
   check('Storico ancora lì dopo il riavvio della pagina', h2.saved === h.saved && h2.items === 30, JSON.stringify(h2));
@@ -376,7 +396,7 @@ async function phaseExits(){
   check('A schermo intero larghezza e zoom come prima', s5.w === full.w && Math.abs(s5.scale - 1) < 0.02, s5.w + ' vs ' + full.w + ', scala ' + s5.scale);
   check('La guida è ancora in corso', s5.running && s5.driving);
   const fa = await call(pageAudit);
-  check('Guida a schermo intero dopo il riquadro: niente fuori schermo', !fa.overflowX && !fa.outside.length, list(fa.outside));
+  check('Guida a schermo intero dopo il riquadro: niente fuori schermo, contrasto e pulsanti a posto', auditOk(fa), auditText(fa));
 
   // Indietro in guida
   back();
