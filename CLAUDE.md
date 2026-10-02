@@ -10,7 +10,8 @@ Struttura e flusso dei dati: `docs/ARCHITETTURA.md`. Difetti noti e idee: `NOTE-
 - `npm run serve`: server su http://localhost:5173 per provare la pagina e registrare il golden.
 - `npm run sync`: build + `npx cap sync`. Poi `cd android && ./gradlew installDebug -Pprova=true` con Java 21
   (`JAVA_HOME="/c/Program Files/Java/jdk-21"`): installa la copia "Tutor prova" senza toccare l'app normale.
-- `npm run device-check`: collaudo sul telefono di uscita dall'app e riquadro sopra Maps (`-- --gps` per il GPS vero).
+- `npm run device-check`: collaudo sul telefono (schermate, tutti i tratti, uscita dall'app, riquadro sopra Maps).
+  `-- --solo pagina` o `-- --solo uscite` per una fase sola, `-- --gps` per il GPS vero.
 - `npm run bundle`: AAB firmato per il Play Store (chiave in `android/keystore.properties`, mai in git).
 - `npm run grafica`: icona, avvio e immagini dello store (`tools/make-icons.mjs`, `tools/store-screenshots.mjs`).
 - Pubblicazione sul Play Store: `docs/play-store/PUBBLICAZIONE.md`.

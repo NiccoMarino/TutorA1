@@ -49,11 +49,19 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
 `native/tutor-native.js` usa `#hudExit`, `#hudMute`, la classe `driving` sul body e mette la classe
 `pip` su `<html>` (stile in `src/styles/pip.css`). Un test in `test/build.test.js` controlla gli id.
 
-## Collaudi dell'uscita dall'app e del riquadro sopra Maps
+## Collaudo sul telefono e del riquadro sopra Maps
 - Sul telefono: `./gradlew installDebug -Pprova=true` installa "Tutor prova" accanto all'app normale, poi
-  `npm run device-check` (aggiungi `-- --gps` per provare anche il GPS vero). Controlla Home e Indietro fuori
-  e dentro la guida, il riquadro sopra Google Maps che si aggiorna con lo schermo acceso, il ritorno a schermo
-  intero e la X del riquadro che termina la guida e spegne il GPS. Schermate in `device-check/`.
+  `npm run device-check`. Due fasi, che vanno avanti anche se una fallisce:
+  - `pagina` (solo JavaScript tramite DevTools, un paio di minuti): l'app installata è l'ultima build, ogni
+    schermata in tema chiaro e scuro (niente fuori schermo, contrasto, valori come NaN), elenco e filtri,
+    impostazioni che restano dopo il riavvio, guida simulata in tutti i tratti a 125, 131, 137,5 e 200 km/h
+    nella WebView vera (inizio dal portale, allarmi, media, annuncio di fine, tempi), storico.
+  - `uscite`: Home e Indietro fuori e dentro la guida, pulsante Riquadro, riquadro sopra Google Maps che si
+    aggiorna e passa all'allarme con lo schermo acceso, ritorno a schermo intero, X del riquadro che termina la guida.
+  `-- --solo pagina` (o `uscite`) per una fase sola, `-- --gps` per provare anche il GPS vero, `-- --completo`
+  per aspettare anche il tempo di spegnimento dello schermo. Gli errori JavaScript della pagina sono raccolti
+  per tutto il collaudo. Schermate (anche una per ogni errore) e risultati in `device-check/`.
+  Le funzioni che girano dentro la pagina sono in `tools/device-page.mjs`: si possono provare anche nel browser.
   La X si tocca in una posizione misurata sul menu del riquadro di One UI; su un altro telefono il collaudo
   ripiega sul trascinamento e lo scrive nel dettaglio del controllo.
 - Nel browser: `tools/pip-harness.mjs` su `/www/index.html`, con la finestra grande come il riquadro
@@ -61,7 +69,7 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
   `test/fixtures/pip-layout.json`.
 
 ## Il golden
-`test/fixtures/golden.json` è il comportamento dell'app registrato su 7 percorsi GPS fissi
+`test/fixtures/golden.json` è il comportamento dell'app registrato su 9 percorsi GPS fissi
 (`test/fixtures/scenarios.json`): schermata, avvisi, vibrazioni e storico, posizione per posizione.
 `test/golden.test.js` lo confronta con `core/`. Se cambi un comportamento di proposito, il test fallisce:
 rigenera il golden e controlla che le differenze siano solo quelle volute.

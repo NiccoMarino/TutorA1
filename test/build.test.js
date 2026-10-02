@@ -113,3 +113,11 @@ test('tutte le autostrade: filtro a tendina e nessun testo rimasto a "A1 e A4"',
   assert.match(app, /<select[^>]*id="filterRoad"/);
   assert.ok(!/Tutor di A1 e A4|Fuori da A1 e A4|A1 o sulla A4|delle due autostrade|Solo A1/.test(app), 'testo rimasto alle sole A1 e A4');
 });
+
+test('il gancio window.__tutor espone quello che usano i collaudi (golden, riquadro, telefono)', () => {
+  const {app} = buildPages();
+  const hook = app.match(/window\.__tutor = \{([^}]*)\}/);
+  assert.ok(hook, 'manca window.__tutor');
+  const keys = hook[1].split(',').map(p => p.split(':')[0].trim());
+  for (const k of ['st', 'SECS', 'settings', 'tracker', 'simulator', 'simControls']) assert.ok(keys.includes(k), 'manca ' + k);
+});
