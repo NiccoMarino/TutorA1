@@ -14,7 +14,7 @@ test('media sotto il limite: tutto bene', () => {
   assert.ok(Math.abs(m.proj - 120) < 1e-9);
   assert.equal(m.status, 'ok');
   assert.equal(m.remKm, 5);
-  assert.equal(adviceText(m), 'Rispettando il limite di 130 chiudi il tratto in regola.');
+  assert.equal(adviceText(m), 'Fino al portale puoi tenere 141 km/h: la media resta entro 130.');
 });
 
 test('media sopra il limite ma sotto la soglia di allarme: avviso', () => {
@@ -48,10 +48,11 @@ test('subito dopo il portale si mostra la velocità istantanea, o niente se manc
   assert.equal(at(0.02, 2, null).avg, null);
 });
 
-// Velocità da non superare nei km che mancano per chiudere il tratto con la media entro il limite (mai sopra il limite)
+// Velocità da non superare nei km che mancano per chiudere il tratto con la media entro il limite. Può essere sopra
+// il limite: dice fin dove si può andare senza rischiare la multa del Tutor.
 const keep = m => keepText(m);
-test('velocità da tenere: in regola basta il limite', () => {
-  assert.deepEqual(keep(at(5, 150, 120)), {label:'per chiudere entro 130', value:'≤ 130'});
+test('velocità da tenere: in regola può essere sopra il limite', () => {
+  assert.deepEqual(keep(at(5, 150, 120)), {label:'per chiudere entro 130', value:'≤ 141'});
 });
 
 test('velocità da tenere: sopra il limite va rallentato quanto serve', () => {
@@ -59,8 +60,19 @@ test('velocità da tenere: sopra il limite va rallentato quanto serve', () => {
   assert.deepEqual(keep(at(5, 120, 150)), {label:'per chiudere entro 130', value:'≤ 114'});
 });
 
-test('velocità da tenere: quando entro il limite non si rientra più, almeno la tolleranza', () => {
-  assert.deepEqual(keep(at(9.9, 269, 120)), {label:'per restare in tolleranza', value:'≤ 130'});
+test('velocità da tenere: andando piano la media resta entro il limite a qualunque velocità', () => {
+  const m = at(8, 300, 100);
+  assert.deepEqual(keep(m), {label:'tratto ormai', value:'in regola'});
+  assert.equal(adviceText(m), 'Rispettando il limite di 130 chiudi il tratto in regola.');
+});
+
+test('velocità da tenere: quando entro il limite non si rientra più, quella per restare in tolleranza', () => {
+  const m = at(9.8, 259, 120);
+  assert.deepEqual(keep(m), {label:'per restare in tolleranza', value:'≤ 176'});
+  assert.equal(adviceText(m), 'Entro il limite non rientri più: per restare in tolleranza resta sotto 176 km/h fino al portale.');
+  const t = at(9.9, 269, 120);
+  assert.deepEqual(keep(t), {label:'tratto ormai', value:'in tolleranza'});
+  assert.equal(adviceText(t), 'Media sopra 130 ma entro la tolleranza fino al portale.');
 });
 
 test('velocità da tenere: a fine tratto con la media troppo alta resta solo rallentare', () => {
@@ -72,9 +84,8 @@ test('velocità da tenere: nei primi secondi vale il limite', () => {
 });
 
 test('consiglio e velocità da tenere dicono lo stesso numero', () => {
-  for (const m of [at(5, 135, 133.3), at(5, 120, 150), at(4, 100, 150), at(7, 190, 140)]){
+  for (const m of [at(5, 150, 120), at(5, 135, 133.3), at(5, 120, 150), at(4, 100, 150), at(7, 190, 140), at(9.8, 259, 120)]){
     const n = keepText(m).value.replace('≤ ', '');
-    if (+n < 130) assert.ok(adviceText(m).includes('sotto ' + n + ' km/h'), adviceText(m) + ' / ' + n);
+    assert.ok(adviceText(m).includes(' ' + n + ' km/h'), adviceText(m) + ' / ' + n);
   }
-  assert.equal(adviceText(at(9.9, 269, 120)), 'Media sopra 130 ma entro la tolleranza. Rispetta il limite fino al portale.');
 });

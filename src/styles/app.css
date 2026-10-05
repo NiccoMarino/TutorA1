@@ -162,46 +162,7 @@ body.driving .app{max-width:760px}
 .hbtn{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:10px; padding:9px 12px 7px; font-weight:700; cursor:pointer; min-height:48px}
 .hbtn[aria-pressed="true"]{background:#F2F6F4; color:#0A0F0D}
 .pill{display:inline-block; background:#F2B21E; color:#1a1300; border-radius:999px; padding:2px 8px 0; font-size:12px; font-weight:800; margin-left:6px; vertical-align:2px}
-
-/* Cartello del Tutor. In verticale (e nel riquadro PiP): nome del tratto sopra e cerchio colorato con l'arco
-   di avanzamento, la media al centro e la velocità da tenere nell'apertura in basso. In orizzontale: più sotto. */
-.plate{--pc:#1E2925; --pf:#FFFFFF; --pt:rgba(255,255,255,.2); --pl:rgba(255,255,255,.5)}
-.plate.go,.plate.ok,.plate.done-ok{--pc:#00794C; --pf:#FFFFFF; --pt:rgba(0,0,0,.28); --pl:#FFFFFF}
-.plate.warn,.plate.done-tol{--pc:#F2B21E; --pf:#161100; --pt:rgba(0,0,0,.18); --pl:#161100}
-.plate.alarm,.plate.done-bad{--pc:#C62828; --pf:#FFFFFF; --pt:rgba(0,0,0,.28); --pl:#FFFFFF}
-.plate-in{display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center}
-.ptext{display:grid; gap:2px; max-width:100%}
-.plate .kicker{font-weight:700; font-size:15px; color:#A8BAB2}
-.plate .title{font-weight:800; font-size:clamp(19px,4.6vw,26px); line-height:1.15}
-.gauge{position:relative; flex:none; width:min(100%, 46vh); aspect-ratio:1; border-radius:50%; background:var(--pc); color:var(--pf);
-  container-type:inline-size; transition:background-color .35s ease}
-.arc{position:absolute; inset:0; width:100%; height:100%}
-.arc circle{fill:none; stroke-width:11}
-.arc .track{stroke:var(--pt)}
-.arc .fill{stroke:var(--pf); stroke-linecap:round; stroke-dasharray:0 100; transition:stroke-dasharray .5s linear}
-.arc .track.a270{stroke-dasharray:75 100}
-.arc .a360, .gauge.noarc .arc .fill{display:none}
-.gauge .big{position:absolute; inset:0 0 14% 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  font-variant-numeric:tabular-nums}
-.gauge .big b{font-size:30cqw; font-weight:900; line-height:.85; letter-spacing:-.03em}
-.gauge .big[data-len="4"] b{font-size:26cqw}
-.gauge .big[data-len="5"] b{font-size:22cqw}
-.gauge .big[data-len="6"] b{font-size:19cqw}
-.gauge .big span{font-size:5.2cqw; font-weight:800; margin-top:2.5cqw; max-width:60cqw; line-height:1.15}
-.keep{display:flex; flex-direction:column; align-items:center; font-variant-numeric:tabular-nums}
-.keep .kl{font-weight:700; line-height:1.15}
-.keep .kv{font-weight:900; line-height:1}
-.keep-in{position:absolute; left:22%; right:22%; bottom:5%; height:19%; justify-content:center}
-.keep-in .kl{font-size:4.4cqw}
-.keep-in .kv{font-size:10.5cqw; margin-top:.5cqw}
-.keep-side{display:none}
-.pside{display:grid; gap:6px; width:100%}
-.plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:#C9D6D0}
-.plate.flash .gauge{animation:flash .9s ease 2}
-@keyframes flash{50%{filter:brightness(1.35)}}
-/* l'avanzamento lo mostra l'arco: della barra restano le scritte */
-.progress .bar{display:none}
-.plabels{display:flex; justify-content:space-between; font-size:13px; font-weight:700; gap:10px; color:#C9D6D0}
+/* Il cartello (#plate) è in cartello.css, la guida col telefono in orizzontale in orizzontale.css */
 
 .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
 .stat{background:#141C19; border:1px solid #26312C; border-radius:12px; padding:10px 10px 8px; display:grid; gap:2px}
@@ -223,40 +184,6 @@ body.driving .app{max-width:760px}
   .hud{gap:10px; padding:10px 12px 12px}
   .stat{padding:8px 9px 7px}
   .simbar{padding:8px 10px; gap:6px}
-}
-/* In simulazione i comandi si prendono un po' dello spazio del cerchio */
-:where(.hud:has(#simBar:not([hidden]))) .gauge{width:min(100%, 36vh)}
-/* Telefono in orizzontale sul supporto: cartello a tutto schermo con testo a sinistra, anello intero al centro,
-   velocità da tenere e km mancanti a destra (non nel riquadro PiP) */
-@media (orientation:landscape) and (max-height:560px){
-  html:not(.pip) body.driving .app{max-width:none}
-  html:not(.pip) body.driving .hud{display:grid; grid-template-rows:auto minmax(0,1fr) auto; height:100vh; box-sizing:border-box;
-    padding:8px 12px 10px; gap:8px; overflow:hidden}
-  html:not(.pip) .stats, html:not(.pip) .advice, html:not(.pip) .hud-limits, html:not(.pip) .toast{display:none}
-  html:not(.pip) .plate{min-height:0; border-radius:16px; padding:5px; background:var(--pc); color:var(--pf); transition:background-color .35s ease}
-  html:not(.pip) .plate.flash{animation:flash .9s ease 2}
-  html:not(.pip) .plate.flash .gauge{animation:none}
-  html:not(.pip) .plate-in{height:100%; box-sizing:border-box; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
-    align-items:center; gap:18px; border:3px solid var(--pl); border-radius:11px; padding:10px 20px; text-align:left}
-  html:not(.pip) .plate .kicker{color:inherit; opacity:.92}
-  html:not(.pip) .plate .title{font-size:clamp(17px,3vw,26px)}
-  /* lato del cerchio: altezza dello schermo meno barra in alto, bordi e spaziature */
-  html:not(.pip) .gauge{width:calc(100vh - 112px); background:none}
-  html:not(.pip) .hud:has(#simBar:not([hidden])) .gauge{width:calc(100vh - 176px)}
-  html:not(.pip) .arc .a270, html:not(.pip) .keep-in{display:none}
-  html:not(.pip) .arc .a360{display:inline}
-  html:not(.pip) .gauge.noarc .arc .fill{display:none}
-  html:not(.pip) .gauge .big{inset:0}
-  html:not(.pip) .pside{justify-items:end; text-align:right; gap:10px}
-  html:not(.pip) .keep-side{display:flex; align-items:flex-end; text-align:right}
-  html:not(.pip) .keep-side .kl{font-size:14px}
-  html:not(.pip) .keep-side .kv{font-size:clamp(28px,6vw,44px); margin-top:2px}
-  html:not(.pip) .plate .sub{color:inherit; font-size:14px; opacity:.95}
-  html:not(.pip) .plabels{color:inherit; justify-content:flex-end}
-  html:not(.pip) #pFrom{display:none}
-  html:not(.pip) #pTo{font-size:16px}
-  html:not(.pip) .simbar{display:flex; align-items:center; gap:12px; padding:4px 10px}
-  html:not(.pip) .simbar input[type=range]{flex:1; min-width:120px}
 }
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important; transition:none !important}

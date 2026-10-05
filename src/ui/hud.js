@@ -2,6 +2,29 @@
 import { esc } from '../core/format.js';
 import { $ } from './dom.js';
 
+// Cartello (#plate): testi, numero grande, velocità da tenere e arco di avanzamento. La forma (verticale, orizzontale,
+// riquadro) la decide solo lo stile: styles/cartello.css, orizzontale.css, pip.css.
+function renderPlate(v){
+  const p = $('#plate'), pl = v.plate;
+  p.className = 'plate ' + pl.cls + (p.classList.contains('flash') ? ' flash' : '');
+  $('#pKicker').textContent = pl.kicker; $('#pTitle').textContent = pl.title;
+  $('#pBig').textContent = pl.big; $('#pUnit').textContent = pl.unit; $('#pSub').textContent = pl.sub;
+  // il numero si rimpicciolisce quando è lungo ("136,75") per restare dentro il cerchio
+  $('#pBigBox').dataset.len = String(Math.min(6, Math.max(3, pl.big.length)));
+  // velocità da tenere: dentro il cerchio (verticale, riquadro) e a destra (orizzontale)
+  p.querySelectorAll('.keep').forEach(k => {
+    k.querySelector('.kl').textContent = v.keep.label; k.querySelector('.kv').textContent = v.keep.value;
+  });
+  // arco aperto (270°) e anello intero: con pathLength 100 la parte piena è in centesimi del giro.
+  // L'anello ha un decimale come la percentuale del tratto, che il collaudo golden legge da qui.
+  const frac = v.gauge ? Math.max(0, Math.min(1, v.gauge.frac)) : 0;
+  $('#pArc').style.strokeDasharray = (frac*75).toFixed(2) + ' 100';
+  $('#pRing').style.strokeDasharray = (frac*100).toFixed(1) + ' 100';
+  p.querySelector('.gauge').classList.toggle('noarc', frac === 0);
+  $('#pProg').hidden = !v.progress;
+  if (v.progress){ $('#pFrom').textContent = v.progress.from; $('#pTo').textContent = v.progress.to; }
+}
+
 export function createHud(){
   let flashT = null;
   return {
@@ -11,27 +34,7 @@ export function createHud(){
       $('#stInst').classList.toggle('hot', v.stats.instHot);
       $('#hudLimits').querySelectorAll('.hchip').forEach(h => h.setAttribute('aria-pressed', String(+h.textContent === v.stats.lim)));
       $('#hudRoad').innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : '') + '<small>' + esc(v.road.sub) + '</small>';
-      const p = $('#plate'), pl = v.plate;
-      p.className = 'plate ' + pl.cls + (p.classList.contains('flash') ? ' flash' : '');
-      $('#pKicker').textContent = pl.kicker; $('#pTitle').textContent = pl.title;
-      $('#pBig').textContent = pl.big; $('#pUnit').textContent = pl.unit; $('#pSub').textContent = pl.sub;
-      // il numero si rimpicciolisce quando è lungo ("136,75") per restare dentro il cerchio
-      $('#pBigBox').dataset.len = String(Math.min(6, Math.max(3, pl.big.length)));
-      p.querySelectorAll('.keep').forEach(k => {
-        k.querySelector('.kl').textContent = v.keep.label; k.querySelector('.kv').textContent = v.keep.value;
-      });
-      // arco aperto (270°) e anello intero: pathLength 100, quindi la parte piena è in centesimi del giro
-      const frac = v.gauge ? Math.max(0, Math.min(1, v.gauge.frac)) : 0;
-      $('#pArc').style.strokeDasharray = (frac*75).toFixed(2) + ' 100';
-      $('#pRing').style.strokeDasharray = (frac*100).toFixed(2) + ' 100';
-      p.querySelector('.gauge').classList.toggle('noarc', frac === 0);
-      const prog = $('#pProg');
-      prog.hidden = !v.progress;
-      if (v.progress){
-        $('#pFill').style.width = v.progress.fill;
-        $('#pFrom').textContent = v.progress.from;
-        $('#pTo').textContent = v.progress.to;
-      }
+      renderPlate(v);
       $('#advice').textContent = v.advice;
     },
     toast(text){ $('#toast').textContent = text; },

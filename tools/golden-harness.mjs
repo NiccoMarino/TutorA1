@@ -38,7 +38,7 @@ export async function run(name = 'golden.json'){
         hudRoad: el('hudRoad').textContent, sInst: el('sInst').textContent, sLim: el('sLim').textContent,
         sThr: el('sThr').textContent, sThrL: el('sThrL').textContent,
         plate: el('plate').className.replace(' flash', ''), prog,
-        fill: prog ? el('pFill').style.width : null, pFrom: prog ? el('pFrom').textContent : null, pTo: prog ? el('pTo').textContent : null,
+        fill: prog ? parseFloat(el('pRing').style.strokeDasharray) + '%' : null, pFrom: prog ? el('pFrom').textContent : null, pTo: prog ? el('pTo').textContent : null,
         toasts: toastObs.takeRecords().flatMap(r => [...r.addedNodes].map(n => n.textContent)),
         vib: vib.slice()
       };

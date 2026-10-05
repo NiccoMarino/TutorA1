@@ -145,3 +145,28 @@ export function driveSection(id, kmh){
   return {n, avgMs: n ? ms/n : 0, maxMs, avg: fin ? fin.avg : null, mid: fin ? fin.partial : null, alarm: alarmBeforeFinish, vib, problems, seen,
           types: [...new Set(events.map(e => e.type))], stillDriving: document.body.classList.contains('driving') || T.st.running};
 }
+
+// Forma del cartello in guida e cosa si vede intorno: "verticale" (arco aperto, velocità da tenere dentro il cerchio),
+// "orizzontale" (cartello a tutto schermo, anello intero, velocità da tenere a destra) o "riquadro" (solo il cerchio)
+export function plateForm(){
+  const shown = sel => { const e = document.querySelector(sel); if (!e) return false; const r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1) return false;
+    for (let n = e; n; n = n.parentElement) if (getComputedStyle(n).display === 'none') return false; return true; };
+  const box = sel => document.querySelector(sel).getBoundingClientRect();
+  const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
+  const vp = {left: 0, top: 0, right: innerWidth, bottom: innerHeight};
+  const g = box('.gauge'), p = box('#plate');
+  const keep = document.querySelector(shown('.keep-side') ? '.keep-side' : '.keep-in');
+  return {
+    form: document.documentElement.classList.contains('pip') ? 'riquadro' : shown('.arc .track.a360') ? 'orizzontale' : 'verticale',
+    w: innerWidth, h: innerHeight,
+    shown: ['.hud-top', '.ptext', '.pside', '.keep-in', '.keep-side', '.stats', '.advice', '.hud-limits', '.simbar'].filter(shown),
+    round: g.width > 0 && Math.abs(g.width - g.height) <= 1,
+    gaugeInside: inside(g, vp), plateInside: inside(p, vp),
+    bigInside: inside(box('#pBig'), g) && inside(box('#pUnit'), g),
+    keepInside: inside(keep.getBoundingClientRect(), shown('.keep-side') ? p : g),
+    keep: keep.textContent,
+    // quanto schermo prende il cartello (in orizzontale) e quanto è largo il cerchio rispetto al lato corto
+    plateShare: Math.round(p.width*p.height/(innerWidth*innerHeight)*100),
+    gaugeShare: Math.round(g.width/Math.min(innerWidth, innerHeight)*100)
+  };
+}

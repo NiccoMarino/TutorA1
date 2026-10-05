@@ -1,0 +1,47 @@
+/* Cartello del Tutor (#plate), forma verticale: è quella di base, usata anche sul computer.
+   Le altre due forme partono da questa: orizzontale.css (telefono girato) e pip.css (riquadro sopra le altre app).
+   Il markup è in index.html (sezione #hud), i testi in core/hud-view.js, ui/hud.js li scrive. */
+/* Colori per stato: --pc fondo del cerchio, --pf testo e arco, --pt binario dell'arco, --pl bordo (orizzontale) */
+.plate{--pc:#1E2925; --pf:#FFFFFF; --pt:rgba(255,255,255,.2); --pl:rgba(255,255,255,.5)}
+.plate.go,.plate.ok,.plate.done-ok{--pc:#00794C; --pf:#FFFFFF; --pt:rgba(0,0,0,.28); --pl:#FFFFFF}
+.plate.warn,.plate.done-tol{--pc:#F2B21E; --pf:#161100; --pt:rgba(0,0,0,.18); --pl:#161100}
+.plate.alarm,.plate.done-bad{--pc:#C62828; --pf:#FFFFFF; --pt:rgba(0,0,0,.28); --pl:#FFFFFF}
+/* Disposizione: nome del tratto sopra, cerchio, poi riga descrittiva e km */
+.plate-in{display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center}
+.ptext{display:grid; gap:2px; max-width:100%}
+.plate .kicker{font-weight:700; font-size:15px; color:#A8BAB2}
+.plate .title{font-weight:800; font-size:clamp(19px,4.6vw,26px); line-height:1.15}
+/* Cerchio: i caratteri dentro sono in cqw, cioè in centesimi della sua larghezza */
+.gauge{position:relative; flex:none; width:min(100%, 46vh); aspect-ratio:1; border-radius:50%; background:var(--pc); color:var(--pf);
+  container-type:inline-size; transition:background-color .35s ease}
+/* Arco di avanzamento: aperto in basso (a270); l'anello intero (a360) è per l'orizzontale */
+.arc{position:absolute; inset:0; width:100%; height:100%}
+.arc circle{fill:none; stroke-width:11}
+.arc .track{stroke:var(--pt)}
+.arc .fill{stroke:var(--pf); stroke-linecap:round; stroke-dasharray:0 100; transition:stroke-dasharray .5s linear}
+.arc .track.a270{stroke-dasharray:75 100}
+.arc .a360, .gauge.noarc .arc .fill{display:none}
+/* Media al centro */
+.gauge .big{position:absolute; inset:0 0 14% 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-variant-numeric:tabular-nums}
+.gauge .big b{font-size:30cqw; font-weight:900; line-height:.85; letter-spacing:-.03em}
+.gauge .big[data-len="4"] b{font-size:26cqw}
+.gauge .big[data-len="5"] b{font-size:22cqw}
+.gauge .big[data-len="6"] b{font-size:19cqw}
+.gauge .big span{font-size:5.2cqw; font-weight:800; margin-top:2.5cqw; max-width:60cqw; line-height:1.15}
+/* Velocità da tenere: nell'apertura dell'arco (keep-in) o a destra in orizzontale (keep-side) */
+.keep{display:flex; flex-direction:column; align-items:center; font-variant-numeric:tabular-nums}
+.keep .kl{font-weight:700; line-height:1.15}
+.keep .kv{font-weight:900; line-height:1}
+.keep-in{position:absolute; left:22%; right:22%; bottom:5%; height:19%; justify-content:center}
+.keep-in .kl{font-size:4.4cqw}
+.keep-in .kv{font-size:10.5cqw; margin-top:.5cqw}
+.keep-side{display:none}
+/* Sotto il cerchio */
+.pside{display:grid; gap:6px; width:100%}
+.plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:#C9D6D0}
+.plate.flash .gauge{animation:flash .9s ease 2}
+@keyframes flash{50%{filter:brightness(1.35)}}
+.plabels{display:flex; justify-content:space-between; font-size:13px; font-weight:700; gap:10px; color:#C9D6D0}
+/* In simulazione i comandi si prendono un po' dello spazio del cerchio */
+:where(.hud:has(#simBar:not([hidden]))) .gauge{width:min(100%, 36vh)}

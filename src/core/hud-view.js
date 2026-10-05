@@ -28,7 +28,7 @@ export function hudView(st, settings){
     plate(m.status, a.mid ? 'Tutor in corso, media parziale' : 'Tutor in corso', s.name,
       m.avg != null ? nfL.format(avgValue(m.avg, lim, 0)) : '–', 'km/h di media',
       nf1.format(m.dist/1000) + ' km percorsi in ' + fmtDur(m.elapsed) + (m.proj != null && m.settled ? ', a questo ritmo chiudi a ' + nf0.format(m.proj) : ''));
-    view.progress = {fill:(m.rel / s.L * 100).toFixed(1) + '%', from:'km ' + nfKm.format(s.ka), to:'mancano ' + fmtDist(m.remKm)};
+    view.progress = {from:'km ' + nfKm.format(s.ka), to:'mancano ' + fmtDist(m.remKm)};
     view.advice = adviceText(m);
     view.gauge = {frac: m.rel / s.L};
     view.keep = keepText(m);

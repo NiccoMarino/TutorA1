@@ -22,24 +22,30 @@ export function computeMetrics(a, f, km, settings){
   return {elapsed, dist, rel, remKm, vNow, avg, lim, thr, warnAt, vLimRest, vThrRest, proj, status, settled};
 }
 
+// Il consiglio scritto sotto il cartello: lo stesso numero della velocità da tenere (keepText)
 export function adviceText(m){
   const lim = m.lim;
   if (!m.settled) return 'Calcolo della media in corso. Limite ' + lim + '.';
-  // lo stesso numero del cartello (keepText)
   const k = keepText(m), n = k.value.replace('≤ ', '');
-  if (m.status === 'alarm'){
-    if (k.value !== 'rallenta') return 'Media oltre la soglia: rallenta e resta sotto ' + n + ' km/h fino al portale.';
-    return 'Media oltre la soglia: rallenta, più tempo resti sotto il limite più la media scende.';
-  }
-  if (+n >= lim) return overLimit(m.avg, lim) ? 'Media sopra ' + lim + ' ma entro la tolleranza. Rispetta il limite fino al portale.' : 'Rispettando il limite di ' + lim + ' chiudi il tratto in regola.';
+  if (k.value === 'rallenta') return 'Media oltre la soglia: rallenta, più tempo resti sotto il limite più la media scende.';
+  if (k.label === 'tratto ormai') return k.value === 'in regola' ? 'Rispettando il limite di ' + lim + ' chiudi il tratto in regola.'
+    : 'Media sopra ' + lim + ' ma entro la tolleranza fino al portale.';
+  if (k.label === 'per restare in tolleranza') return 'Entro il limite non rientri più: per restare in tolleranza resta sotto ' + n + ' km/h fino al portale.';
+  if (+n >= lim) return 'Fino al portale puoi tenere ' + n + ' km/h: la media resta entro ' + lim + '.';
+  if (m.status === 'alarm') return 'Media oltre la soglia: rallenta e resta sotto ' + n + ' km/h fino al portale.';
   return 'Per chiudere entro il limite resta sotto ' + n + ' km/h fino al portale.';
 }
 
-// Velocità da tenere fino al portale, mai sopra il limite: per chiudere entro il limite, se non si può più almeno
-// entro la tolleranza. Sotto i 50 km/h non è un consiglio sensato in autostrada.
+// Velocità da tenere fino al portale per chiudere il tratto con la media entro il limite; se non si può più, entro la
+// tolleranza. Può essere sopra il limite: dice fin dove si può andare senza rischiare la multa del Tutor.
+// Sotto i 50 km/h non è un consiglio sensato in autostrada; da 200 in su vuol dire che la media è ormai al sicuro.
+const KEEP_MIN = 50, KEEP_SAFE = 200;
 export function keepText(m){
-  const lim = m.lim, below = v => '≤ ' + Math.floor(Math.min(v, lim));
-  if (!m.settled || m.vLimRest >= 50) return {label:'per chiudere entro ' + lim, value: m.settled ? below(m.vLimRest) : '≤ ' + lim};
-  if (m.vThrRest >= 50) return {label:'per restare in tolleranza', value: below(m.vThrRest)};
+  const lim = m.lim;
+  if (!m.settled) return {label:'per chiudere entro ' + lim, value:'≤ ' + lim};
+  if (m.vLimRest >= KEEP_SAFE) return {label:'tratto ormai', value:'in regola'};
+  if (m.vLimRest >= KEEP_MIN) return {label:'per chiudere entro ' + lim, value:'≤ ' + Math.floor(m.vLimRest)};
+  if (m.vThrRest >= KEEP_SAFE) return {label:'tratto ormai', value:'in tolleranza'};
+  if (m.vThrRest >= KEEP_MIN) return {label:'per restare in tolleranza', value:'≤ ' + Math.floor(m.vThrRest)};
   return {label:'non rientri più', value:'rallenta'};
 }

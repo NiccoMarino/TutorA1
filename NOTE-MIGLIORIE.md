@@ -39,8 +39,8 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
 - Orizzontale: cartello a tutto schermo con anello (proposta 4); statistiche, consiglio e scelta del limite
   restano nella schermata verticale.
 - Riquadro: quadrato, solo il cerchio, trasparente intorno. Resta un'ombra leggera disegnata da Android.
-- Velocità da tenere per chiudere entro il limite, sul cartello e nel consiglio. Da provare in autostrada.
-- L'orizzontale è provato solo nel browser: il collaudo sul telefono non ruota lo schermo (impostazione di sistema).
+- Velocità da tenere per chiudere entro il limite, sul cartello e nel consiglio, anche sopra il limite. Da provare in autostrada.
+- Il collaudo sul telefono gira lo schermo (fase `rotazione`) e poi lo rimette com'era.
 
 ## Nuova schermata iniziale (ramo `nuova-home`)
 - Schermata iniziale con due cartelli stradali ("Avvia guida" verde, "Prova in simulazione" blu) su una corsia

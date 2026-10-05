@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildPages, render, checkInlineScript } from '../scripts/build.mjs';
+import { buildPages, render, checkInlineScript, stripCssComments } from '../scripts/build.mjs';
 
 const saved = readFileSync(new URL('../index.html', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
@@ -125,4 +125,20 @@ test('il gancio window.__tutor espone quello che usano i collaudi (golden, riqua
 test("la pagina ha un'icona dentro di sé: il browser non cerca favicon.ico (errore 404 nell'app)", () => {
   const {web, app} = buildPages();
   for (const page of [web, app]) assert.match(page, /<link rel="icon" href="data:image\/svg\+xml,/);
+});
+
+test('il cartello ha le sue tre forme nella pagina: verticale, orizzontale e riquadro', () => {
+  const {app} = buildPages();
+  for (const id of ['plate', 'pArc', 'pRing', 'pBigBox']) assert.ok(app.includes('id="' + id + '"'), 'manca id="' + id + '"');
+  assert.ok(app.includes('class="keep keep-in"') && app.includes('class="keep keep-side"'), 'manca la velocità da tenere');
+  assert.ok(app.includes('.keep-side{display:none}'), 'manca styles/cartello.css');
+  assert.ok(app.includes('html:not(.pip) .keep-side{display:flex'), 'manca styles/orizzontale.css');
+  assert.ok(app.includes('html.pip .gauge'), 'manca il cerchio nel riquadro (styles/pip.css)');
+  assert.ok(!app.includes('id="pFill"'), 'è tornata la vecchia barra di avanzamento');
+});
+
+test('nella pagina lo stile non ha commenti (restano nei sorgenti)', () => {
+  assert.equal(stripCssComments('/* a */\n.x{color:red}\n  /* b\n c */\n.y{top:0} /* d */'), '.x{color:red}\n.y{top:0} ');
+  const {app} = buildPages();
+  for (const [, css] of app.matchAll(/<style>([\s\S]*?)<\/style>/g)) assert.ok(!css.includes('/*'), 'commento nello stile della pagina');
 });

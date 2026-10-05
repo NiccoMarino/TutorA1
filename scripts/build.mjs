@@ -61,9 +61,14 @@ function bundleMain(){
   return checkInlineScript(r.outputFiles[0].text.replace(/\n$/, ''));
 }
 
+// Lo stile senza commenti: nei sorgenti spiegano dove sono le cose, nella pagina sarebbero solo peso
+export function stripCssComments(css){
+  return css.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').filter(l => l.trim()).join('\n');
+}
+
 export function buildPages(){
   const main = bundleMain();
-  const include = path => path === 'main.js' ? main : readSource(path);
+  const include = path => path === 'main.js' ? main : path.endsWith('.css') ? stripCssComments(readSource(path)) : readSource(path);
   const template = readSource('index.html');
   const web = render(template, VARS.web, include);
   const app = render(template, VARS.app, include);
