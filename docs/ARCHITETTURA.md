@@ -65,8 +65,15 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
   La X si tocca in una posizione misurata sul menu del riquadro di One UI; su un altro telefono il collaudo
   ripiega sul trascinamento e lo scrive nel dettaglio del controllo.
 - Nel browser: `tools/pip-harness.mjs` su `/www/index.html`, con la finestra grande come il riquadro
-  (189×118 sul Samsung S25), misura il cartello in ogni stato della guida e lo confronta con
-  `test/fixtures/pip-layout.json`.
+  (quadrato, 153×153 sul Samsung S25), misura il cerchio del cartello in ogni stato della guida e lo confronta
+  con `test/fixtures/pip-layout.json`.
+- Cartello di guida (`#plate`): un solo markup per tre forme, scelte dallo stile. In verticale cerchio colorato
+  con arco aperto, media al centro e velocità da tenere nell'apertura; in orizzontale cartello a tutto schermo
+  con anello intero (nome a sinistra, velocità da tenere e km mancanti a destra); nel riquadro solo il cerchio.
+  La velocità da tenere (`keepText` in `core/metrics.js`) è quella che fa chiudere il tratto entro il limite,
+  mai sopra il limite; se non basta più, quella per restare in tolleranza. Il consiglio scritto usa lo stesso numero.
+- Riquadro trasparente: `MainActivity` rende trasparenti finestra, vista principale e WebView nel riquadro, e lo
+  rifà a ogni cambio di configurazione perché il plugin SystemBars di Capacitor rimette lo sfondo pieno.
 
 ## Il golden
 `test/fixtures/golden.json` è il comportamento dell'app registrato su 9 percorsi GPS fissi

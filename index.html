@@ -178,29 +178,45 @@ body.driving .app{max-width:760px}
 .hbtn[aria-pressed="true"]{background:#F2F6F4; color:#0A0F0D}
 .pill{display:inline-block; background:#F2B21E; color:#1a1300; border-radius:999px; padding:2px 8px 0; font-size:12px; font-weight:800; margin-left:6px; vertical-align:2px}
 
-.plate{border-radius:16px; padding:6px; background:#1E2925; transition:background-color .35s ease}
-.plate-in{border:3px solid rgba(255,255,255,.5); border-radius:11px; padding:14px 16px 14px; display:grid; gap:4px; min-height:220px; align-content:start}
-.plate .kicker{font-weight:700; font-size:15px; opacity:.92}
+/* Cartello del Tutor. In verticale (e nel riquadro PiP): nome del tratto sopra e cerchio colorato con l'arco
+   di avanzamento, la media al centro e la velocità da tenere nell'apertura in basso. In orizzontale: più sotto. */
+.plate{--pc:#1E2925; --pf:#FFFFFF; --pt:rgba(255,255,255,.2); --pl:rgba(255,255,255,.5)}
+.plate.go,.plate.ok,.plate.done-ok{--pc:#00794C; --pf:#FFFFFF; --pt:rgba(0,0,0,.28); --pl:#FFFFFF}
+.plate.warn,.plate.done-tol{--pc:#F2B21E; --pf:#161100; --pt:rgba(0,0,0,.18); --pl:#161100}
+.plate.alarm,.plate.done-bad{--pc:#C62828; --pf:#FFFFFF; --pt:rgba(0,0,0,.28); --pl:#FFFFFF}
+.plate-in{display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center}
+.ptext{display:grid; gap:2px; max-width:100%}
+.plate .kicker{font-weight:700; font-size:15px; color:#A8BAB2}
 .plate .title{font-weight:800; font-size:clamp(19px,4.6vw,26px); line-height:1.15}
-.plate .big{display:flex; align-items:baseline; gap:10px; font-weight:900; font-variant-numeric:tabular-nums; line-height:.9; margin-top:6px}
-.plate .big b{font-size:clamp(76px,21vw,150px); letter-spacing:-2px}
-.plate .big span{font-size:clamp(17px,4vw,22px); font-weight:800; line-height:1.1; max-width:9ch}
-.plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; opacity:.95}
-.plate.go,.plate.ok{background:#00794C; color:#fff}
-.plate.go .plate-in,.plate.ok .plate-in{border-color:#fff}
-.plate.warn{background:#F2B21E; color:#161100}
-.plate.warn .plate-in{border-color:#161100}
-.plate.alarm{background:#C62828; color:#fff}
-.plate.alarm .plate-in{border-color:#fff}
-.plate.done-ok{background:#00794C; color:#fff} .plate.done-tol{background:#F2B21E; color:#161100} .plate.done-bad{background:#C62828; color:#fff}
-.plate.done-tol .plate-in{border-color:#161100} .plate.done-ok .plate-in,.plate.done-bad .plate-in{border-color:#fff}
-.plate.flash{animation:flash .9s ease 2}
+.gauge{position:relative; flex:none; width:min(100%, 46vh); aspect-ratio:1; border-radius:50%; background:var(--pc); color:var(--pf);
+  container-type:inline-size; transition:background-color .35s ease}
+.arc{position:absolute; inset:0; width:100%; height:100%}
+.arc circle{fill:none; stroke-width:11}
+.arc .track{stroke:var(--pt)}
+.arc .fill{stroke:var(--pf); stroke-linecap:round; stroke-dasharray:0 100; transition:stroke-dasharray .5s linear}
+.arc .track.a270{stroke-dasharray:75 100}
+.arc .a360, .gauge.noarc .arc .fill{display:none}
+.gauge .big{position:absolute; inset:0 0 14% 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-variant-numeric:tabular-nums}
+.gauge .big b{font-size:30cqw; font-weight:900; line-height:.85; letter-spacing:-.03em}
+.gauge .big[data-len="4"] b{font-size:26cqw}
+.gauge .big[data-len="5"] b{font-size:22cqw}
+.gauge .big[data-len="6"] b{font-size:19cqw}
+.gauge .big span{font-size:5.2cqw; font-weight:800; margin-top:2.5cqw; max-width:60cqw; line-height:1.15}
+.keep{display:flex; flex-direction:column; align-items:center; font-variant-numeric:tabular-nums}
+.keep .kl{font-weight:700; line-height:1.15}
+.keep .kv{font-weight:900; line-height:1}
+.keep-in{position:absolute; left:22%; right:22%; bottom:5%; height:19%; justify-content:center}
+.keep-in .kl{font-size:4.4cqw}
+.keep-in .kv{font-size:10.5cqw; margin-top:.5cqw}
+.keep-side{display:none}
+.pside{display:grid; gap:6px; width:100%}
+.plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:#C9D6D0}
+.plate.flash .gauge{animation:flash .9s ease 2}
 @keyframes flash{50%{filter:brightness(1.35)}}
-.progress{margin-top:10px}
-.bar{height:12px; border-radius:6px; background:rgba(0,0,0,.28); overflow:hidden}
-.plate.warn .bar{background:rgba(0,0,0,.18)}
-.bar i{display:block; height:100%; width:0; background:currentColor; border-radius:6px; transition:width .5s linear}
-.plabels{display:flex; justify-content:space-between; font-size:13px; font-weight:700; margin-top:5px; gap:10px}
+/* l'avanzamento lo mostra l'arco: della barra restano le scritte */
+.progress .bar{display:none}
+.plabels{display:flex; justify-content:space-between; font-size:13px; font-weight:700; gap:10px; color:#C9D6D0}
 
 .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
 .stat{background:#141C19; border:1px solid #26312C; border-radius:12px; padding:10px 10px 8px; display:grid; gap:2px}
@@ -220,46 +236,58 @@ body.driving .app{max-width:760px}
 
 @media (max-width:820px) and (orientation:portrait){
   .hud{gap:10px; padding:10px 12px 12px}
-  .plate .big b{font-size:clamp(76px,24vw,150px)}
   .stat{padding:8px 9px 7px}
   .simbar{padding:8px 10px; gap:6px}
 }
-/* Telefono in orizzontale sul supporto: cartello a sinistra, il resto a destra (non nel riquadro PiP) */
+/* In simulazione i comandi si prendono un po' dello spazio del cerchio */
+:where(.hud:has(#simBar:not([hidden]))) .gauge{width:min(100%, 36vh)}
+/* Telefono in orizzontale sul supporto: cartello a tutto schermo con testo a sinistra, anello intero al centro,
+   velocità da tenere e km mancanti a destra (non nel riquadro PiP) */
 @media (orientation:landscape) and (max-height:560px){
   html:not(.pip) body.driving .app{max-width:none}
-  html:not(.pip) body.driving .hud{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); grid-auto-rows:min-content;
-    column-gap:14px; row-gap:8px; padding:8px 14px 10px; align-content:start}
-  html:not(.pip) .hud-top{grid-column:1 / -1}
-  html:not(.pip) .plate{grid-column:1; grid-row:2 / span 5; align-self:start}
-  html:not(.pip) .hud > :not(.hud-top):not(.plate){grid-column:2}
-  html:not(.pip) .plate-in{min-height:0}
-  html:not(.pip) .plate .big b{font-size:clamp(56px,18vh,110px)}
+  html:not(.pip) body.driving .hud{display:grid; grid-template-rows:auto minmax(0,1fr) auto; height:100vh; box-sizing:border-box;
+    padding:8px 12px 10px; gap:8px; overflow:hidden}
+  html:not(.pip) .stats, html:not(.pip) .advice, html:not(.pip) .hud-limits, html:not(.pip) .toast{display:none}
+  html:not(.pip) .plate{min-height:0; border-radius:16px; padding:5px; background:var(--pc); color:var(--pf); transition:background-color .35s ease}
+  html:not(.pip) .plate.flash{animation:flash .9s ease 2}
+  html:not(.pip) .plate.flash .gauge{animation:none}
+  html:not(.pip) .plate-in{height:100%; box-sizing:border-box; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    align-items:center; gap:18px; border:3px solid var(--pl); border-radius:11px; padding:10px 20px; text-align:left}
+  html:not(.pip) .plate .kicker{color:inherit; opacity:.92}
+  html:not(.pip) .plate .title{font-size:clamp(17px,3vw,26px)}
+  /* lato del cerchio: altezza dello schermo meno barra in alto, bordi e spaziature */
+  html:not(.pip) .gauge{width:calc(100vh - 112px); background:none}
+  html:not(.pip) .hud:has(#simBar:not([hidden])) .gauge{width:calc(100vh - 176px)}
+  html:not(.pip) .arc .a270, html:not(.pip) .keep-in{display:none}
+  html:not(.pip) .arc .a360{display:inline}
+  html:not(.pip) .gauge.noarc .arc .fill{display:none}
+  html:not(.pip) .gauge .big{inset:0}
+  html:not(.pip) .pside{justify-items:end; text-align:right; gap:10px}
+  html:not(.pip) .keep-side{display:flex; align-items:flex-end; text-align:right}
+  html:not(.pip) .keep-side .kl{font-size:14px}
+  html:not(.pip) .keep-side .kv{font-size:clamp(28px,6vw,44px); margin-top:2px}
+  html:not(.pip) .plate .sub{color:inherit; font-size:14px; opacity:.95}
+  html:not(.pip) .plabels{color:inherit; justify-content:flex-end}
+  html:not(.pip) #pFrom{display:none}
+  html:not(.pip) #pTo{font-size:16px}
+  html:not(.pip) .simbar{display:flex; align-items:center; gap:12px; padding:4px 10px}
+  html:not(.pip) .simbar input[type=range]{flex:1; min-width:120px}
 }
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important; transition:none !important}
 }
 </style>
 <style>
-/* Riquadro Picture-in-Picture dell'app Android: la classe "pip" su <html> la mette native/tutor-native.js */
-html.pip body.driving .app{display:block; height:100vh; min-height:0}
-html.pip .screen, html.pip .hud-top, html.pip .stats, html.pip .advice,
-  html.pip .hud-limits, html.pip .simbar, html.pip .toast{display:none !important}
-html.pip .hud{padding:0; gap:0; height:100vh; overflow:hidden}
-html.pip .plate{height:100vh; box-sizing:border-box; border-radius:0; padding:3px}
-html.pip .plate-in{height:100%; box-sizing:border-box; min-height:0; padding:5px 8px; gap:0; border-width:2px; border-radius:8px; align-content:center}
-html.pip .plate .kicker{font-size:10px}
-html.pip .plate .title, html.pip .plate .sub{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-html.pip .plate .title{font-size:12.5px}
-html.pip .plate .title{line-height:1.25}
-html.pip .plate .big{margin-top:4px; gap:5px}
-html.pip .plate .big b{font-size:min(36vh,22vw); letter-spacing:-1px}
-/* dentro il tratto la barra di avanzamento basta: la riga descrittiva non ci sta */
-html.pip .plate-in:has(#pProg:not([hidden])) .sub{display:none}
-html.pip .plate .big span{font-size:10.5px; max-width:10ch}
-html.pip .plate .sub{font-size:10px}
-html.pip .progress{margin-top:3px}
-html.pip .bar{height:5px}
-html.pip .plabels{font-size:9px; margin-top:2px}
+/* Riquadro Picture-in-Picture dell'app Android: la classe "pip" su <html> la mette native/tutor-native.js.
+   Solo il cerchio del cartello, su fondo trasparente: nel riquadro MainActivity rende trasparente la finestra. */
+html.pip, html.pip body{background:transparent !important}
+html.pip body.driving .app{display:block; height:100vh; min-height:0; max-width:none}
+html.pip .screen, html.pip .hud-top, html.pip .stats, html.pip .advice, html.pip .hud-limits, html.pip .simbar,
+  html.pip .toast, html.pip .ptext, html.pip .pside{display:none !important}
+html.pip .hud{padding:0; gap:0; height:100vh; overflow:hidden; background:transparent}
+html.pip .plate{height:100vh; display:flex; align-items:center; justify-content:center}
+html.pip .plate-in{gap:0; width:100%}
+html.pip .gauge{width:min(100vw, 100vh)}
 </style>
 </head>
 <body>
@@ -274,13 +302,28 @@ html.pip .plabels{font-size:9px; margin-top:2px}
 
     <div class="plate" id="plate">
       <div class="plate-in">
-        <div class="kicker" id="pKicker">Avvio</div>
-        <div class="title" id="pTitle">Sto cercando la tua posizione</div>
-        <div class="big"><b id="pBig">–</b><span id="pUnit"></span></div>
-        <div class="sub" id="pSub"></div>
-        <div class="progress" id="pProg" hidden>
-          <div class="bar"><i id="pFill"></i></div>
-          <div class="plabels"><span id="pFrom"></span><span id="pTo"></span></div>
+        <div class="ptext">
+          <div class="kicker" id="pKicker">Avvio</div>
+          <div class="title" id="pTitle">Sto cercando la tua posizione</div>
+        </div>
+        <!-- Cartello circolare: arco aperto in verticale e nel riquadro, anello intero in orizzontale -->
+        <div class="gauge">
+          <svg class="arc" viewBox="0 0 200 200" aria-hidden="true">
+            <circle class="track a270" cx="100" cy="100" r="88" pathLength="100" transform="rotate(135 100 100)"/>
+            <circle class="fill a270" id="pArc" cx="100" cy="100" r="88" pathLength="100" transform="rotate(135 100 100)"/>
+            <circle class="track a360" cx="100" cy="100" r="88" pathLength="100"/>
+            <circle class="fill a360" id="pRing" cx="100" cy="100" r="88" pathLength="100" transform="rotate(-90 100 100)"/>
+          </svg>
+          <div class="big" id="pBigBox"><b id="pBig">–</b><span id="pUnit"></span></div>
+          <div class="keep keep-in"><span class="kl"></span><b class="kv"></b></div>
+        </div>
+        <div class="pside">
+          <div class="keep keep-side"><span class="kl"></span><b class="kv"></b></div>
+          <div class="sub" id="pSub"></div>
+          <div class="progress" id="pProg" hidden>
+            <div class="bar"><i id="pFill"></i></div>
+            <div class="plabels"><span id="pFrom"></span><span id="pTo"></span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -710,23 +753,33 @@ html.pip .plabels{font-size:9px; margin-top:2px}
     const settled = elapsed >= 12 && dist >= 250;
     const avg = settled || elapsed >= 4 && dist > 60 ? dist / elapsed * 3.6 : vNow;
     const lim = settings.limit, thr = thresholdFor(lim), warnAt = thr - settings.margin;
-    const tLeft = Leff / warnAt * 3600 - elapsed;
-    const vMaxRest = tLeft > 0 ? remKm / tLeft * 3600 : Infinity;
+    const restFor = (target) => {
+      const t = Leff / target * 3600 - elapsed;
+      return t > 0 ? remKm / t * 3600 : Infinity;
+    };
+    const vLimRest = restFor(lim), vThrRest = restFor(thr);
     const proj = vNow && vNow > 10 && elapsed > 0 ? (dist / 1e3 + remKm) / ((elapsed + remKm / vNow * 3600) / 3600) : null;
     let status = "ok";
     if (settled && avg >= warnAt) status = "alarm";
     else if (settled && (overLimit(avg, lim) || proj != null && proj >= warnAt)) status = "warn";
-    return { elapsed, dist, rel, remKm, vNow, avg, lim, thr, warnAt, vMaxRest, proj, status, settled };
+    return { elapsed, dist, rel, remKm, vNow, avg, lim, thr, warnAt, vLimRest, vThrRest, proj, status, settled };
   }
   function adviceText(m) {
     const lim = m.lim;
     if (!m.settled) return "Calcolo della media in corso. Limite " + lim + ".";
+    const k = keepText(m), n = k.value.replace("≤ ", "");
     if (m.status === "alarm") {
-      if (isFinite(m.vMaxRest) && m.vMaxRest >= 60) return "Media oltre la soglia: rallenta e resta sotto " + Math.floor(Math.min(m.vMaxRest, lim)) + " km/h fino al portale.";
+      if (k.value !== "rallenta") return "Media oltre la soglia: rallenta e resta sotto " + n + " km/h fino al portale.";
       return "Media oltre la soglia: rallenta, più tempo resti sotto il limite più la media scende.";
     }
-    if (!isFinite(m.vMaxRest) || m.vMaxRest >= lim) return overLimit(m.avg, lim) ? "Media sopra " + lim + " ma entro la tolleranza. Rispetta il limite fino al portale." : "Rispettando il limite di " + lim + " chiudi il tratto in regola.";
-    return "Per chiudere sotto la soglia resta sotto " + Math.floor(m.vMaxRest) + " km/h fino al portale.";
+    if (+n >= lim) return overLimit(m.avg, lim) ? "Media sopra " + lim + " ma entro la tolleranza. Rispetta il limite fino al portale." : "Rispettando il limite di " + lim + " chiudi il tratto in regola.";
+    return "Per chiudere entro il limite resta sotto " + n + " km/h fino al portale.";
+  }
+  function keepText(m) {
+    const lim = m.lim, below = (v) => "≤ " + Math.floor(Math.min(v, lim));
+    if (!m.settled || m.vLimRest >= 50) return { label: "per chiudere entro " + lim, value: m.settled ? below(m.vLimRest) : "≤ " + lim };
+    if (m.vThrRest >= 50) return { label: "per restare in tolleranza", value: below(m.vThrRest) };
+    return { label: "non rientri più", value: "rallenta" };
   }
 
   // src/core/tracker.js
@@ -1058,7 +1111,12 @@ html.pip .plabels{font-size:9px; margin-top:2px}
       } : { title: "Fuori dalle autostrade seguite", sim, sub: "Precisione GPS " + nf0.format(f.acc) + " m" },
       plate: null,
       progress: null,
-      advice: ""
+      advice: "",
+      gauge: null,
+      keep: { label: "", value: "" }
+    };
+    const keep = (label, value = "") => {
+      view.keep = { label, value };
     };
     const plate = (cls, kicker, title, big, unit, sub) => {
       view.plate = { cls, kicker, title, big, unit, sub };
@@ -1075,6 +1133,8 @@ html.pip .plabels{font-size:9px; margin-top:2px}
       );
       view.progress = { fill: (m.rel / s.L * 100).toFixed(1) + "%", from: "km " + nfKm.format(s.ka), to: "mancano " + fmtDist(m.remKm) };
       view.advice = adviceText(m);
+      view.gauge = { frac: m.rel / s.L };
+      view.keep = keepText(m);
     } else if (st.result && f && f.t < st.result.until) {
       const r = st.result, [vt, vc] = verdictOf(r.avg, r.lim);
       plate(
@@ -1085,13 +1145,18 @@ html.pip .plabels{font-size:9px; margin-top:2px}
         "km/h di media",
         vt.charAt(0).toUpperCase() + vt.slice(1) + ", tempo " + fmtDur(r.dur)
       );
+      view.gauge = { frac: 1 };
+      keep("tratto concluso", vc === "ok" ? "in regola" : vc === "tol" ? "in tolleranza" : "oltre la soglia");
       view.advice = st.next ? "Prossimo Tutor tra " + fmtDist(st.next.dist) + "." : "";
     } else if (!f) {
       plate("", "Avvio", "Sto cercando la tua posizione", "–", "", "Il monitoraggio parte appena il GPS ti trova su un'autostrada dell'elenco.");
+      keep("cerco il GPS");
     } else if (!st.onRoad) {
       plate("", "Fuori dalle autostrade seguite", "Il monitoraggio parte quando entri in un'autostrada dell'elenco", speed, "km/h", "");
+      keep("fuori autostrada");
     } else if (!st.sign) {
       plate("", "Sulla " + RAMS[st.ram].name, "Sto capendo in che direzione vai", speed, "km/h", "");
+      keep("cerco la direzione");
     } else if (st.next) {
       const n = st.next, near = n.dist <= settings.preAlert + 0.05;
       const eta = vNow && vNow > 20 ? ", circa " + fmtDur(n.dist / vNow * 3600) : "";
@@ -1105,9 +1170,11 @@ html.pip .plabels{font-size:9px; margin-top:2px}
         meters ? "m al portale" : "km al portale",
         "Tratto di " + nfL.format(n.sec.L) + " km" + eta
       );
+      keep("limite", String(lim));
       view.advice = near ? "Limite " + lim + ": al portale di inizio parte il calcolo della media." : "";
     } else {
       plate("", "Nessun Tutor più avanti", "In questa direzione non ci sono altri tratti controllati", speed, "km/h", "");
+      keep("nessun Tutor avanti");
     }
     return view;
   }
@@ -1394,6 +1461,15 @@ html.pip .plabels{font-size:9px; margin-top:2px}
         $("#pBig").textContent = pl.big;
         $("#pUnit").textContent = pl.unit;
         $("#pSub").textContent = pl.sub;
+        $("#pBigBox").dataset.len = String(Math.min(6, Math.max(3, pl.big.length)));
+        p.querySelectorAll(".keep").forEach((k) => {
+          k.querySelector(".kl").textContent = v.keep.label;
+          k.querySelector(".kv").textContent = v.keep.value;
+        });
+        const frac = v.gauge ? Math.max(0, Math.min(1, v.gauge.frac)) : 0;
+        $("#pArc").style.strokeDasharray = (frac * 75).toFixed(2) + " 100";
+        $("#pRing").style.strokeDasharray = (frac * 100).toFixed(2) + " 100";
+        p.querySelector(".gauge").classList.toggle("noarc", frac === 0);
         const prog = $("#pProg");
         prog.hidden = !v.progress;
         if (v.progress) {

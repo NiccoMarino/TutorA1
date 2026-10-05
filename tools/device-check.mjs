@@ -146,11 +146,13 @@ const pipLayout = () => js(`(() => {
   const vis = sel => { const e = document.querySelector(sel); if (!e) return false; const r = e.getBoundingClientRect(); return getComputedStyle(e).display !== 'none' && r.width > 0 && r.height > 0; };
   const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
   const vp = {left: 0, top: 0, right: innerWidth, bottom: innerHeight};
+  const g = document.querySelector('.gauge').getBoundingClientRect();
+  const clear = e => getComputedStyle(e).backgroundColor === 'rgba(0, 0, 0, 0)';
   return {
-    visible: ['.screen', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast'].filter(vis),
-    plateInside: inside(el('plate').getBoundingClientRect(), vp),
-    bigInside: inside(el('pBig').getBoundingClientRect(), document.querySelector('.plate-in').getBoundingClientRect()),
-    titleCut: el('pTitle').scrollWidth > el('pTitle').clientWidth + 1
+    visible: ['.screen', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast', '.ptext', '.pside'].filter(vis),
+    plateInside: g.width > 0 && inside(g, vp) && Math.abs(g.width - Math.min(innerWidth, innerHeight)) <= 2,
+    bigInside: inside(el('pBig').getBoundingClientRect(), g) && inside(document.querySelector('.keep-in').getBoundingClientRect(), g),
+    transparent: [document.documentElement, document.body, document.querySelector('.hud')].every(clear)
   }; })()`);
 
 async function launch(){
@@ -184,9 +186,11 @@ async function closePip(){
   const [l, tp, r, b] = task().bounds || t.bounds, cx = (l + r) >> 1, cy = (tp + b) >> 1;
   adb('shell', 'input', 'tap', String(cx), String(cy));
   await sleep(600);
-  // Il menu del riquadro è di sistema e uiautomator non lo vede: su One UI la X è l'ultima icona in alto a destra
-  // (misurata dallo screenshot del menu: 85% della larghezza, 21% dell'altezza)
-  adb('shell', 'input', 'tap', String(Math.round(l + 0.852*(r - l))), String(Math.round(tp + 0.21*(b - tp))));
+  // Il menu del riquadro è di sistema e uiautomator non lo vede: su One UI la X è l'ultima icona in alto a destra.
+  // Aperto il menu il riquadro si allarga un po': posizione misurata dallo screenshot con il riquadro quadrato,
+  // 84% della larghezza da sinistra e 13% della larghezza dall'alto
+  const [ml, mt, mr] = task().bounds || [l, tp, r];
+  adb('shell', 'input', 'tap', String(Math.round(ml + 0.84*(mr - ml))), String(Math.round(mt + 0.134*(mr - ml))));
   if ((await waitTask(t => t.mode !== 'pinned', 3000)).mode !== 'pinned') return 'pulsante X';
   const [sw, sh] = screenSize();
   adb('shell', 'input', 'swipe', String(cx), String(cy), String(sw >> 1), String(Math.round(sh*0.96)), '1200');
@@ -360,9 +364,9 @@ async function phaseExits(){
   const s2 = await pageState();
   check('Nel riquadro la guida continua e si aggiorna', s2.running && s2.fixT > s1.fixT, s1.fixT + ' -> ' + s2.fixT);
   const lay = await pipLayout();
-  check('Nel riquadro resta solo il cartello', lay.visible.length === 0, lay.visible.join(', ') || 'nient\'altro visibile');
-  check('Il cartello sta tutto nel riquadro', lay.plateInside && lay.bigInside, s2.kicker + ', ' + s2.plate);
-  if (lay.titleCut) note('Titolo del cartello tagliato nel riquadro', s2.kicker + ': ' + s2.title);
+  check('Nel riquadro resta solo il cerchio del cartello', lay.visible.length === 0, lay.visible.join(', ') || 'nient\'altro visibile');
+  check('Il cerchio riempie il riquadro e media e velocità da tenere ci stanno dentro', lay.plateInside && lay.bigInside, s2.kicker + ', ' + s2.plate);
+  check('Intorno al cerchio la pagina è trasparente', lay.transparent);
 
   // Navigazione: Maps davanti, il riquadro resta sopra e lo schermo acceso
   adb('shell', 'am', 'start', '-W', '-n', MAPS);

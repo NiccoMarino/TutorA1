@@ -26,13 +26,28 @@
 
     <div class="plate" id="plate">
       <div class="plate-in">
-        <div class="kicker" id="pKicker">Avvio</div>
-        <div class="title" id="pTitle">Sto cercando la tua posizione</div>
-        <div class="big"><b id="pBig">–</b><span id="pUnit"></span></div>
-        <div class="sub" id="pSub"></div>
-        <div class="progress" id="pProg" hidden>
-          <div class="bar"><i id="pFill"></i></div>
-          <div class="plabels"><span id="pFrom"></span><span id="pTo"></span></div>
+        <div class="ptext">
+          <div class="kicker" id="pKicker">Avvio</div>
+          <div class="title" id="pTitle">Sto cercando la tua posizione</div>
+        </div>
+        <!-- Cartello circolare: arco aperto in verticale e nel riquadro, anello intero in orizzontale -->
+        <div class="gauge">
+          <svg class="arc" viewBox="0 0 200 200" aria-hidden="true">
+            <circle class="track a270" cx="100" cy="100" r="88" pathLength="100" transform="rotate(135 100 100)"/>
+            <circle class="fill a270" id="pArc" cx="100" cy="100" r="88" pathLength="100" transform="rotate(135 100 100)"/>
+            <circle class="track a360" cx="100" cy="100" r="88" pathLength="100"/>
+            <circle class="fill a360" id="pRing" cx="100" cy="100" r="88" pathLength="100" transform="rotate(-90 100 100)"/>
+          </svg>
+          <div class="big" id="pBigBox"><b id="pBig">–</b><span id="pUnit"></span></div>
+          <div class="keep keep-in"><span class="kl"></span><b class="kv"></b></div>
+        </div>
+        <div class="pside">
+          <div class="keep keep-side"><span class="kl"></span><b class="kv"></b></div>
+          <div class="sub" id="pSub"></div>
+          <div class="progress" id="pProg" hidden>
+            <div class="bar"><i id="pFill"></i></div>
+            <div class="plabels"><span id="pFrom"></span><span id="pTo"></span></div>
+          </div>
         </div>
       </div>
     </div>

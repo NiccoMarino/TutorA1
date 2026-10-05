@@ -1,20 +1,10 @@
-/* Riquadro Picture-in-Picture dell'app Android: la classe "pip" su <html> la mette native/tutor-native.js */
-html.pip body.driving .app{display:block; height:100vh; min-height:0}
-html.pip .screen, html.pip .hud-top, html.pip .stats, html.pip .advice,
-  html.pip .hud-limits, html.pip .simbar, html.pip .toast{display:none !important}
-html.pip .hud{padding:0; gap:0; height:100vh; overflow:hidden}
-html.pip .plate{height:100vh; box-sizing:border-box; border-radius:0; padding:3px}
-html.pip .plate-in{height:100%; box-sizing:border-box; min-height:0; padding:5px 8px; gap:0; border-width:2px; border-radius:8px; align-content:center}
-html.pip .plate .kicker{font-size:10px}
-html.pip .plate .title, html.pip .plate .sub{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-html.pip .plate .title{font-size:12.5px}
-html.pip .plate .title{line-height:1.25}
-html.pip .plate .big{margin-top:4px; gap:5px}
-html.pip .plate .big b{font-size:min(36vh,22vw); letter-spacing:-1px}
-/* dentro il tratto la barra di avanzamento basta: la riga descrittiva non ci sta */
-html.pip .plate-in:has(#pProg:not([hidden])) .sub{display:none}
-html.pip .plate .big span{font-size:10.5px; max-width:10ch}
-html.pip .plate .sub{font-size:10px}
-html.pip .progress{margin-top:3px}
-html.pip .bar{height:5px}
-html.pip .plabels{font-size:9px; margin-top:2px}
+/* Riquadro Picture-in-Picture dell'app Android: la classe "pip" su <html> la mette native/tutor-native.js.
+   Solo il cerchio del cartello, su fondo trasparente: nel riquadro MainActivity rende trasparente la finestra. */
+html.pip, html.pip body{background:transparent !important}
+html.pip body.driving .app{display:block; height:100vh; min-height:0; max-width:none}
+html.pip .screen, html.pip .hud-top, html.pip .stats, html.pip .advice, html.pip .hud-limits, html.pip .simbar,
+  html.pip .toast, html.pip .ptext, html.pip .pside{display:none !important}
+html.pip .hud{padding:0; gap:0; height:100vh; overflow:hidden; background:transparent}
+html.pip .plate{height:100vh; display:flex; align-items:center; justify-content:center}
+html.pip .plate-in{gap:0; width:100%}
+html.pip .gauge{width:min(100vw, 100vh)}
