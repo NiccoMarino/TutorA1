@@ -124,11 +124,15 @@
           <div class="seg" id="setLimits"></div>
           <small>Segui sempre i cartelli: con pioggia il limite in autostrada scende a 110, nei cantieri può essere più basso.</small>
         </div>
-        <div class="field">
-          <span>Margine di sicurezza sull'allarme: <output id="marginOut"></output></span>
-          <input type="range" id="setMargin" min="0" max="5" step="1">
+        <label class="field">
+          <span>Cartello giallo quando la media supera</span>
+          <select class="sel" id="setYellow"></select>
+        </label>
+        <label class="field">
+          <span>Cartello rosso e allarme quando la media arriva a</span>
+          <select class="sel" id="setRed"></select>
           <small id="marginHelp"></small>
-        </div>
+        </label>
         <label class="field">
           <span>Preavviso prima del portale</span>
           <select class="sel" id="setPre">

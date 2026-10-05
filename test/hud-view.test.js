@@ -72,3 +72,8 @@ test('senza GPS, fuori autostrada e senza Tutor avanti: una riga che dice dove s
   assert.deepEqual(hudView(end, S130).keep, {label:'nessun Tutor avanti', value:''});
   assert.deepEqual(hudView({...end, sign:0}, S130).keep, {label:'cerco la direzione', value:''});
 });
+
+test('statistiche: l\'allarme segue il rosso scelto nelle impostazioni', () => {
+  assert.equal(hudView(emptyState, {limit:130, margin:2, preAlert:1, yellowOff:-5, redOff:0}).stats.thrLabel, 'soglia, allarme a 130');
+  assert.equal(hudView(emptyState, {limit:130, margin:3, preAlert:1}).stats.thrLabel, 'soglia, allarme a 133,8');
+});

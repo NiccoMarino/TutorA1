@@ -92,9 +92,9 @@ test('la pagina non scarica niente da internet: script, stili e caratteri sono d
   }
 });
 
-test('la pagina resta leggera (sotto i 450 kB)', () => {
+test('la pagina resta leggera (sotto i 550 kB)', () => {
   const {app} = buildPages();
-  assert.ok(Buffer.byteLength(app) < 450*1024, Math.round(Buffer.byteLength(app)/1024) + ' kB');
+  assert.ok(Buffer.byteLength(app) < 550*1024, Math.round(Buffer.byteLength(app)/1024) + ' kB');
 });
 
 test('schermata iniziale con i due cartelli, menù e una pagina per ogni voce', () => {

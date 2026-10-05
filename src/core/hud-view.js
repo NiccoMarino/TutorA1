@@ -1,17 +1,17 @@
 // Cosa mostrare nella schermata di guida, calcolato dallo stato del tracker. Non tocca la pagina:
 // ui/hud.js applica la vista.
 import { nf0, nf1, nf12, nfKm, nfL, fmtDur, fmtDist } from './format.js';
-import { thresholdFor, thrText, verdictOf, avgValue } from './rules.js';
+import { thresholdFor, thrText, verdictOf, avgValue, colorLimits } from './rules.js';
 import { RAMS } from './network.js';
 import { computeMetrics, adviceText, keepText } from './metrics.js';
 
 export function hudView(st, settings){
-  const f = st.fix, lim = settings.limit, thr = thresholdFor(lim);
+  const f = st.fix, lim = settings.limit, thr = thresholdFor(lim), {red} = colorLimits(settings);
   const vNow = f && f.v != null ? f.v*3.6 : null;
   const speed = vNow != null ? nf0.format(vNow) : '–';
   const sim = st.source === 'sim';
   const view = {
-    stats: {lim, thr:thrText(lim), thrLabel: settings.margin ? 'soglia, allarme a ' + nf1.format(thr - settings.margin) : 'soglia con tolleranza',
+    stats: {lim, thr:thrText(lim), thrLabel: Math.abs(red - thr) > 1e-6 ? 'soglia, allarme a ' + (Number.isInteger(red) ? red : nf1.format(red)) : 'soglia con tolleranza',
             inst:speed, instHot: vNow != null && vNow > thr},
     road: !f ? {title:'In attesa del segnale GPS', sim, sub:'Tieni il telefono con vista del cielo'}
       : st.onRoad && st.ram ? {title:RAMS[st.ram].name + ', km ' + nf1.format(st.km), sim,

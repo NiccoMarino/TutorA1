@@ -1,6 +1,6 @@
 // Impostazioni: pagina Impostazioni di guida (con il tema), limiti nella schermata di guida, pulsante Audio
 import { nf1 } from '../core/format.js';
-import { LIMITS, thresholdFor, thrText } from '../core/rules.js';
+import { LIMITS, thrText, colorLimits, YELLOW_CHOICES, RED_CHOICES } from '../core/rules.js';
 import { $ } from './dom.js';
 import { THEMES, applyTheme } from './theme.js';
 
@@ -20,18 +20,37 @@ export function createSettingsPanel({settings, save, onChange, say}){
       hbox.appendChild(h);
     });
   }
-  function setLimit(v){ settings.limit = v; save(); renderLimitChips(); renderMargin(); onChange(); }
-  function renderMargin(){
-    $('#setMargin').value = settings.margin;
-    $('#marginOut').textContent = settings.margin + ' km/h';
-    $('#marginHelp').textContent = 'Con limite ' + settings.limit + ' la soglia di sanzione è ' + thrText(settings.limit) + ' km/h: l\'allarme scatta quando la media arriva a ' + nf1.format(thresholdFor(settings.limit) - settings.margin) + ' km/h. Sopra ' + settings.limit + ' la schermata diventa gialla.';
+  function setLimit(v){ settings.limit = v; save(); renderLimitChips(); renderColors(); onChange(); }
+  // Colori del cartello: giallo da, rosso (e allarme) da. Le scelte sono relative al limite (core/rules.js)
+  const fmt = v => Number.isInteger(v) ? String(v) : nf1.format(v);
+  const redKey = () => settings.redOff != null ? 'l:' + settings.redOff : 'm:' + (settings.margin || 0);
+  function fill(sel, choices, cur){
+    sel.innerHTML = '';
+    for (const c of choices){ const o = document.createElement('option'); o.value = c.key; o.textContent = c.label; sel.appendChild(o); }
+    sel.value = cur;
   }
+  function renderColors(){
+    const lim = settings.limit, {yellow, red} = colorLimits(settings), key = redKey();
+    fill($('#setYellow'), YELLOW_CHOICES(lim).map(c => ({...c, key: String(c.value)})), String(settings.yellowOff || 0));
+    fill($('#setRed'), RED_CHOICES(lim, key), key);
+    $('#marginHelp').textContent = 'Con limite ' + lim + ' la soglia di sanzione è ' + thrText(lim) + ' km/h. Il cartello diventa giallo sopra '
+      + fmt(yellow) + ' km/h di media e rosso, con l\'allarme, da ' + fmt(red) + ' km/h.'
+      + (yellow >= red ? ' Il giallo parte dopo il rosso, quindi si vedrà solo il rosso.' : '');
+  }
+  $('#setYellow').addEventListener('change', e => {
+    const off = +e.target.value; if (off) settings.yellowOff = off; else delete settings.yellowOff;
+    save(); renderColors(); onChange();
+  });
+  $('#setRed').addEventListener('change', e => {
+    const [kind, v] = e.target.value.split(':');
+    if (kind === 'l') settings.redOff = +v; else { settings.margin = +v; delete settings.redOff; }
+    save(); renderColors(); onChange();
+  });
   function renderMute(){
     const on = settings.voice || settings.beep, b = $('#hudMute');
     b.textContent = on ? 'Audio sì' : 'Audio no';
     b.setAttribute('aria-pressed', String(!on));
   }
-  $('#setMargin').addEventListener('input', e => { settings.margin = +e.target.value; save(); renderMargin(); onChange(); });
   $('#setPre').value = String(settings.preAlert);
   $('#setPre').addEventListener('change', e => { settings.preAlert = +e.target.value; save(); });
   [['#setVoice','voice'],['#setBeep','beep'],['#setInst','instWarn']].forEach(([id, k]) => {
@@ -53,5 +72,5 @@ export function createSettingsPanel({settings, save, onChange, say}){
       box.appendChild(b);
     });
   }
-  renderLimitChips(); renderMargin(); renderMute(); renderTheme();
+  renderLimitChips(); renderColors(); renderMute(); renderTheme();
 }

@@ -288,6 +288,14 @@ async function phasePage(){
   await reload();
   const after = await js(`({limit: window.__tutor.settings.limit, pressed: [...document.querySelectorAll('#setLimits .chip')].find(b => b.getAttribute('aria-pressed') === 'true').textContent})`);
   check('Dopo il riavvio il limite resta 110', after.limit === 110 && after.pressed.startsWith('110'), JSON.stringify(after));
+  // Colori del cartello: giallo da 5 sotto il limite, rosso dal limite; restano dopo il riavvio
+  await js(`(() => { const y = document.getElementById('setYellow'), r = document.getElementById('setRed');
+    y.value = '-5'; y.dispatchEvent(new Event('change')); r.value = 'l:0'; r.dispatchEvent(new Event('change')); return true; })()`);
+  await reload();
+  const col = await js(`({y: document.getElementById('setYellow').value, r: document.getElementById('setRed').value,
+    help: document.getElementById('marginHelp').textContent})`);
+  check('Colori scelti (giallo sopra 105, rosso da 110 con limite 110): restano dopo il riavvio', col.y === '-5' && col.r === 'l:0'
+    && /giallo sopra 105 .* da 110 km\/h/.test(col.help), col.help.slice(0, 140));
   await js(`localStorage.setItem('tutorA1.v1.settings', ${JSON.stringify(JSON.stringify(TEST_SETTINGS))}); localStorage.setItem('tutorA1.v1.history', '[]'); true`);
   await reload();
 

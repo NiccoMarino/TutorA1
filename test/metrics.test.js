@@ -96,3 +96,11 @@ test('giallo solo con la media sopra il limite', () => {
   assert.equal(at(5, 137.4, 100).status, 'warn', 'media 131 andando a 100: giallo');
   assert.equal(at(5, 150, 130).status, 'ok', 'media esattamente 120: verde');
 });
+
+test('colori scelti: giallo da 125 e rosso da 130', () => {
+  const s = {limit:130, margin:2, yellowOff:-5, redOff:0};
+  const m = (km, sec) => computeMetrics(active, {t:sec, odo:km*1000, v:120/3.6}, km, s);
+  assert.equal(m(5, 150).status, 'ok', 'media 120');
+  assert.equal(m(5, 142.9).status, 'warn', 'media 126');
+  assert.equal(m(5, 138.4).status, 'alarm', 'media 130,1');
+});

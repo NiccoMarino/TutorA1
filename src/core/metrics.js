@@ -1,6 +1,6 @@
 // Media nel tratto in corso, proiezione all'arrivo e consiglio di velocità
 import { clamp } from './format.js';
-import { thresholdFor, overLimit } from './rules.js';
+import { thresholdFor, overLimit, colorLimits } from './rules.js';
 import { secRel } from './network.js';
 
 export function computeMetrics(a, f, km, settings){
@@ -11,15 +11,16 @@ export function computeMetrics(a, f, km, settings){
   const vNow = f.v != null ? f.v*3.6 : null;
   const settled = elapsed >= 12 && dist >= 250;
   const avg = settled || (elapsed >= 4 && dist > 60) ? dist/elapsed*3.6 : vNow;
-  const lim = settings.limit, thr = thresholdFor(lim), warnAt = thr - settings.margin;
+  const lim = settings.limit, thr = thresholdFor(lim), {yellow, red: warnAt} = colorLimits(settings);
   // Velocità da non superare nei km che mancano per chiudere con la media entro `target`
   const restFor = target => { const t = Leff/target*3600 - elapsed; return t > 0 ? remKm/t*3600 : Infinity; };
   const vLimRest = restFor(lim), vThrRest = restFor(thr);
   const proj = vNow && vNow > 10 && elapsed > 0 ? (dist/1000 + remKm)/((elapsed + remKm/vNow*3600)/3600) : null;
-  // Colore del cartello solo dalla media: rosso oltre la soglia di allarme, giallo sopra il limite
+  // Colore del cartello solo dalla media, con le soglie scelte nelle impostazioni (colorLimits):
+  // rosso (e allarme) da `warnAt`, giallo sopra `yellow`
   let status = 'ok';
   if (settled && avg >= warnAt) status = 'alarm';
-  else if (settled && overLimit(avg, lim)) status = 'warn';
+  else if (settled && overLimit(avg, yellow)) status = 'warn';
   return {elapsed, dist, rel, remKm, vNow, avg, lim, thr, warnAt, vLimRest, vThrRest, proj, status, settled};
 }
 
