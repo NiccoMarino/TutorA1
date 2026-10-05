@@ -29,7 +29,8 @@ export function pageAudit(){
     if (!text || !shown(e)) continue;
     const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
     if ((r.right > W + 1 || r.left < -1) && !clipsX(e)) out.outside.push(label(e));
-    if (/\b(NaN|undefined|null|Infinity)\b|\[object /.test(text)) out.broken.push(label(e));
+    // i testi delle licenze sono copiati così come sono ("null and void" nella OFL)
+    if (/\b(NaN|undefined|null|Infinity)\b|\[object /.test(text) && !e.closest('pre.lic')) out.broken.push(label(e));
     if (parseFloat(cs.fontSize) < 11) out.tiny.push(label(e) + ' ' + cs.fontSize);
     if ((cs.overflow.includes('hidden') || cs.textOverflow === 'ellipsis') && e.scrollWidth > e.clientWidth + 1) out.clipped.push(label(e));
     const bg = bgOf(e), fg = rgba(cs.color);

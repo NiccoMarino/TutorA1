@@ -19,3 +19,22 @@ test("l'informativa è una pagina statica senza script esterni", () => {
 test('la pagina dell\'app porta all\'informativa', () => {
   assert.ok(readFileSync(new URL('../src/index.html', import.meta.url), 'utf8').includes('https://niccomarino.github.io/TutorA1/privacy.html'));
 });
+
+// termini.html: termini d'uso, linkati dalla pagina dell'app e dall'informativa
+const terms = readFileSync(new URL('../termini.html', import.meta.url), 'utf8');
+
+test('i termini d\'uso dicono che le stime non sono misure ufficiali e che il limite vale sempre', () => {
+  assert.ok(!/<script/i.test(terms));
+  assert.match(terms, /non autorizza a superare il limite/);
+  assert.match(terms, /non garantisce di evitare sanzioni/);
+  assert.match(terms, /articolo 173 del Codice della Strada/);
+  assert.match(terms, /minori di 18 anni/);
+  assert.match(terms, /mailto:niccofantini2000@gmail\.com/);
+  assert.ok(html.includes('termini.html'), 'l\'informativa porta ai termini');
+});
+
+test('cookie: nessun cookie e nessun banner, detto nell\'informativa; la pagina non scrive cookie', () => {
+  assert.match(html, /<h2>Cookie<\/h2>/);
+  const src = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  assert.ok(!/document\.cookie/.test(src), 'la pagina usa i cookie');
+});

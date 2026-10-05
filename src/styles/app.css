@@ -85,6 +85,12 @@ svg{flex:none}
 .prose{display:grid; gap:12px; font-size:15px}
 .prose p{margin:0}
 .prose a, .src a{color:inherit}
+.prose h3{margin:0; font-size:16px}
+/* Licenze: un riquadro apribile per ogni componente, con il testo completo */
+.prose details{border-top:1px solid var(--line)}
+.prose summary{min-height:48px; display:flex; align-items:center; cursor:pointer; font-weight:600; font-size:14px}
+.prose pre.lic{white-space:pre-wrap; font-size:12px; line-height:1.4; max-height:320px; overflow:auto; margin:0 0 10px;
+  background:var(--panel-2); padding:10px; border-radius:8px}
 .menu-list{display:grid; gap:8px; padding:6px 16px}
 .mitem{appearance:none; display:flex; align-items:center; gap:14px; width:100%; min-height:66px; padding:10px 14px 8px; text-align:left;
   background:var(--panel); border:1px solid var(--line); border-radius:14px; color:var(--ink); cursor:pointer}

@@ -142,3 +142,33 @@ test('nella pagina lo stile non ha commenti (restano nei sorgenti)', () => {
   const {app} = buildPages();
   for (const [, css] of app.matchAll(/<style>([\s\S]*?)<\/style>/g)) assert.ok(!css.includes('/*'), 'commento nello stile della pagina');
 });
+
+// Licenze: copyright e testo di ogni componente incluso accompagnano l'app (OFL, MIT, Apache)
+test('licenze di carattere, Capacitor, plugin e librerie Android nella pagina', () => {
+  const {app, web} = buildPages();
+  for (const page of [app, web]){
+    for (const t of ['Copyright 2021 The Overpass Project Authors', 'SIL OPEN FONT LICENSE', 'Copyright (c) 2017-present Drifty Co.',
+      'Copyright 2021 James Diacono', 'Copyright (c) 2019 The keep-awake developers.', 'Copyright (c) 2021 Robin Genz',
+      'Copyright 2020-present Ionic', 'Apache License', 'OpenStreetMap', 'ODbL']) assert.ok(page.includes(t), 'manca: ' + t);
+  }
+});
+
+// Accessibilità e tastiera: immagini con testo alternativo, pulsanti con solo un'icona con un nome,
+// niente ordine di tabulazione forzato né elementi cliccabili che non sono pulsanti o collegamenti
+test('accessibilità del markup: testo alternativo, nomi dei pulsanti, tastiera', () => {
+  const {app} = buildPages();
+  for (const img of app.match(/<img\b[^>]*>/g) || []) assert.match(img, /\balt="/, 'immagine senza alt: ' + img);
+  for (const [, attrs, inner] of app.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)){
+    const text = inner.replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<[^>]+>/g, '').trim();
+    assert.ok(text || /aria-label="[^"]+"/.test(attrs) || /id="(hudExit|hudMute)"/.test(attrs), 'pulsante senza nome: ' + attrs);
+  }
+  assert.ok(!/tabindex="[1-9]/.test(app), 'tabindex positivo');
+  assert.ok(!/<(div|span|li)\b[^>]*\bonclick=/i.test(app), 'elemento cliccabile che non è un pulsante');
+  assert.match(app, /:focus-visible\{outline:3px solid/);
+});
+
+test('privacy: pulsante per cancellare storico e impostazioni, collegamenti a informativa e termini', () => {
+  const {app} = buildPages();
+  assert.ok(app.includes('id="dataClear"'));
+  assert.ok(app.includes('privacy.html') && app.includes('termini.html'));
+});

@@ -16,6 +16,8 @@ Struttura e flusso dei dati: `docs/ARCHITETTURA.md`. Difetti noti e idee: `NOTE-
 - `npm run bundle`: AAB firmato per il Play Store (chiave in `android/keystore.properties`, mai in git).
 - `npm run grafica`: icona, avvio e immagini dello store (`tools/make-icons.mjs`, `tools/store-screenshots.mjs`).
 - Pubblicazione sul Play Store: `docs/play-store/PUBBLICAZIONE.md`.
+- Privacy, termini, licenze e verifica legale (20 punti): `privacy.html`, `termini.html`, `docs/legale/VERIFICA.md`.
+  Se cambia cosa fa l'app con i dati (statistiche, pubblicità, abbonamento) vanno aggiornati prima.
 
 ## Regole
 - Non modificare `index.html` a mano: si modifica `src/` e si esegue `npm run build`.

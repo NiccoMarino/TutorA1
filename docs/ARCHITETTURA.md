@@ -42,6 +42,12 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
 - Versione: `package.json`; la build la scrive nella pagina, `android/app/build.gradle` ne ricava versionName e versionCode.
 - Icona, avvio e immagini dello store: `tools/make-icons.mjs` e `tools/store-screenshots.mjs` (`npm run grafica`).
 - Cartello di guida e sue tre forme (verticale, orizzontale, riquadro): sezione "Il cartello di guida" qui sotto.
+- Colori del cartello scelti dall'utente (giallo da, rosso e allarme da): `colorLimits` in `core/rules.js`,
+  menù in `ui/settings-panel.js`.
+- Pagine legali: `privacy.html` e `termini.html` nella radice (servite da GitHub Pages, linkate dall'app);
+  verifica dei 20 punti e bozza dell'abbonamento in `docs/legale/`. Le licenze nell'app (Privacy e diritti)
+  le genera la build (`licensesHtml` in `scripts/build.mjs`) dai file LICENSE delle librerie; per aggiungere una
+  libreria all'app va aggiunta a `LICENSED`. "Cancella storico e impostazioni": `clearAll` in `core/store.js`.
 - Ottimizzazioni: l'aggancio alla strada (`matchPoint`) scorre tutti i segmenti con un filtro per
   riquadro; se servisse più velocità, un indice spaziale va costruito in `buildNetwork`.
 

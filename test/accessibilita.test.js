@@ -48,3 +48,12 @@ test('pulsanti, scelte, menù a tendina e cursori alti almeno 48 px', () => {
   if (!sw || +sw[1] < 48) small.push('.switch ' + (sw ? sw[1] : '?') + ' px');
   assert.deepEqual(small, []);
 });
+
+// Cartello di guida: testo e arco sul colore di ogni stato (i colori sono fissi, uguali nei due temi)
+test('cartello: testo leggibile su ogni colore (verde, giallo, rosso, neutro)', () => {
+  const cart = readFileSync(new URL('../src/styles/cartello.css', import.meta.url), 'utf8');
+  const tones = [...cart.matchAll(/--pc:(#[0-9A-Fa-f]{6}); --pf:(#[0-9A-Fa-f]{6})/g)].map(m => [m[1], m[2]]);
+  assert.equal(tones.length, 4);
+  const bad = tones.filter(([bg, fg]) => ratio(fg, bg) < 4.5).map(([bg, fg]) => fg + ' su ' + bg + ' ' + ratio(fg, bg).toFixed(2));
+  assert.deepEqual(bad, []);
+});

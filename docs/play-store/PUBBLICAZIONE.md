@@ -47,7 +47,10 @@ Google rifiuta un AAB con lo stesso numero di versione di uno già caricato.
 
 ## 5. Creare l'app nella console
 "Crea app": nome **MediaVelocità**, lingua predefinita **Italiano – it-IT**, **App**, **Gratuita**, accetta le
-dichiarazioni. Attenzione: una volta pubblicata come gratuita non può diventare a pagamento.
+dichiarazioni. Attenzione: una volta pubblicata come gratuita non può avere un prezzo d'acquisto, ma può vendere
+un abbonamento dentro l'app (Google Play Billing): per l'abbonamento annuale pensato resta **Gratuita**.
+Prima di vendere leggi `docs/legale/ABBONAMENTO-BOZZA.md` e `docs/legale/VERIFICA.md` (dati del venditore
+pubblicati da Google, condizioni, rimborsi).
 
 ## 6. Compilare la console
 1. **Contenuti dell'app**: tutte le sezioni, con le risposte di `MODULI.md`. Per il servizio in primo piano

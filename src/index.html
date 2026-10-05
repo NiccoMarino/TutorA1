@@ -207,11 +207,31 @@
     <header class="pagebar"><button class="iconbtn" type="button" data-back aria-label="Torna al menù"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button><h2 id="tInfo">Privacy e diritti</h2></header>
     <div class="page-body">
       <div class="card prose">
-        <p>La posizione GPS resta sul telefono: l'app non la invia a nessuno, funziona anche senza internet e lo storico dei tratti è salvato solo qui. <a href="https://niccomarino.github.io/TutorA1/privacy.html" target="_blank" rel="noopener">Informativa sulla privacy</a>.</p>
-        <p>Tratti della rete di Autostrade per l'Italia (A1, A4 Milano–Brescia, A7, A8, A9, A10, A11, A13, A14, A16, A23, A26, A27 e A30): <a href="https://www.autostrade.it/it/tecnologia-sicurezza/sicurezza/il-tutor" target="_blank" rel="noopener">autostrade.it, pagina Il Tutor</a>, consultata il 29 settembre 2026 per A1 e A4 e il 2 ottobre 2026 per le altre. Tratti della A4 Venezia–Trieste: <a href="https://www.infoviaggiando.it/it/14180/tutor" target="_blank" rel="noopener">infoviaggiando.it</a> di Autostrade Alto Adriatico, consultata il 30 settembre 2026. Sulla A4 tra Torino e Milano e tra Brescia e Venezia le società che la gestiscono non indicano tratti Tutor. Tracciato delle carreggiate, usato per riconoscere strada e direzione: © contributori OpenStreetMap (ODbL). Chilometriche di caselli, cantieri, webcam e aree di servizio: dati di viabilità di Autostrade per l'Italia.</p>
-        <p>La posizione dei portali è ricavata dal chilometro ufficiale. Su A1 e A4 l'errore tipico è di circa 100 metri, fino a 250; sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa. Sulle altre autostrade il chilometro è interpolato tra webcam, aree di servizio e caselli di cui si conosce la posizione: di solito l'errore resta sotto i 100 metri, di più dove questi punti sono lontani tra loro.</p>
-        <p>Carattere Overpass (SIL Open Font License).</p>
+        <h3>I tuoi dati</h3>
+        <p>La posizione GPS resta sul telefono: l'app non la invia a nessuno, funziona anche senza internet e non ha account, pubblicità né statistiche di utilizzo. Impostazioni e storico dei tratti sono salvati solo nella memoria del telefono (o del browser) e servono solo a farti usare l'app: niente cookie, quindi nessun consenso da chiedere.</p>
+        <p><a href="https://niccomarino.github.io/TutorA1/privacy.html" target="_blank" rel="noopener">Informativa sulla privacy</a> · <a href="https://niccomarino.github.io/TutorA1/termini.html" target="_blank" rel="noopener">Termini d'uso</a></p>
+        <button class="btn" id="dataClear" type="button">Cancella storico e impostazioni</button>
+      </div>
+      <div class="card prose">
+        <h3>Uso sicuro</h3>
+        <p>Non usare il telefono mentre guidi: fissalo a un supporto e imposta tutto prima di partire, l'app ti avvisa con la voce. Valgono sempre i cartelli e il limite indicato sulla strada.</p>
+        <p>Media, velocità da tenere e posizione dei portali sono stime fatte con il GPS del telefono: possono differire da quelle del Tutor, e l'app non garantisce di evitare sanzioni.</p>
         <p>Non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato.</p>
+      </div>
+      <div class="card prose">
+        <h3>Fonti e precisione</h3>
+        <p>Tratti della rete di Autostrade per l'Italia (A1, A4 Milano–Brescia, A7, A8, A9, A10, A11, A13, A14, A16, A23, A26, A27 e A30): <a href="https://www.autostrade.it/it/tecnologia-sicurezza/sicurezza/il-tutor" target="_blank" rel="noopener">autostrade.it, pagina Il Tutor</a>, consultata il 29 settembre 2026 per A1 e A4 e il 2 ottobre 2026 per le altre. Tratti della A4 Venezia–Trieste: <a href="https://www.infoviaggiando.it/it/14180/tutor" target="_blank" rel="noopener">infoviaggiando.it</a> di Autostrade Alto Adriatico, consultata il 30 settembre 2026. Sulla A4 tra Torino e Milano e tra Brescia e Venezia le società che la gestiscono non indicano tratti Tutor. Chilometriche di caselli, cantieri, webcam e aree di servizio: dati di viabilità di Autostrade per l'Italia.</p>
+        <p>La posizione dei portali è ricavata dal chilometro ufficiale. Su A1 e A4 l'errore tipico è di circa 100 metri, fino a 250; sulle diramazioni di Roma e sulla Variante di Valico la stima è meno precisa. Sulle altre autostrade il chilometro è interpolato tra webcam, aree di servizio e caselli di cui si conosce la posizione: di solito l'errore resta sotto i 100 metri, di più dove questi punti sono lontani tra loro.</p>
+      </div>
+      <div class="card prose">
+        <h3>Contatti</h3>
+        <p>Per domande, segnalazioni o richieste sui dati: <a href="mailto:niccofantini2000@gmail.com">niccofantini2000@gmail.com</a>.</p>
+      </div>
+      <div class="card prose">
+        <h3>Licenze</h3>
+        <p>Tracciato delle carreggiate, usato per riconoscere strada e direzione: © contributori <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>, disponibile con licenza ODbL. I dati dei tratti derivati da OpenStreetMap sono nel file <code>src/data/tutor-data.json</code> del <a href="https://github.com/NiccoMarino/TutorA1" target="_blank" rel="noopener">codice dell'app</a>, con la stessa licenza.</p>
+        <p>Software e carattere inclusi nell'app:</p>
+<!--@var licenses-->
       </div>
     </div>
   </section>
