@@ -172,3 +172,10 @@ test('privacy: pulsante per cancellare storico e impostazioni, collegamenti a in
   assert.ok(app.includes('id="dataClear"'));
   assert.ok(app.includes('privacy.html') && app.includes('termini.html'));
 });
+
+// Capacitor scrive --safe-area-inset-* nella pagina, a volte prima che esista (errore innocuo nella console, vedi
+// tools/device-check.mjs): resta innocuo finché la pagina usa solo env(safe-area-inset-*) e mai quelle variabili
+test('la pagina non usa le variabili --safe-area-inset-* di Capacitor', () => {
+  const {app} = buildPages();
+  assert.ok(!app.includes('var(--safe-area-inset'), 'la pagina usa le variabili di Capacitor');
+});

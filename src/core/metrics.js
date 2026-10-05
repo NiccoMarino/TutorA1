@@ -33,7 +33,9 @@ export function adviceText(m){
   if (k.label === 'tratto ormai') return k.value === 'in regola' ? 'Rispettando il limite di ' + lim + ' chiudi il tratto in regola.'
     : 'Media sopra ' + lim + ' ma entro la tolleranza fino al portale.';
   if (k.label === 'per restare in tolleranza') return 'Entro il limite non rientri più: per restare in tolleranza resta sotto ' + n + ' km/h fino al portale.';
-  if (+n >= lim) return 'Fino al portale puoi tenere ' + n + ' km/h: la media resta entro ' + lim + '.';
+  // sopra il limite il numero resta sul cartello (≤ 141), ma il consiglio non invita a superare il limite, che vale
+  // in ogni momento e non solo come media (art. 142 del Codice della Strada)
+  if (+n >= lim) return 'Con il limite di ' + lim + ' chiudi in regola.';
   if (m.status === 'alarm') return 'Media oltre la soglia: rallenta e resta sotto ' + n + ' km/h fino al portale.';
   return 'Per chiudere entro il limite resta sotto ' + n + ' km/h fino al portale.';
 }

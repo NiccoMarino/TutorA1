@@ -64,7 +64,8 @@ Un solo markup (`#plate` in `src/index.html`) per tre forme, scelte solo dallo s
 - Velocità da tenere: `keepText` in `core/metrics.js`. È la velocità che fa chiudere il tratto con la media entro il
   limite, anche se sopra il limite (dice fin dove si può andare senza rischiare la multa); se non basta più, quella
   per restare in tolleranza; da 200 km/h in su il tratto è "ormai in regola". Il consiglio scritto (`adviceText`)
-  usa lo stesso numero.
+  usa lo stesso numero, tranne quando è sopra il limite: allora dice "Con il limite di 130 chiudi in regola",
+  perché il limite vale in ogni momento (scelta presa in `docs/legale/VERIFICA.md`, punto 12).
 - Riquadro trasparente: `MainActivity` rende trasparenti finestra, vista principale e WebView nel riquadro, e lo
   rifà a ogni cambio di configurazione perché il plugin SystemBars di Capacitor rimette lo sfondo pieno.
 - Nella pagina lo stile arriva senza commenti (`stripCssComments` in `scripts/build.mjs`): nei sorgenti restano.

@@ -533,13 +533,14 @@ async function main(){
     try { await fn(); } catch(e){ check('Fase ' + name + ' interrotta', false, e.message); }
     console.log('    (' + Math.round((Date.now() - t0)/1000) + ' s)');
   }
-  // Capacitor (SystemBars) scrive le misure delle barre di sistema nella pagina: se capita mentre il collaudo la
-  // ricarica (freshStart) il documento è vuoto e la console riporta un errore. Innocuo: la pagina usa env(safe-area-*),
-  // non quelle variabili, e nell'app la pagina non si ricarica mai. Altrove resta un errore.
-  const harmless = t => t.includes(', riavvio]') && t.includes('Error injecting safe area CSS');
+  // Capacitor (SystemBars) scrive nella pagina le misure delle barre di sistema come variabili --safe-area-inset-*:
+  // se lo fa mentre la pagina si sta caricando (avvio, riapertura, riavvio del collaudo) il documento non c'è ancora
+  // e la console riporta un errore. Innocuo perché la pagina non usa quelle variabili (usa env(safe-area-inset-*)):
+  // lo garantisce un test in test/build.test.js. Solo quel messaggio, con il documento assente, diventa una nota.
+  const harmless = t => t.includes('Error injecting safe area CSS') && t.includes("reading 'style'");
   const fmt = ([t, n]) => (n > 1 ? n + '× ' : '') + t;
   const errs = [...pageErrors].filter(([t]) => !harmless(t)).map(fmt), known = [...pageErrors].filter(([t]) => harmless(t)).map(fmt);
-  if (known.length) note('Capacitor durante il riavvio della pagina fatto dal collaudo (innocuo)', list(known, 2));
+  if (known.length) note('Capacitor ha scritto le misure delle barre prima che la pagina fosse caricata (innocuo)', list(known, 2));
   check('Nessun errore JavaScript nella pagina durante il collaudo', !errs.length, list(errs, 5));
 }
 

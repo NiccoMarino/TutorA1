@@ -35,3 +35,10 @@ test('il riquadro è quadrato e trasparente intorno al cerchio', () => {
   const pip = read('src/styles/pip.css');
   assert.match(pip, /html\.pip, html\.pip body\{background:transparent/);
 });
+
+// L'app non si collega a nessun server: il permesso internet resta tolto, anche se una libreria lo chiede
+test('niente permesso INTERNET nell\'app', () => {
+  const manifest = read('android/app/src/main/AndroidManifest.xml');
+  assert.match(manifest, /<uses-permission android:name="android\.permission\.INTERNET" tools:node="remove" \/>/);
+  assert.ok(!/<uses-permission android:name="android\.permission\.INTERNET" \/>/.test(manifest));
+});

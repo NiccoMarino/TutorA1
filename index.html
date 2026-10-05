@@ -1202,7 +1202,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     if (k.value === "rallenta") return "Media oltre la soglia: rallenta, più tempo resti sotto il limite più la media scende.";
     if (k.label === "tratto ormai") return k.value === "in regola" ? "Rispettando il limite di " + lim + " chiudi il tratto in regola." : "Media sopra " + lim + " ma entro la tolleranza fino al portale.";
     if (k.label === "per restare in tolleranza") return "Entro il limite non rientri più: per restare in tolleranza resta sotto " + n + " km/h fino al portale.";
-    if (+n >= lim) return "Fino al portale puoi tenere " + n + " km/h: la media resta entro " + lim + ".";
+    if (+n >= lim) return "Con il limite di " + lim + " chiudi in regola.";
     if (m.status === "alarm") return "Media oltre la soglia: rallenta e resta sotto " + n + " km/h fino al portale.";
     return "Per chiudere entro il limite resta sotto " + n + " km/h fino al portale.";
   }

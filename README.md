@@ -10,7 +10,7 @@ e calcolano la tua media nel tratto, come fa il Tutor.
   Roma e la Variante di Valico, 24 sulla A4 tra Milano e Brescia e tra Venezia e Trieste, e 103 su A7, A8, A9, A10,
   A11, A13, A14, A16, A23, A26, A27 e A30 (tutti quelli indicati da Autostrade per l'Italia).
 - In guida segue la posizione GPS. Avvisa prima del portale di inizio e calcola la media mentre sei
-  nel tratto. Dice fino a quanto puoi andare (anche sopra il limite) per chiuderlo con la media entro il limite e allarma con voce,
+  nel tratto. Indica la velocità da tenere per chiuderlo con la media entro il limite e allarma con voce,
   suoni e vibrazione se la media supera la soglia.
 - Schermata di guida con un cartello circolare: media al centro, arco di avanzamento nel tratto e velocità da
   tenere in basso. Con il telefono in orizzontale il cartello prende tutto lo schermo.

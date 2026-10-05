@@ -19,11 +19,11 @@ Stato: **Fatto**, **Non serve** (con il motivo), **Da fare** (serve una tua deci
 | 9 | Schemi ingannevoli | Fatto | nessuno; regole per l'abbonamento |
 | 10 | Costi nascosti | Fatto | nessun costo; regole per l'abbonamento |
 | 11 | Recensioni false | Fatto | nessuna |
-| 12 | Promesse non dimostrabili | Fatto, uno da decidere | scheda dello store, app |
+| 12 | Promesse non dimostrabili | Fatto | scheda dello store, consiglio di guida |
 | 13 | Testo alternativo | Fatto | test |
 | 14 | Contrasto | Fatto | test e collaudo sul telefono |
 | 15 | Tastiera | Fatto | test |
-| 16 | Dati di chi pubblica | Da fare | servono i tuoi dati |
+| 16 | Dati di chi pubblica | Fatto per ora | email; da rivedere quando si vende |
 | 17 | Età | Fatto | 18 anni e oltre |
 | 18 | Disiscrizione dalle email | Non serve | l'app non manda email |
 | 19 | Licenze di caratteri e immagini | Fatto | app, Privacy e diritti, Licenze |
@@ -77,8 +77,9 @@ Ai tester del test chiuso va chiesto un parere sincero, mai una recensione in ca
   metodo del Tutor".
 - Aggiunto che le stime non garantiscono di evitare sanzioni e che il limite vale sempre.
 - La precisione dei portali ora dice "di solito entro 100 metri".
-- Da decidere con te: il consiglio "Fino al portale puoi tenere 141 km/h" invita a superare il limite istantaneo.
-  Vedi in fondo.
+- Il consiglio "Fino al portale puoi tenere 141 km/h" invitava a superare il limite, che vale in ogni momento
+  (art. 142 del Codice della Strada). Ora il cartello mostra ancora "≤ 141", ma il consiglio dice "Con il limite di
+  130 chiudi in regola". I termini d'uso dicono che la velocità da tenere non autorizza a superare il limite.
 
 **13. Testo alternativo.** L'app non ha immagini `<img>`: icone e loghi sono disegni con `aria-hidden`, e i
 pulsanti con solo l'icona hanno un nome (`aria-label`). Un test lo controlla a ogni build.
@@ -89,13 +90,13 @@ pulsanti con solo l'icona hanno un nome (`aria-label`). Un test lo controlla a o
 **15. Tastiera.** Sul sito tutto quello che si tocca è un pulsante, un collegamento o un campo vero, quindi
 raggiungibile con Tab; il bordo di messa a fuoco è visibile; nessun ordine di tabulazione forzato. Un test lo controlla.
 
-**16. Dati di chi pubblica.** Oggi l'app indica l'email di contatto (Privacy e diritti, informativa, termini, scheda).
-Per vendere servono di più, e mancano.
-- Google mostra nella scheda nome, indirizzo, telefono ed email di chi vende (Digital Services Act).
-- La legge sui contratti a distanza chiede l'identità del venditore.
+**16. Dati di chi pubblica.** Pubblichi come persona, senza indirizzo né telefono. Finché l'app è gratuita
+basta così: informativa, termini, app e scheda indicano lo sviluppatore e l'email di contatto.
 
-Dimmi quali dati vuoi usare e come pubblichi: persona fisica o società, con o senza partita IVA. Li aggiungo a
-informativa, termini e app.
+Quando arriverà l'abbonamento, Google chiederà se sei un "operatore commerciale" (Digital Services Act). A chi lo è
+fa mostrare nella scheda anche indirizzo e telefono. Una persona che vende un abbonamento in modo continuativo di
+solito lo è: va valutato con il commercialista. Se sì, si può usare un indirizzo di domiciliazione o una casella
+postale e un numero dedicato, invece di quelli di casa.
 
 **17. Età.** App per chi guida, non rivolta ai minori di 18 anni: è scritto in informativa e termini, e nella
 Play Console la fascia d'età è "18 anni e oltre" (`docs/play-store/MODULI.md`). Non ci sono account, quindi niente
@@ -119,15 +120,3 @@ avrà il link per disiscriversi e servirà il consenso prima dell'iscrizione.
 **20. Cancellazione dei dati.** Tutto quello che l'app conserva è sul telefono. Nuovo pulsante "Cancella storico e
 impostazioni" in Privacy e diritti, con conferma, oltre a "Cancella lo storico" e alla disinstallazione. Lo
 sviluppatore non ha dati di nessuno da cancellare; resta l'email per qualsiasi richiesta.
-
-## Da decidere: la velocità da tenere sopra il limite
-Il cartello mostra per esempio "≤ 141" e il consiglio dice "Fino al portale puoi tenere 141 km/h: la media resta
-entro 130". Il limite però vale in ogni momento (art. 142 del Codice della Strada), non solo come media: andare a
-141 è comunque un'infrazione, anche se il Tutor non la rileva. Un testo che lo suggerisce espone l'app a critiche,
-a contestazioni e a una possibile segnalazione su Google Play.
-
-Proposte, in ordine di prudenza:
-1. Lasciare il numero e cambiare il consiglio in "Media sotto controllo: con il limite di 130 chiudi in regola"
-   quando il numero supera il limite (il cartello mostra "≤ 141" senza invitare ad andarci).
-2. Lasciare tutto com'è, con l'avvertenza dei termini d'uso (già scritta).
-3. Mostrare al massimo il limite (com'era prima).

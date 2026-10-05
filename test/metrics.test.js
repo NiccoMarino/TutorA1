@@ -14,7 +14,8 @@ test('media sotto il limite: tutto bene', () => {
   assert.ok(Math.abs(m.proj - 120) < 1e-9);
   assert.equal(m.status, 'ok');
   assert.equal(m.remKm, 5);
-  assert.equal(adviceText(m), 'Fino al portale puoi tenere 141 km/h: la media resta entro 130.');
+  // il cartello mostra ≤ 141, ma il consiglio non invita a superare il limite (che vale in ogni momento)
+  assert.equal(adviceText(m), 'Con il limite di 130 chiudi in regola.');
 });
 
 test('media sopra il limite ma sotto la soglia di allarme: avviso', () => {
@@ -84,10 +85,12 @@ test('velocità da tenere: nei primi secondi vale il limite', () => {
 });
 
 test('consiglio e velocità da tenere dicono lo stesso numero', () => {
-  for (const m of [at(5, 150, 120), at(5, 135, 133.3), at(5, 120, 150), at(4, 100, 150), at(7, 190, 140), at(9.8, 259, 120)]){
+  for (const m of [at(5, 135, 133.3), at(5, 120, 150), at(4, 100, 150), at(7, 190, 140), at(9.8, 259, 120)]){
     const n = keepText(m).value.replace('≤ ', '');
     assert.ok(adviceText(m).includes(' ' + n + ' km/h'), adviceText(m) + ' / ' + n);
   }
+  // sopra il limite il numero resta sul cartello, il consiglio no
+  assert.ok(!/1[34]\d km\/h/.test(adviceText(at(5, 150, 120))));
 });
 
 // Il giallo dipende solo dalla media sopra il limite, non dalla velocità di adesso
