@@ -62,7 +62,7 @@ Un solo markup (`#plate` in `src/index.html`) per tre forme, scelte solo dallo s
 
 - Testi e numeri: `core/hud-view.js` (`plate`, `keep`, `gauge`, `progress`); `ui/hud.js` (`renderPlate`) li scrive.
 - Velocità da tenere: `keepText` in `core/metrics.js`. È la velocità che fa chiudere il tratto con la media entro il
-  limite, anche se sopra il limite (dice fin dove si può andare senza rischiare la multa); se non basta più, quella
+  limite, anche se sopra il limite (il numero dice entro quale velocità la media del tratto resta sotto il limite); se non basta più, quella
   per restare in tolleranza; da 200 km/h in su il tratto è "ormai in regola". Il consiglio scritto (`adviceText`)
   usa lo stesso numero, tranne quando è sopra il limite: allora dice "Con il limite di 130 chiudi in regola",
   perché il limite vale in ogni momento (scelta presa in `docs/legale/VERIFICA.md`, punto 12).
