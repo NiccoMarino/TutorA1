@@ -20,11 +20,30 @@ const FONTS = FONT_WEIGHTS.map(w => {
   return '@font-face{font-family:"Overpass";font-style:normal;font-weight:' + w + ';font-display:swap;' +
     'src:url(data:font/woff2;base64,' + readFileSync(file).toString('base64') + ') format("woff2")}';
 }).join('\n');
+// Licenze del software incluso nell'app, con i testi presi dalle librerie installate: le licenze chiedono che
+// copyright e testo accompagnino il software (pagina Privacy e diritti, sezione Licenze)
+const esc = t => t.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const pkgLicense = pkg => readFileSync(ROOT + 'node_modules/' + pkg + '/LICENSE', 'utf8').replace(/\r\n/g, '\n').trim();
+export const LICENSED = [
+  ['Carattere Overpass', '@fontsource/overpass', 'SIL Open Font License 1.1'],
+  ['Capacitor', '@capacitor/core', 'MIT'], ['Capacitor per Android', '@capacitor/android', 'MIT'],
+  ['Posizione in secondo piano', '@capacitor-community/background-geolocation', 'MIT'],
+  ['Schermo acceso', '@capacitor-community/keep-awake', 'MIT'],
+  ['Sintesi vocale', '@capacitor-community/text-to-speech', 'MIT'], ['Vibrazione', '@capacitor/haptics', 'MIT']
+];
+export function licensesHtml(){
+  const items = LICENSED.map(([what, pkg, lic]) =>
+    '<details><summary>' + what + ' (' + pkg + '), ' + lic + '</summary><pre class="lic">' + esc(pkgLicense(pkg)) + '</pre></details>');
+  items.push('<details><summary>Librerie Android: AndroidX (Apache License 2.0) e Google Play services per la posizione '
+    + '(termini di Google per le API Android)</summary><pre class="lic">' + esc(readSource('legal/apache-2.0.txt')) + '</pre></details>');
+  return items.join('\n');
+}
+const LICENSES = licensesHtml();
 const VARS = {
-  web: {viewportFit: ', viewport-fit=cover', bridge: '', notice: NOTICE, version: VERSION, fonts: FONTS},
+  web: {viewportFit: ', viewport-fit=cover', bridge: '', notice: NOTICE, version: VERSION, fonts: FONTS, licenses: LICENSES},
   // Senza viewport-fit=cover Capacitor lascia spazio a barra di stato e barra di navigazione,
   // così la pagina (che non usa i margini safe-area) non finisce sotto l'ora e la batteria
-  app: {viewportFit: '', bridge: '\n<script src="capacitor.js"></script>\n<script src="tutor-native.js"></script>', notice: NOTICE, version: VERSION, fonts: FONTS}
+  app: {viewportFit: '', bridge: '\n<script src="capacitor.js"></script>\n<script src="tutor-native.js"></script>', notice: NOTICE, version: VERSION, fonts: FONTS, licenses: LICENSES}
 };
 
 export function readSource(path){
@@ -61,9 +80,14 @@ function bundleMain(){
   return checkInlineScript(r.outputFiles[0].text.replace(/\n$/, ''));
 }
 
+// Lo stile senza commenti: nei sorgenti spiegano dove sono le cose, nella pagina sarebbero solo peso
+export function stripCssComments(css){
+  return css.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').filter(l => l.trim()).join('\n');
+}
+
 export function buildPages(){
   const main = bundleMain();
-  const include = path => path === 'main.js' ? main : readSource(path);
+  const include = path => path === 'main.js' ? main : path.endsWith('.css') ? stripCssComments(readSource(path)) : readSource(path);
   const template = readSource('index.html');
   const web = render(template, VARS.web, include);
   const app = render(template, VARS.app, include);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:allowBackup="true"
@@ -37,7 +38,8 @@
         </provider>
     </application>
 
-    <!-- Permissions -->
-
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Permessi: niente internet, l'app non si collega a nessun server (la pagina è dentro l'app).
+         tools:node="remove" lo toglie anche se lo chiede una libreria. Posizione, notifica e vibrazione
+         arrivano dai plugin (background-geolocation, haptics). -->
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
 </manifest>

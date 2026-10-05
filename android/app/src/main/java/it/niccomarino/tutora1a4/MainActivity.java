@@ -3,6 +3,9 @@ package it.niccomarino.tutora1a4;
 import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -22,6 +25,9 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(TutorPipPlugin.class);
         super.onCreate(savedInstanceState);
+        // Finestra capace di trasparenza: serve al riquadro, dove si vede solo il cerchio del cartello.
+        // A schermo intero lo sfondo resta pieno (tema e pagina), quindi non cambia niente.
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
         // Fuori dalla guida Indietro chiude prima il menù o la pagina aperta (window.tutorBack in main.js);
         // solo dalla schermata iniziale fa quello che fa di solito Android
         OnBackPressedCallback backInPage = new OnBackPressedCallback(true) {
@@ -58,7 +64,7 @@ public class MainActivity extends BridgeActivity {
     }
 
     private PictureInPictureParams buildPipParams() {
-        PictureInPictureParams.Builder b = new PictureInPictureParams.Builder().setAspectRatio(new Rational(16, 10));
+        PictureInPictureParams.Builder b = new PictureInPictureParams.Builder().setAspectRatio(new Rational(1, 1));
         // Da Android 12 la finestrella si apre da sola quando esci con il gesto Home
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             b.setAutoEnterEnabled(pipEnabled).setSeamlessResizeEnabled(false);
@@ -105,6 +111,7 @@ public class MainActivity extends BridgeActivity {
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         sendToPage("tutorpip", String.valueOf(isInPictureInPictureMode));
+        setPipTransparent(isInPictureInPictureMode);
         // Nella finestrella la WebView cambia zoom e al ritorno lo tiene: lo riporto al 100% (più volte,
         // perché l'animazione di uscita dal riquadro dura qualche istante)
         if (!isInPictureInPictureMode) {
@@ -112,6 +119,25 @@ public class MainActivity extends BridgeActivity {
             WebView wv = bridge.getWebView();
             for (int delay : new int[] {200, 600, 1200}) wv.postDelayed(() -> resetZoom(wv), delay);
         }
+    }
+
+    // A ogni cambio di configurazione (anche entrando nel riquadro) SystemBars rimette lo sfondo pieno: nel riquadro lo ritolgo
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (isInPictureInPictureMode()) setPipTransparent(true);
+    }
+
+    // Nel riquadro, fuori dal cerchio si vede quello che c'è sotto (Maps): finestra e WebView trasparenti.
+    // La pagina fa lo stesso con la classe "pip" (src/styles/pip.css). Tornando a schermo intero si rimette lo sfondo.
+    private void setPipTransparent(boolean on) {
+        WebView wv = bridge == null ? null : bridge.getWebView();
+        int bg = on ? Color.TRANSPARENT : getColor(R.color.barre_sistema);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) setTranslucent(on);
+        getWindow().setBackgroundDrawable(new ColorDrawable(bg));
+        // il plugin SystemBars di Capacitor dà un colore anche alla vista principale della finestra
+        getWindow().getDecorView().setBackgroundColor(bg);
+        if (wv != null) wv.setBackgroundColor(on ? Color.TRANSPARENT : bg);
     }
 
     @SuppressWarnings("deprecation")

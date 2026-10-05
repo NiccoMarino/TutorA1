@@ -1,14 +1,17 @@
 // Collaudo sul telefono collegato via USB, pensato per trovare più difetti possibile nel minor tempo.
 // Usa la copia di prova "Tutor prova" (it.niccomarino.tutora1a4.prova): l'app normale non viene toccata.
-// Non cambia impostazioni del telefono (solo quelle dell'app di prova).
+// Non cambia impostazioni del telefono (solo quelle dell'app di prova), tranne la rotazione dello schermo nella fase
+// "rotazione": la gira con "wm user-rotation" e alla fine la rimette com'era, anche se il collaudo si interrompe.
 //
 // Fasi (ognuna va avanti anche se la precedente fallisce; gli errori JavaScript della pagina sono raccolti sempre):
 //   pagina   versione installata, ogni schermata in tema chiaro e scuro (fuori schermo, contrasto, testi rotti),
 //            elenco e filtri, impostazioni salvate, guida simulata in tutti i tratti a 125, 131, 137,5 e 200 km/h
 //            nella WebView vera, storico. Solo JavaScript, niente gesti: un paio di minuti.
+//   rotazione guida simulata con il telefono girato: cartello a tutto schermo in orizzontale (anello, velocità da tenere
+//            a destra), di nuovo cerchio in verticale, guida che continua senza ricaricare la pagina.
 //   uscite   Home, Indietro, pulsante Riquadro, riquadro sopra Google Maps, ritorno a schermo intero, X del riquadro.
 //   gps      (con --gps) GPS vero: il servizio della posizione si ferma chiudendo il riquadro.
-// Uso: node tools/device-check.mjs [--solo pagina|uscite] [--gps] [--completo] [--out cartella]
+// Uso: node tools/device-check.mjs [--solo pagina|rotazione|uscite] [--gps] [--completo] [--out cartella]
 //   --completo aspetta anche il tempo di spegnimento dello schermo (fino a un minuto in più).
 // A ogni errore salva una schermata in <out>/errore-N.png; il riepilogo è in <out>/risultati.json.
 import { execFileSync } from 'node:child_process';
@@ -16,7 +19,7 @@ import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { verdictOf } from '../src/core/rules.js';
-import { pageFingerprint, pageAudit, showScreen, listCheck, driveSection } from './device-page.mjs';
+import { pageFingerprint, pageAudit, showScreen, listCheck, driveSection, plateForm } from './device-page.mjs';
 
 const PKG = 'it.niccomarino.tutora1a4.prova';
 const ACT = PKG + '/it.niccomarino.tutora1a4.MainActivity';
@@ -76,13 +79,30 @@ async function waitTask(pred, ms = 6000){
 // La finestra chiede di tenere acceso lo schermo (FLAG_KEEP_SCREEN_ON, messo da KeepAwake)
 const keepsScreenOn = () => task().keepScreenOn;
 const gpsServiceOn = () => /isForeground=true/.test(adb('shell', 'dumpsys', 'activity', 'services', PKG));
+// Rotazione dello schermo: la prima volta si annota com'era, restoreRotation() la rimette (anche a fine collaudo)
+let rotationBefore = null;
+function rotate(r){
+  if (!rotationBefore) rotationBefore = {mode: adb('shell', 'wm', 'user-rotation'), rot: adb('shell', 'settings', 'get', 'system', 'user_rotation')};
+  adb('shell', 'wm', 'user-rotation', 'lock', String(r));
+}
+function restoreRotation(){
+  if (!rotationBefore) return true;
+  const {mode, rot} = rotationBefore;
+  adb('shell', 'wm', 'user-rotation', 'lock', /^\d$/.test(rot) ? rot : '0');
+  if (/free/.test(mode)) adb('shell', 'wm', 'user-rotation', 'free');
+  const ok = adb('shell', 'wm', 'user-rotation') === mode && adb('shell', 'settings', 'get', 'system', 'user_rotation') === rot;
+  rotationBefore = null;
+  return ok;
+}
 function screenSize(){ const m = adb('shell', 'wm', 'size').match(/(\d+)x(\d+)/); return m ? [+m[1], +m[2]] : [1080, 2340]; }
 
 /* ---------- pagina, tramite DevTools della WebView ---------- */
 let ws = null, msgId = 0;
 const pending = new Map();
 // Errori JavaScript e messaggi di errore nella console, per tutta la durata del collaudo
+// (con la fase in cui sono comparsi, per ritrovarli)
 const pageErrors = new Map();
+let currentPhase = 'avvio';
 function onDevtools(m){
   if (m.id && pending.has(m.id)){ pending.get(m.id)(m); pending.delete(m.id); return; }
   let text = null;
@@ -94,7 +114,7 @@ function onDevtools(m){
   } else if (m.method === 'Log.entryAdded' && m.params.entry.level === 'error'){
     text = m.params.entry.text + (m.params.entry.url ? ' (' + m.params.entry.url + ')' : '');
   }
-  if (text) pageErrors.set(text.slice(0, 200), (pageErrors.get(text.slice(0, 200)) || 0) + 1);
+  if (text){ const k = '[' + currentPhase + '] ' + text.slice(0, 200); pageErrors.set(k, (pageErrors.get(k) || 0) + 1); }
 }
 async function connect(){
   try { if (ws) ws.close(); } catch(e){}
@@ -146,11 +166,13 @@ const pipLayout = () => js(`(() => {
   const vis = sel => { const e = document.querySelector(sel); if (!e) return false; const r = e.getBoundingClientRect(); return getComputedStyle(e).display !== 'none' && r.width > 0 && r.height > 0; };
   const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
   const vp = {left: 0, top: 0, right: innerWidth, bottom: innerHeight};
+  const g = document.querySelector('.gauge').getBoundingClientRect();
+  const clear = e => getComputedStyle(e).backgroundColor === 'rgba(0, 0, 0, 0)';
   return {
-    visible: ['.screen', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast'].filter(vis),
-    plateInside: inside(el('plate').getBoundingClientRect(), vp),
-    bigInside: inside(el('pBig').getBoundingClientRect(), document.querySelector('.plate-in').getBoundingClientRect()),
-    titleCut: el('pTitle').scrollWidth > el('pTitle').clientWidth + 1
+    visible: ['.screen', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast', '.ptext', '.pside'].filter(vis),
+    plateInside: g.width > 0 && inside(g, vp) && Math.abs(g.width - Math.min(innerWidth, innerHeight)) <= 2,
+    bigInside: inside(el('pBig').getBoundingClientRect(), g) && inside(document.querySelector('.keep-in').getBoundingClientRect(), g),
+    transparent: [document.documentElement, document.body, document.querySelector('.hud')].every(clear)
   }; })()`);
 
 async function launch(){
@@ -165,10 +187,13 @@ async function reload(){
   if (!await waitFor('!!window.__tutor && document.readyState === "complete"', 15000)) throw new Error('La pagina non si è ricaricata');
 }
 async function freshStart(){
+  const phase = currentPhase;
+  currentPhase = phase + ', riavvio';
   adb('shell', 'am', 'force-stop', PKG);
   await launch();
   await js(`localStorage.setItem('tutorA1.v1.settings', ${JSON.stringify(JSON.stringify(TEST_SETTINGS))}); true`);
   await reload();
+  currentPhase = phase;
 }
 async function startSim(kmh){
   await js(`(() => { document.getElementById('simSec').value = '12'; document.getElementById('simV').value = '${kmh}';
@@ -183,10 +208,19 @@ async function closePip(){
   await sleep(1500);   // il riquadro appena aperto ignora i tocchi finché non si è assestato
   const [l, tp, r, b] = task().bounds || t.bounds, cx = (l + r) >> 1, cy = (tp + b) >> 1;
   adb('shell', 'input', 'tap', String(cx), String(cy));
-  await sleep(600);
-  // Il menu del riquadro è di sistema e uiautomator non lo vede: su One UI la X è l'ultima icona in alto a destra
-  // (misurata dallo screenshot del menu: 85% della larghezza, 21% dell'altezza)
-  adb('shell', 'input', 'tap', String(Math.round(l + 0.852*(r - l))), String(Math.round(tp + 0.21*(b - tp))));
+  // Il menu del riquadro è di sistema e uiautomator non lo vede: su One UI la X è l'ultima icona in alto a destra.
+  // Aperto il menu il riquadro si allarga un po': si aspetta che sia allargato e fermo (due letture uguali),
+  // altrimenti il tocco cade sull'icona accanto, che riapre l'app.
+  // Posizione misurata dallo screenshot con il riquadro quadrato: 84% della larghezza da sinistra, 13% dall'alto
+  let mb = null;
+  for (let i = 0, prev = null; i < 10; i++){
+    await sleep(250);
+    const cur = task().bounds;
+    if (cur && prev && cur.join() === prev.join() && cur[2] - cur[0] > r - l){ mb = cur; break; }
+    prev = cur;
+  }
+  const [ml, mt, mr] = mb || task().bounds || [l, tp, r];
+  adb('shell', 'input', 'tap', String(Math.round(ml + 0.84*(mr - ml))), String(Math.round(mt + 0.134*(mr - ml))));
   if ((await waitTask(t => t.mode !== 'pinned', 3000)).mode !== 'pinned') return 'pulsante X';
   const [sw, sh] = screenSize();
   adb('shell', 'input', 'swipe', String(cx), String(cy), String(sw >> 1), String(Math.round(sh*0.96)), '1200');
@@ -254,6 +288,14 @@ async function phasePage(){
   await reload();
   const after = await js(`({limit: window.__tutor.settings.limit, pressed: [...document.querySelectorAll('#setLimits .chip')].find(b => b.getAttribute('aria-pressed') === 'true').textContent})`);
   check('Dopo il riavvio il limite resta 110', after.limit === 110 && after.pressed.startsWith('110'), JSON.stringify(after));
+  // Colori del cartello: giallo da 5 sotto il limite, rosso dal limite; restano dopo il riavvio
+  await js(`(() => { const y = document.getElementById('setYellow'), r = document.getElementById('setRed');
+    y.value = '-5'; y.dispatchEvent(new Event('change')); r.value = 'l:0'; r.dispatchEvent(new Event('change')); return true; })()`);
+  await reload();
+  const col = await js(`({y: document.getElementById('setYellow').value, r: document.getElementById('setRed').value,
+    help: document.getElementById('marginHelp').textContent})`);
+  check('Colori scelti (giallo sopra 105, rosso da 110 con limite 110): restano dopo il riavvio', col.y === '-5' && col.r === 'l:0'
+    && /giallo sopra 105 .* da 110 km\/h/.test(col.help), col.help.slice(0, 140));
   await js(`localStorage.setItem('tutorA1.v1.settings', ${JSON.stringify(JSON.stringify(TEST_SETTINGS))}); localStorage.setItem('tutorA1.v1.history', '[]'); true`);
   await reload();
 
@@ -313,6 +355,53 @@ async function phasePage(){
   check('Svuota storico', h3.saved === 0 && /Qui compariranno/.test(h3.text), JSON.stringify(h3).slice(0, 80));
 }
 
+// Guida simulata con il telefono girato: in orizzontale il cartello prende lo schermo, tornando dritti torna il cerchio
+async function phaseRotation(){
+  await freshStart();
+  await js(`(() => { document.getElementById('simSec').value = '15'; document.getElementById('simV').value = '160';
+    document.getElementById('btnSimStart').click(); window.__tutor.simControls.stopTimer(); return true; })()`);
+  // avanza la simulazione fino a quel momento del cartello (senza timer: il collaudo decide quando)
+  const stepUntil = until => js(`(() => { const T = window.__tutor, el = document.getElementById('plate');
+    for (let i = 0; i < 3000; i++){ const p = el.className.replace(' flash', '').replace('plate ', ''); if (${until}) return true;
+      const q = T.simulator.step(); if (!q) return false; T.tracker.pushPosition(q); } return false; })()`);
+  const has = (f, sels) => sels.every(s => f.shown.includes(s)), hasNone = (f, sels) => sels.every(s => !f.shown.includes(s));
+  check('Guida simulata nel tratto (verticale)', await stepUntil('p === "alarm"'));
+  const v = await call(plateForm), origin = await js('performance.timeOrigin');
+  check('Verticale: cerchio con la velocità da tenere dentro, statistiche e consiglio sotto',
+    v.form === 'verticale' && has(v, ['.keep-in', '.stats', '.advice', '.simbar']) && hasNone(v, ['.keep-side']) && v.round && v.bigInside && v.keepInside,
+    v.form + ', ' + v.shown.join(' ') + ', cerchio ' + v.gaugeShare + '% della larghezza');
+  // gira a sinistra (rotazione 1): la pagina deve accorgersene senza ricaricarsi
+  rotate(1);
+  const turned = await waitFor('innerWidth > innerHeight', 6000);
+  await sleep(800);
+  const h = await call(plateForm);
+  check('Telefono girato: la pagina passa in orizzontale', turned, h.w + 'x' + h.h);
+  check('Orizzontale: cartello a tutto schermo con anello intero e velocità da tenere a destra',
+    h.form === 'orizzontale' && has(h, ['.hud-top', '.ptext', '.pside', '.keep-side', '.simbar']) && hasNone(h, ['.keep-in', '.stats', '.advice', '.hud-limits'])
+      && h.round && h.plateInside && h.gaugeInside && h.bigInside && h.keepInside && h.plateShare >= 50,
+    h.form + ', ' + h.shown.join(' ') + ', cartello ' + h.plateShare + '% dello schermo, "' + h.keep + '"');
+  let a = await call(pageAudit);
+  check('Orizzontale in allarme: niente fuori schermo, contrasto e pulsanti a posto', auditOk(a), auditText(a));
+  if (a.tiny.length) note('Testo sotto 11 px in orizzontale', list(a.tiny));
+  screenshot('guida-orizzontale.png');
+  check('Orizzontale a fine tratto', await stepUntil('p.startsWith("done")') && auditOk(a = await call(pageAudit)), auditText(a));
+  const same = await js('performance.timeOrigin') === origin && await js('window.__tutor.st.running');
+  check('Girando il telefono la guida continua (la pagina non si ricarica)', same);
+  // di nuovo dritto: com'era prima del collaudo
+  const back = restoreRotation();
+  check('Rotazione del telefono rimessa come prima del collaudo', back);
+  await waitFor('innerWidth < innerHeight', 6000);
+  await sleep(800);
+  const v2 = await call(plateForm);
+  a = await call(pageAudit);
+  check('Di nuovo in verticale: cerchio e statistiche come prima', v2.form === 'verticale' && has(v2, ['.keep-in', '.stats']) && hasNone(v2, ['.keep-side']) && auditOk(a),
+    v2.form + ', ' + auditText(a));
+  await js(`document.getElementById('hudExit').click(); true`);
+  // Android finisce di raddrizzare lo schermo dopo qualche istante: chiudere l'app prima fa arrivare a Capacitor
+  // le misure delle barre di sistema mentre la pagina si sta caricando (errore nella console, innocuo ma rumoroso)
+  await sleep(2500);
+}
+
 async function phaseExits(){
   await freshStart();
   const full = await pageState();
@@ -360,9 +449,9 @@ async function phaseExits(){
   const s2 = await pageState();
   check('Nel riquadro la guida continua e si aggiorna', s2.running && s2.fixT > s1.fixT, s1.fixT + ' -> ' + s2.fixT);
   const lay = await pipLayout();
-  check('Nel riquadro resta solo il cartello', lay.visible.length === 0, lay.visible.join(', ') || 'nient\'altro visibile');
-  check('Il cartello sta tutto nel riquadro', lay.plateInside && lay.bigInside, s2.kicker + ', ' + s2.plate);
-  if (lay.titleCut) note('Titolo del cartello tagliato nel riquadro', s2.kicker + ': ' + s2.title);
+  check('Nel riquadro resta solo il cerchio del cartello', lay.visible.length === 0, lay.visible.join(', ') || 'nient\'altro visibile');
+  check('Il cerchio riempie il riquadro e media e velocità da tenere ci stanno dentro', lay.plateInside && lay.bigInside, s2.kicker + ', ' + s2.plate);
+  check('Intorno al cerchio la pagina è trasparente', lay.transparent);
 
   // Navigazione: Maps davanti, il riquadro resta sopra e lo schermo acceso
   adb('shell', 'am', 'start', '-W', '-n', MAPS);
@@ -436,20 +525,31 @@ async function main(){
   for (const p of ['ACCESS_FINE_LOCATION', 'ACCESS_COARSE_LOCATION', 'POST_NOTIFICATIONS']){ try { adb('shell', 'pm', 'grant', PKG, 'android.permission.' + p); } catch(e){} }
   // Lo schermo deve essere acceso e sbloccato, altrimenti i gesti non arrivano all'app
   if (!/mWakefulness=Awake/.test(adb('shell', 'dumpsys', 'power'))) throw new Error('Schermo spento: accendi e sblocca il telefono');
-  const phases = [['pagina', phasePage], ['uscite', phaseExits], ...(withGps ? [['gps', phaseGps]] : [])].filter(([n]) => !only || n === only);
+  const phases = [['pagina', phasePage], ['rotazione', phaseRotation], ['uscite', phaseExits], ...(withGps ? [['gps', phaseGps]] : [])].filter(([n]) => !only || n === only);
   for (const [name, fn] of phases){
     const t0 = Date.now();
     console.log('\n--- ' + name + ' ---');
+    currentPhase = name;
     try { await fn(); } catch(e){ check('Fase ' + name + ' interrotta', false, e.message); }
     console.log('    (' + Math.round((Date.now() - t0)/1000) + ' s)');
   }
-  const errs = [...pageErrors].map(([t, n]) => (n > 1 ? n + '× ' : '') + t);
+  // Capacitor (SystemBars) scrive nella pagina le misure delle barre di sistema come variabili --safe-area-inset-*:
+  // se lo fa mentre la pagina si sta caricando (avvio, riapertura, riavvio del collaudo) il documento non c'è ancora
+  // e la console riporta un errore. Innocuo perché la pagina non usa quelle variabili (usa env(safe-area-inset-*)):
+  // lo garantisce un test in test/build.test.js. Solo quel messaggio, con il documento assente, diventa una nota.
+  const harmless = t => t.includes('Error injecting safe area CSS') && t.includes("reading 'style'");
+  const fmt = ([t, n]) => (n > 1 ? n + '× ' : '') + t;
+  const errs = [...pageErrors].filter(([t]) => !harmless(t)).map(fmt), known = [...pageErrors].filter(([t]) => harmless(t)).map(fmt);
+  if (known.length) note('Capacitor ha scritto le misure delle barre prima che la pagina fosse caricata (innocuo)', list(known, 2));
   check('Nessun errore JavaScript nella pagina durante il collaudo', !errs.length, list(errs, 5));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href){
   const t0 = Date.now();
+  // fermato con Ctrl+C: la rotazione dello schermo torna comunque com'era
+  process.on('SIGINT', () => { try { restoreRotation(); } catch(e){} process.exit(130); });
   main().catch(e => check('Collaudo interrotto', false, e.message)).finally(() => {
+    try { restoreRotation(); } catch(e){}
     try { adb('shell', 'am', 'force-stop', PKG); } catch(e){}
     try { adb('forward', '--remove', 'tcp:' + PORT); } catch(e){}
     try { if (ws) ws.close(); } catch(e){}

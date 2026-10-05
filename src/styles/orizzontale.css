@@ -1,0 +1,39 @@
+/* Guida con il telefono in orizzontale sul supporto (non nel riquadro PiP): il cartello prende tutto lo schermo,
+   con il nome del tratto a sinistra, l'anello intero al centro, velocità da tenere e km mancanti a destra.
+   Restano la barra in alto (Esci, Riquadro, Audio) e, in simulazione, i comandi in una riga sotto.
+   Statistiche, consiglio e scelta del limite si vedono solo in verticale. Parte da cartello.css. */
+@media (orientation:landscape) and (max-height:560px){
+  /* schermata: barra in alto, cartello, comandi della simulazione; il resto nascosto */
+  html:not(.pip) body.driving .app{max-width:none}
+  html:not(.pip) body.driving .hud{display:grid; grid-template-rows:auto minmax(0,1fr) auto; height:100vh; box-sizing:border-box;
+    padding:8px 12px 10px; gap:8px; overflow:hidden}
+  html:not(.pip) .stats, html:not(.pip) .advice, html:not(.pip) .hud-limits, html:not(.pip) .toast{display:none}
+  /* cartello colorato a tutto schermo, su tre colonne: testo, anello, velocità da tenere e km */
+  html:not(.pip) .plate{min-height:0; border-radius:16px; padding:5px; background:var(--pc); color:var(--pf); transition:background-color .35s ease}
+  html:not(.pip) .plate.flash{animation:flash .9s ease 2}
+  html:not(.pip) .plate.flash .gauge{animation:none}
+  html:not(.pip) .plate-in{height:100%; box-sizing:border-box; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    align-items:center; gap:18px; border:3px solid var(--pl); border-radius:11px; padding:10px 20px; text-align:left}
+  html:not(.pip) .plate .kicker{color:inherit; opacity:.92}
+  html:not(.pip) .plate .title{font-size:clamp(17px,3vw,26px)}
+  /* lato del cerchio: altezza dello schermo meno barra in alto, bordi e spaziature */
+  html:not(.pip) .gauge{width:calc(100vh - 112px); background:none}
+  html:not(.pip) .hud:has(#simBar:not([hidden])) .gauge{width:calc(100vh - 176px)}
+  /* anello intero al posto dell'arco aperto, velocità da tenere a destra */
+  html:not(.pip) .arc .a270, html:not(.pip) .keep-in{display:none}
+  html:not(.pip) .arc .a360{display:inline}
+  html:not(.pip) .gauge.noarc .arc .fill{display:none}
+  html:not(.pip) .gauge .big{inset:0}
+  html:not(.pip) .gauge .big span{font-size:max(11px, 5.2cqw)}
+  html:not(.pip) .pside{justify-items:end; text-align:right; gap:10px}
+  html:not(.pip) .keep-side{display:flex; align-items:flex-end; text-align:right}
+  html:not(.pip) .keep-side .kl{font-size:14px}
+  html:not(.pip) .keep-side .kv{font-size:clamp(28px,6vw,44px); margin-top:2px}
+  html:not(.pip) .plate .sub{color:inherit; font-size:14px; opacity:.95}
+  html:not(.pip) .plabels{color:inherit; justify-content:flex-end}
+  html:not(.pip) #pFrom{display:none}
+  html:not(.pip) #pTo{font-size:16px}
+  /* comandi della simulazione su una riga */
+  html:not(.pip) .simbar{display:flex; align-items:center; gap:12px; padding:4px 10px}
+  html:not(.pip) .simbar input[type=range]{flex:1; min-width:120px}
+}

@@ -61,6 +61,11 @@ function boot(){
 
   createSidebar({secs, settings, onSimulate: (id, v) => simControls.start(id, v)});
   createSettingsPanel({settings, save: () => store.saveSettings(), onChange: () => { tracker.refresh(); render(); }, say});
+  // Privacy e diritti: cancella tutto quello che l'app conserva sul telefono e riparte come appena installata
+  $('#dataClear').addEventListener('click', () => {
+    if (!confirm('Cancellare lo storico dei tratti e tutte le impostazioni? Non si può annullare.')) return;
+    store.clearAll(); location.reload();
+  });
   const historyPanel = createHistoryPanel(store);
 
   tracker.on(ev => {

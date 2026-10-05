@@ -12,7 +12,8 @@ export function pageFingerprint(){
 // Cosa c'è di storto nella parte visibile: uscite dallo schermo, contrasto sotto 4,5 (3 per i testi grandi), testi rotti,
 // cose da toccare sotto i 48 px consigliati da Android, testo tagliato
 export function pageAudit(){
-  const W = innerWidth, out = {overflowX: document.documentElement.scrollWidth > W + 1, outside: [], contrast: [], broken: [], small: [], clipped: [], tiny: []};
+  // larghezza vera dello schermo: se qualcosa sborda il browser allarga innerWidth (e lo nasconderebbe), clientWidth no
+  const W = document.documentElement.clientWidth, out = {overflowX: document.documentElement.scrollWidth > W + 1, outside: [], contrast: [], broken: [], small: [], clipped: [], tiny: []};
   const name = e => e.id ? '#' + e.id : e.tagName.toLowerCase() + (typeof e.className === 'string' && e.className.trim() ? '.' + e.className.trim().split(/\s+/)[0] : '');
   const label = e => name(e) + ' "' + (e.textContent || e.getAttribute('aria-label') || e.value || '').trim().replace(/\s+/g, ' ').slice(0, 28) + '"';
   const shown = e => { const r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1) return false;
@@ -29,7 +30,8 @@ export function pageAudit(){
     if (!text || !shown(e)) continue;
     const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
     if ((r.right > W + 1 || r.left < -1) && !clipsX(e)) out.outside.push(label(e));
-    if (/\b(NaN|undefined|null|Infinity)\b|\[object /.test(text)) out.broken.push(label(e));
+    // i testi delle licenze sono copiati così come sono ("null and void" nella OFL)
+    if (/\b(NaN|undefined|null|Infinity)\b|\[object /.test(text) && !e.closest('pre.lic')) out.broken.push(label(e));
     if (parseFloat(cs.fontSize) < 11) out.tiny.push(label(e) + ' ' + cs.fontSize);
     if ((cs.overflow.includes('hidden') || cs.textOverflow === 'ellipsis') && e.scrollWidth > e.clientWidth + 1) out.clipped.push(label(e));
     const bg = bgOf(e), fg = rgba(cs.color);
@@ -144,4 +146,29 @@ export function driveSection(id, kmh){
   navigator.vibrate = realVibrate; off(); toasts.disconnect();
   return {n, avgMs: n ? ms/n : 0, maxMs, avg: fin ? fin.avg : null, mid: fin ? fin.partial : null, alarm: alarmBeforeFinish, vib, problems, seen,
           types: [...new Set(events.map(e => e.type))], stillDriving: document.body.classList.contains('driving') || T.st.running};
+}
+
+// Forma del cartello in guida e cosa si vede intorno: "verticale" (arco aperto, velocità da tenere dentro il cerchio),
+// "orizzontale" (cartello a tutto schermo, anello intero, velocità da tenere a destra) o "riquadro" (solo il cerchio)
+export function plateForm(){
+  const shown = sel => { const e = document.querySelector(sel); if (!e) return false; const r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1) return false;
+    for (let n = e; n; n = n.parentElement) if (getComputedStyle(n).display === 'none') return false; return true; };
+  const box = sel => document.querySelector(sel).getBoundingClientRect();
+  const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
+  const vp = {left: 0, top: 0, right: innerWidth, bottom: innerHeight};
+  const g = box('.gauge'), p = box('#plate');
+  const keep = document.querySelector(shown('.keep-side') ? '.keep-side' : '.keep-in');
+  return {
+    form: document.documentElement.classList.contains('pip') ? 'riquadro' : shown('.arc .track.a360') ? 'orizzontale' : 'verticale',
+    w: innerWidth, h: innerHeight,
+    shown: ['.hud-top', '.ptext', '.pside', '.keep-in', '.keep-side', '.stats', '.advice', '.hud-limits', '.simbar'].filter(shown),
+    round: g.width > 0 && Math.abs(g.width - g.height) <= 1,
+    gaugeInside: inside(g, vp), plateInside: inside(p, vp),
+    bigInside: inside(box('#pBig'), g) && inside(box('#pUnit'), g),
+    keepInside: inside(keep.getBoundingClientRect(), shown('.keep-side') ? p : g),
+    keep: keep.textContent,
+    // quanto schermo prende il cartello (in orizzontale) e quanto è largo il cerchio rispetto al lato corto
+    plateShare: Math.round(p.width*p.height/(innerWidth*innerHeight)*100),
+    gaugeShare: Math.round(g.width/Math.min(innerWidth, innerHeight)*100)
+  };
 }

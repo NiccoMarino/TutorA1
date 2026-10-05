@@ -64,3 +64,14 @@ test('lo storico tiene gli ultimi 60 tratti, il più recente per primo, e li sal
   assert.deepEqual(s.history, []);
   assert.equal(storage.getItem(HKEY), '[]');
 });
+
+// Diritto alla cancellazione: tutto quello che l'app conserva è qui, e si cancella dall'app
+test('cancella tutti i dati: storico e impostazioni spariscono dal telefono', () => {
+  const removed = [];
+  const storage = {...memoryStorage({[SKEY]: JSON.stringify({limit:110}), [HKEY]: JSON.stringify([{sec:'x'}])}), removeItem: k => removed.push(k)};
+  const s = createStore(storage);
+  s.clearAll();
+  assert.deepEqual(removed.sort(), [HKEY, SKEY].sort());
+  assert.deepEqual(s.history, []);
+  assert.deepEqual(s.settings, DEFAULT_SETTINGS);
+});

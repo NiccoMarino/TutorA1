@@ -10,12 +10,14 @@ e calcolano la tua media nel tratto, come fa il Tutor.
   Roma e la Variante di Valico, 24 sulla A4 tra Milano e Brescia e tra Venezia e Trieste, e 103 su A7, A8, A9, A10,
   A11, A13, A14, A16, A23, A26, A27 e A30 (tutti quelli indicati da Autostrade per l'Italia).
 - In guida segue la posizione GPS. Avvisa prima del portale di inizio e calcola la media mentre sei
-  nel tratto. Dice a quanto puoi andare per chiuderlo sotto la soglia e allarma con voce, suoni e
-  vibrazione se la media la supera.
+  nel tratto. Indica la velocità da tenere per chiuderlo con la media entro il limite e allarma con voce,
+  suoni e vibrazione se la media supera la soglia.
+- Schermata di guida con un cartello circolare: media al centro, arco di avanzamento nel tratto e velocità da
+  tenere in basso. Con il telefono in orizzontale il cartello prende tutto lo schermo.
 - Tiene lo storico dei tratti percorsi, con la media e l'esito.
 - Ha una simulazione per provarla senza guidare.
-- Nell'app Android, quando esci per usare Maps o Waze resta un riquadro con il cartello del Tutor
-  (Picture-in-Picture), e il GPS continua anche a schermo spento.
+- Nell'app Android, quando esci per usare Maps o Waze resta un riquadro con il solo cerchio del cartello
+  (Picture-in-Picture, trasparente intorno al cerchio), e il GPS continua anche a schermo spento.
 
 ## Come si usa
 - **Dal browser del telefono:** apri il link qui sopra e premi "Avvia guida". Il GPS funziona solo
@@ -68,8 +70,8 @@ npm run build
 - `npm run sync` prepara l'app Android. Poi, dalla cartella `android/`, `./gradlew installDebug`
   la installa sul telefono collegato via USB. Con `-Pprova=true` si installa invece una copia
   separata, "Tutor prova", accanto all'app normale.
-- `npm run device-check` collauda sul telefono le schermate, la guida simulata in tutti i tratti, l'uscita
-  dall'app e il riquadro sopra Maps.
+- `npm run device-check` collauda sul telefono le schermate, la guida simulata in tutti i tratti, il telefono
+  girato in orizzontale, l'uscita dall'app e il riquadro sopra Maps.
 - `npm run bundle` crea l'AAB firmato per il Play Store (serve `android/keystore.properties`).
 - `npm run grafica` rifà icona, schermata di avvio e immagini per lo store.
 

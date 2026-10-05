@@ -24,3 +24,21 @@ test('il tasto Indietro di Android chiede prima alla pagina (window.tutorBack)',
   const page = read('src/main.js');
   assert.match(page, /window\.tutorBack\s*=/);
 });
+
+// Il riquadro mostra solo il cartello circolare: finestra quadrata e trasparente fuori dal cerchio
+test('il riquadro è quadrato e trasparente intorno al cerchio', () => {
+  const main = read('android/app/src/main/java/it/niccomarino/tutora1a4/MainActivity.java');
+  assert.match(main, /setAspectRatio\(new Rational\(1, 1\)\)/);
+  assert.match(main, /setPipTransparent\(isInPictureInPictureMode\)/);
+  assert.match(main, /wv\.setBackgroundColor\(on \? Color\.TRANSPARENT/);
+  assert.match(main, /PixelFormat\.TRANSLUCENT/);
+  const pip = read('src/styles/pip.css');
+  assert.match(pip, /html\.pip, html\.pip body\{background:transparent/);
+});
+
+// L'app non si collega a nessun server: il permesso internet resta tolto, anche se una libreria lo chiede
+test('niente permesso INTERNET nell\'app', () => {
+  const manifest = read('android/app/src/main/AndroidManifest.xml');
+  assert.match(manifest, /<uses-permission android:name="android\.permission\.INTERNET" tools:node="remove" \/>/);
+  assert.ok(!/<uses-permission android:name="android\.permission\.INTERNET" \/>/.test(manifest));
+});

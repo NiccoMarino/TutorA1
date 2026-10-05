@@ -41,9 +41,34 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
   Il carattere Overpass è dentro la pagina (`scripts/build.mjs`), quindi l'app non si collega a internet.
 - Versione: `package.json`; la build la scrive nella pagina, `android/app/build.gradle` ne ricava versionName e versionCode.
 - Icona, avvio e immagini dello store: `tools/make-icons.mjs` e `tools/store-screenshots.mjs` (`npm run grafica`).
-- Stile del riquadro Picture-in-Picture: `src/styles/pip.css`.
+- Cartello di guida e sue tre forme (verticale, orizzontale, riquadro): sezione "Il cartello di guida" qui sotto.
+- Colori del cartello scelti dall'utente (giallo da, rosso e allarme da): `colorLimits` in `core/rules.js`,
+  menù in `ui/settings-panel.js`.
+- Pagine legali: `privacy.html` e `termini.html` nella radice (servite da GitHub Pages, linkate dall'app);
+  verifica dei 20 punti e bozza dell'abbonamento in `docs/legale/`. Le licenze nell'app (Privacy e diritti)
+  le genera la build (`licensesHtml` in `scripts/build.mjs`) dai file LICENSE delle librerie; per aggiungere una
+  libreria all'app va aggiunta a `LICENSED`. "Cancella storico e impostazioni": `clearAll` in `core/store.js`.
 - Ottimizzazioni: l'aggancio alla strada (`matchPoint`) scorre tutti i segmenti con un filtro per
   riquadro; se servisse più velocità, un indice spaziale va costruito in `buildNetwork`.
+
+## Il cartello di guida
+Un solo markup (`#plate` in `src/index.html`) per tre forme, scelte solo dallo stile:
+
+| Forma | Quando | Stile |
+|---|---|---|
+| verticale: nome del tratto sopra, cerchio colorato con arco aperto, media al centro, velocità da tenere nell'apertura | telefono dritto, computer | `styles/cartello.css` |
+| orizzontale: cartello a tutto schermo, nome a sinistra, anello intero con la media, velocità da tenere e km mancanti a destra | telefono girato (altezza fino a 560 px) | `styles/orizzontale.css` |
+| riquadro: solo il cerchio, trasparente intorno | riquadro sopra Maps (classe `pip` su `<html>`) | `styles/pip.css` |
+
+- Testi e numeri: `core/hud-view.js` (`plate`, `keep`, `gauge`, `progress`); `ui/hud.js` (`renderPlate`) li scrive.
+- Velocità da tenere: `keepText` in `core/metrics.js`. È la velocità che fa chiudere il tratto con la media entro il
+  limite, anche se sopra il limite (il numero dice entro quale velocità la media del tratto resta sotto il limite); se non basta più, quella
+  per restare in tolleranza; da 200 km/h in su il tratto è "ormai in regola". Il consiglio scritto (`adviceText`)
+  usa lo stesso numero, tranne quando è sopra il limite: allora dice "Con il limite di 130 chiudi in regola",
+  perché il limite vale in ogni momento (scelta presa in `docs/legale/VERIFICA.md`, punto 12).
+- Riquadro trasparente: `MainActivity` rende trasparenti finestra, vista principale e WebView nel riquadro, e lo
+  rifà a ogni cambio di configurazione perché il plugin SystemBars di Capacitor rimette lo sfondo pieno.
+- Nella pagina lo stile arriva senza commenti (`stripCssComments` in `scripts/build.mjs`): nei sorgenti restano.
 
 ## Contratto con il ponte nativo
 `native/tutor-native.js` usa `#hudExit`, `#hudMute`, la classe `driving` sul body e mette la classe
@@ -51,22 +76,26 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
 
 ## Collaudo sul telefono e del riquadro sopra Maps
 - Sul telefono: `./gradlew installDebug -Pprova=true` installa "Tutor prova" accanto all'app normale, poi
-  `npm run device-check`. Due fasi, che vanno avanti anche se una fallisce:
+  `npm run device-check`. Tre fasi, che vanno avanti anche se una fallisce:
   - `pagina` (solo JavaScript tramite DevTools, un paio di minuti): l'app installata è l'ultima build, ogni
     schermata in tema chiaro e scuro (niente fuori schermo, contrasto, valori come NaN), elenco e filtri,
     impostazioni che restano dopo il riavvio, guida simulata in tutti i tratti a 125, 131, 137,5 e 200 km/h
     nella WebView vera (inizio dal portale, allarmi, media, annuncio di fine, tempi), storico.
+  - `rotazione`: guida simulata con il telefono girato (`wm user-rotation`): in orizzontale cartello a tutto
+    schermo con anello e velocità da tenere a destra, statistiche nascoste, niente fuori schermo, guida che continua
+    senza ricaricare la pagina; poi di nuovo dritto. La rotazione torna com'era anche se il collaudo si interrompe.
   - `uscite`: Home e Indietro fuori e dentro la guida, pulsante Riquadro, riquadro sopra Google Maps che si
     aggiorna e passa all'allarme con lo schermo acceso, ritorno a schermo intero, X del riquadro che termina la guida.
-  `-- --solo pagina` (o `uscite`) per una fase sola, `-- --gps` per provare anche il GPS vero, `-- --completo`
+  `-- --solo pagina` (o `rotazione`, `uscite`) per una fase sola, `-- --gps` per provare anche il GPS vero, `-- --completo`
   per aspettare anche il tempo di spegnimento dello schermo. Gli errori JavaScript della pagina sono raccolti
-  per tutto il collaudo. Schermate (anche una per ogni errore) e risultati in `device-check/`.
+  per tutto il collaudo, con la fase in cui sono comparsi (", riavvio" se durante il riavvio della pagina fatto dal
+  collaudo: lì un errore di Capacitor sulle barre di sistema è solo una nota). Schermate (anche una per ogni errore) e risultati in `device-check/`.
   Le funzioni che girano dentro la pagina sono in `tools/device-page.mjs`: si possono provare anche nel browser.
   La X si tocca in una posizione misurata sul menu del riquadro di One UI; su un altro telefono il collaudo
   ripiega sul trascinamento e lo scrive nel dettaglio del controllo.
 - Nel browser: `tools/pip-harness.mjs` su `/www/index.html`, con la finestra grande come il riquadro
-  (189×118 sul Samsung S25), misura il cartello in ogni stato della guida e lo confronta con
-  `test/fixtures/pip-layout.json`.
+  (quadrato, 153×153 sul Samsung S25), misura il cerchio del cartello in ogni stato della guida e lo confronta
+  con `test/fixtures/pip-layout.json`.
 
 ## Il golden
 `test/fixtures/golden.json` è il comportamento dell'app registrato su 9 percorsi GPS fissi

@@ -34,6 +34,14 @@ Waze insieme alla nostra, consumo della batteria, Android 8-11.
   è uguale per costruzione (colori fissi), da guardare una volta con il telefono in tema chiaro.
 - Schermo orizzontale: in guida cartello a sinistra e numeri a destra, niente più tagliato.
 
+## Cartello circolare (ramo `tutte-le-autostrade`)
+- Verticale: cerchio colorato con arco di avanzamento (proposta C3), più grande, niente metà schermo vuota.
+- Orizzontale: cartello a tutto schermo con anello (proposta 4); statistiche, consiglio e scelta del limite
+  restano nella schermata verticale.
+- Riquadro: quadrato, solo il cerchio, trasparente intorno. Resta un'ombra leggera disegnata da Android.
+- Velocità da tenere per chiudere entro il limite, sul cartello e nel consiglio, anche sopra il limite. Da provare in autostrada.
+- Il collaudo sul telefono gira lo schermo (fase `rotazione`) e poi lo rimette com'era.
+
 ## Nuova schermata iniziale (ramo `nuova-home`)
 - Schermata iniziale con due cartelli stradali ("Avvia guida" verde, "Prova in simulazione" blu) su una corsia
   disegnata; nome al centro, logo a sinistra, menù a destra.

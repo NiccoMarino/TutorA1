@@ -14,6 +14,13 @@ export function createStore(storage){
     saveSettings(){ set(SKEY, settings); },
     get history(){ return history; },
     addHistory(entry){ history.unshift(entry); history = history.slice(0, 60); set(HKEY, history); },
-    clearHistory(){ history = []; set(HKEY, history); }
+    clearHistory(){ history = []; set(HKEY, history); },
+    // Cancella tutto quello che l'app conserva (storico e impostazioni): torna come appena installata
+    clearAll(){
+      for (const k of [SKEY, HKEY]){ try { storage.removeItem(k); } catch(e){} }
+      history = [];
+      for (const k of Object.keys(settings)) delete settings[k];
+      Object.assign(settings, DEFAULT_SETTINGS);
+    }
   };
 }

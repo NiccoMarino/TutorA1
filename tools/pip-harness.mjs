@@ -28,14 +28,18 @@ export async function run(name = 'pip-layout.json'){
   const el = id => document.getElementById(id);
   const vis = sel => { const e = document.querySelector(sel); if (!e) return false; const r = e.getBoundingClientRect(); return getComputedStyle(e).display !== 'none' && r.width > 0 && r.height > 0; };
   const inside = (r, b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1;
-  const cut = id => el(id).scrollWidth > el(id).clientWidth + 1;
-  const measure = () => ({
-    visible: ['.screen', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast'].filter(vis),
-    plateInside: inside(el('plate').getBoundingClientRect(), {left: 0, top: 0, right: innerWidth, bottom: innerHeight}),
-    bigInside: inside(el('pBig').getBoundingClientRect(), document.querySelector('.plate-in').getBoundingClientRect()),
-    titleCut: cut('pTitle'), subCut: cut('pSub'),
-    bigPx: Math.round(parseFloat(getComputedStyle(el('pBig')).fontSize))
-  });
+  // nel riquadro c'è solo il cerchio: deve riempirlo e contenere media, unità e velocità da tenere
+  const measure = () => {
+    const g = document.querySelector('.gauge').getBoundingClientRect();
+    return {
+      visible: ['.screen', '.hud-top', '.stats', '.advice', '.hud-limits', '.simbar', '.toast', '.ptext', '.pside'].filter(vis),
+      gaugeFills: g.width > 0 && inside(g, {left: 0, top: 0, right: innerWidth, bottom: innerHeight}) && Math.abs(g.width - Math.min(innerWidth, innerHeight)) <= 2,
+      bigInside: inside(el('pBig').getBoundingClientRect(), g) && inside(el('pUnit').getBoundingClientRect(), g),
+      keepInside: inside(document.querySelector('.keep-in').getBoundingClientRect(), g),
+      keep: document.querySelector('.keep-in').textContent,
+      bigPx: Math.round(parseFloat(getComputedStyle(el('pBig')).fontSize))
+    };
+  };
 
   window.dispatchEvent(new CustomEvent('tutorpip', {detail: true}));
   const out = [];

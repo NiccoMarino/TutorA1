@@ -17,7 +17,8 @@ function snapshot(v){
     hudRoad:v.road.title + (v.road.sim ? 'Simulazione' : '') + v.road.sub,
     sInst:v.stats.inst, sLim:String(v.stats.lim), sThr:v.stats.thr, sThrL:v.stats.thrLabel,
     plate:'plate ' + v.plate.cls, prog:!!v.progress,
-    fill:v.progress ? parseFloat(v.progress.fill) + '%' : null,
+    // avanzamento nel tratto: l'anello del cartello, in centesimi con un decimale (ui/hud.js)
+    fill:v.progress ? parseFloat((v.gauge.frac*100).toFixed(1)) + '%' : null,
     pFrom:v.progress ? v.progress.from : null, pTo:v.progress ? v.progress.to : null
   };
 }

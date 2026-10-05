@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buildPages, render, checkInlineScript } from '../scripts/build.mjs';
+import { buildPages, render, checkInlineScript, stripCssComments } from '../scripts/build.mjs';
 
 const saved = readFileSync(new URL('../index.html', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
@@ -92,9 +92,9 @@ test('la pagina non scarica niente da internet: script, stili e caratteri sono d
   }
 });
 
-test('la pagina resta leggera (sotto i 450 kB)', () => {
+test('la pagina resta leggera (sotto i 550 kB)', () => {
   const {app} = buildPages();
-  assert.ok(Buffer.byteLength(app) < 450*1024, Math.round(Buffer.byteLength(app)/1024) + ' kB');
+  assert.ok(Buffer.byteLength(app) < 550*1024, Math.round(Buffer.byteLength(app)/1024) + ' kB');
 });
 
 test('schermata iniziale con i due cartelli, menù e una pagina per ogni voce', () => {
@@ -125,4 +125,57 @@ test('il gancio window.__tutor espone quello che usano i collaudi (golden, riqua
 test("la pagina ha un'icona dentro di sé: il browser non cerca favicon.ico (errore 404 nell'app)", () => {
   const {web, app} = buildPages();
   for (const page of [web, app]) assert.match(page, /<link rel="icon" href="data:image\/svg\+xml,/);
+});
+
+test('il cartello ha le sue tre forme nella pagina: verticale, orizzontale e riquadro', () => {
+  const {app} = buildPages();
+  for (const id of ['plate', 'pArc', 'pRing', 'pBigBox']) assert.ok(app.includes('id="' + id + '"'), 'manca id="' + id + '"');
+  assert.ok(app.includes('class="keep keep-in"') && app.includes('class="keep keep-side"'), 'manca la velocità da tenere');
+  assert.ok(app.includes('.keep-side{display:none}'), 'manca styles/cartello.css');
+  assert.ok(app.includes('html:not(.pip) .keep-side{display:flex'), 'manca styles/orizzontale.css');
+  assert.ok(app.includes('html.pip .gauge'), 'manca il cerchio nel riquadro (styles/pip.css)');
+  assert.ok(!app.includes('id="pFill"'), 'è tornata la vecchia barra di avanzamento');
+});
+
+test('nella pagina lo stile non ha commenti (restano nei sorgenti)', () => {
+  assert.equal(stripCssComments('/* a */\n.x{color:red}\n  /* b\n c */\n.y{top:0} /* d */'), '.x{color:red}\n.y{top:0} ');
+  const {app} = buildPages();
+  for (const [, css] of app.matchAll(/<style>([\s\S]*?)<\/style>/g)) assert.ok(!css.includes('/*'), 'commento nello stile della pagina');
+});
+
+// Licenze: copyright e testo di ogni componente incluso accompagnano l'app (OFL, MIT, Apache)
+test('licenze di carattere, Capacitor, plugin e librerie Android nella pagina', () => {
+  const {app, web} = buildPages();
+  for (const page of [app, web]){
+    for (const t of ['Copyright 2021 The Overpass Project Authors', 'SIL OPEN FONT LICENSE', 'Copyright (c) 2017-present Drifty Co.',
+      'Copyright 2021 James Diacono', 'Copyright (c) 2019 The keep-awake developers.', 'Copyright (c) 2021 Robin Genz',
+      'Copyright 2020-present Ionic', 'Apache License', 'OpenStreetMap', 'ODbL']) assert.ok(page.includes(t), 'manca: ' + t);
+  }
+});
+
+// Accessibilità e tastiera: immagini con testo alternativo, pulsanti con solo un'icona con un nome,
+// niente ordine di tabulazione forzato né elementi cliccabili che non sono pulsanti o collegamenti
+test('accessibilità del markup: testo alternativo, nomi dei pulsanti, tastiera', () => {
+  const {app} = buildPages();
+  for (const img of app.match(/<img\b[^>]*>/g) || []) assert.match(img, /\balt="/, 'immagine senza alt: ' + img);
+  for (const [, attrs, inner] of app.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)){
+    const text = inner.replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<[^>]+>/g, '').trim();
+    assert.ok(text || /aria-label="[^"]+"/.test(attrs) || /id="(hudExit|hudMute)"/.test(attrs), 'pulsante senza nome: ' + attrs);
+  }
+  assert.ok(!/tabindex="[1-9]/.test(app), 'tabindex positivo');
+  assert.ok(!/<(div|span|li)\b[^>]*\bonclick=/i.test(app), 'elemento cliccabile che non è un pulsante');
+  assert.match(app, /:focus-visible\{outline:3px solid/);
+});
+
+test('privacy: pulsante per cancellare storico e impostazioni, collegamenti a informativa e termini', () => {
+  const {app} = buildPages();
+  assert.ok(app.includes('id="dataClear"'));
+  assert.ok(app.includes('privacy.html') && app.includes('termini.html'));
+});
+
+// Capacitor scrive --safe-area-inset-* nella pagina, a volte prima che esista (errore innocuo nella console, vedi
+// tools/device-check.mjs): resta innocuo finché la pagina usa solo env(safe-area-inset-*) e mai quelle variabili
+test('la pagina non usa le variabili --safe-area-inset-* di Capacitor', () => {
+  const {app} = buildPages();
+  assert.ok(!app.includes('var(--safe-area-inset'), 'la pagina usa le variabili di Capacitor');
 });
