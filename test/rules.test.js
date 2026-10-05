@@ -51,9 +51,19 @@ test('colori: elenco delle scelte, dalla più alta, con il valore di base tra qu
 });
 
 test('colori: la scelta attuale resta nell\'elenco, anche un margine della versione precedente', () => {
-  assert.ok(RED_CHOICES(130, 'm:4').some(c => c.key === 'm:4' && c.label === '132,8 km/h (4 sotto la soglia)'));
-  assert.equal(RED_CHOICES(130, 'l:0').find(c => c.key === 'l:0').label, '130 km/h (il limite)');
+  assert.ok(RED_CHOICES(130, 'm:4').some(c => c.key === 'm:4' && c.label === '132,8 (4 sotto la soglia)'));
+  assert.equal(RED_CHOICES(130, 'l:0').find(c => c.key === 'l:0').label, '130 (il limite)');
   // con limite 90 la soglia è 95: "3 sopra il limite" e "2 sotto la soglia" sono lo stesso 93
   const r90 = RED_CHOICES(90, 'l:3');
   assert.ok(r90.some(c => c.key === 'l:3') && !r90.some(c => c.key === 'm:2'));
+});
+
+// I menù sono larghi quanto lo schermo: voci brevi (a 360 px ne stanno circa 38 caratteri), senza "km/h" (è nel titolo del campo)
+test('colori: voci dei menù brevi', () => {
+  for (const lim of [130, 110, 90]){
+    for (const c of [...YELLOW_CHOICES(lim), ...RED_CHOICES(lim, 'm:4')]) assert.ok(c.label.length <= 30, c.label);
+  }
+  assert.equal(RED_CHOICES(130).find(c => c.key === 'm:2').label, '134,8 (consigliato)');
+  assert.equal(RED_CHOICES(130).find(c => c.key === 'm:0').label, '136,8 (la soglia)');
+  assert.equal(YELLOW_CHOICES(130).find(c => c.value === -5).label, '125 (5 sotto il limite)');
 });

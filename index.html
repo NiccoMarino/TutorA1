@@ -86,7 +86,7 @@ svg{flex:none}
 .page{background:var(--bg)}
 .pagebar{position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:6px; padding:14px 16px 8px 8px; background:var(--bg)}
 .pagebar h2{margin:0; font-size:22px; line-height:1.1; font-weight:800}
-.page-body{padding:8px 16px 32px; display:grid; gap:16px}
+.page-body{padding:8px 16px 32px; display:grid; grid-template-columns:minmax(0,1fr); gap:16px}
 .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px}
 .fields{display:grid; gap:16px}
 .prose{display:grid; gap:12px; font-size:15px}
@@ -143,7 +143,7 @@ svg{flex:none}
 .sec-detail p{margin:0}
 .sec-detail .muted{color:var(--muted)}
 .sec-detail .btn{justify-self:start; margin-top:6px}
-.field{display:grid; gap:7px}
+.field{display:grid; grid-template-columns:minmax(0,1fr); gap:7px}
 .field > span{font-weight:700}
 .field small{color:var(--muted)}
 .seg{display:flex; gap:6px; flex-wrap:wrap}
@@ -151,7 +151,7 @@ svg{flex:none}
 .switch{display:flex; justify-content:space-between; align-items:center; gap:12px; font-weight:600; min-height:48px}
 .switch input{width:22px; height:22px; accent-color:var(--brand)}
 input[type=range]{width:100%; height:48px; margin:0; accent-color:var(--brand)}
-select.sel{padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--panel-2); min-height:48px}
+select.sel{padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--panel-2); min-height:48px; max-width:100%}
 .hist{display:grid; gap:8px; margin:0; padding:0; list-style:none}
 .hist li{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:14px}
 .hist .v{font-weight:800; font-variant-numeric:tabular-nums}
@@ -377,11 +377,11 @@ html.pip .gauge{width:min(100vw, 100vh)}
           <small>Segui sempre i cartelli: con pioggia il limite in autostrada scende a 110, nei cantieri può essere più basso.</small>
         </div>
         <label class="field">
-          <span>Cartello giallo quando la media supera</span>
+          <span>Cartello giallo sopra (km/h di media)</span>
           <select class="sel" id="setYellow"></select>
         </label>
         <label class="field">
-          <span>Cartello rosso e allarme quando la media arriva a</span>
+          <span>Cartello rosso e allarme da (km/h)</span>
           <select class="sel" id="setRed"></select>
           <small id="marginHelp"></small>
         </label>
@@ -1103,13 +1103,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     };
   }
   var sotto = (n, what) => n === 0 ? what : n + " " + (n > 0 ? "sopra" : "sotto") + " " + what;
-  var YELLOW_CHOICES = (lim) => [0, -1, -2, -3, -5, -10, -15].map((off) => ({ value: off, kmh: lim + off, label: lim + off + " km/h (" + (off ? sotto(off, "il limite").replace(/^-/, "") : "il limite") + ")" }));
+  var YELLOW_CHOICES = (lim) => [0, -1, -2, -3, -5, -10, -15].map((off) => ({ value: off, kmh: lim + off, label: lim + off + " (" + (off ? sotto(off, "il limite").replace(/^-/, "") : "il limite") + ")" }));
   function RED_CHOICES(lim, currentKey) {
     const thr = thresholdFor(lim), out = [];
     const choice = (key) => {
       const [kind, v] = key.split(":"), n = +v;
-      if (kind === "l") return { key, kmh: lim + n, label: lim + n + " km/h (" + (n ? sotto(n, "il limite").replace(/^-/, "") : "il limite") + ")" };
-      return { key, kmh: thr - n, label: nf1.format(thr - n) + " km/h (" + (n ? n + " sotto la soglia" : "la soglia di sanzione") + (n === 2 ? ", consigliato" : "") + ")" };
+      if (kind === "l") return { key, kmh: lim + n, label: lim + n + " (" + (n ? sotto(n, "il limite").replace(/^-/, "") : "il limite") + ")" };
+      return { key, kmh: thr - n, label: nf1.format(thr - n) + " (" + (n === 2 ? "consigliato" : n ? n + " sotto la soglia" : "la soglia") + ")" };
     };
     const add = (key) => {
       const c = choice(key);

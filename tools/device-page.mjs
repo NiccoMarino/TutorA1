@@ -12,7 +12,8 @@ export function pageFingerprint(){
 // Cosa c'è di storto nella parte visibile: uscite dallo schermo, contrasto sotto 4,5 (3 per i testi grandi), testi rotti,
 // cose da toccare sotto i 48 px consigliati da Android, testo tagliato
 export function pageAudit(){
-  const W = innerWidth, out = {overflowX: document.documentElement.scrollWidth > W + 1, outside: [], contrast: [], broken: [], small: [], clipped: [], tiny: []};
+  // larghezza vera dello schermo: se qualcosa sborda il browser allarga innerWidth (e lo nasconderebbe), clientWidth no
+  const W = document.documentElement.clientWidth, out = {overflowX: document.documentElement.scrollWidth > W + 1, outside: [], contrast: [], broken: [], small: [], clipped: [], tiny: []};
   const name = e => e.id ? '#' + e.id : e.tagName.toLowerCase() + (typeof e.className === 'string' && e.className.trim() ? '.' + e.className.trim().split(/\s+/)[0] : '');
   const label = e => name(e) + ' "' + (e.textContent || e.getAttribute('aria-label') || e.value || '').trim().replace(/\s+/g, ' ').slice(0, 28) + '"';
   const shown = e => { const r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1) return false;

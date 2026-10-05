@@ -27,9 +27,10 @@ export function colorLimits(settings){
           red: settings.redOff != null ? lim + settings.redOff : thresholdFor(lim) - (settings.margin || 0)};
 }
 const sotto = (n, what) => n === 0 ? what : n + ' ' + (n > 0 ? 'sopra' : 'sotto') + ' ' + what;
-// Scelte per il giallo: {value: yellowOff, kmh, label}, dalla più alta
+// Scelte per il giallo: {value: yellowOff, kmh, label}, dalla più alta. Etichette brevi, senza "km/h" (è nel titolo
+// del campo nelle impostazioni): i menù sono larghi quanto lo schermo
 export const YELLOW_CHOICES = lim => [0, -1, -2, -3, -5, -10, -15].map(off =>
-  ({value: off, kmh: lim + off, label: (lim + off) + ' km/h (' + (off ? sotto(off, 'il limite').replace(/^-/, '') : 'il limite') + ')'}));
+  ({value: off, kmh: lim + off, label: (lim + off) + ' (' + (off ? sotto(off, 'il limite').replace(/^-/, '') : 'il limite') + ')'}));
 // Scelte per il rosso: {key: "m:<km/h sotto la soglia>" o "l:<scarto dal limite>", kmh, label}, dalla più alta,
 // senza doppioni (con limite fino a 100 la soglia è limite + 5 e alcune coincidono). La scelta attuale (`currentKey`,
 // anche un margine della versione precedente come "m:4") resta sempre nell'elenco.
@@ -37,8 +38,8 @@ export function RED_CHOICES(lim, currentKey){
   const thr = thresholdFor(lim), out = [];
   const choice = key => {
     const [kind, v] = key.split(':'), n = +v;
-    if (kind === 'l') return {key, kmh: lim + n, label: (lim + n) + ' km/h (' + (n ? sotto(n, 'il limite').replace(/^-/, '') : 'il limite') + ')'};
-    return {key, kmh: thr - n, label: nf1.format(thr - n) + ' km/h (' + (n ? n + ' sotto la soglia' : 'la soglia di sanzione') + (n === 2 ? ', consigliato' : '') + ')'};
+    if (kind === 'l') return {key, kmh: lim + n, label: (lim + n) + ' (' + (n ? sotto(n, 'il limite').replace(/^-/, '') : 'il limite') + ')'};
+    return {key, kmh: thr - n, label: nf1.format(thr - n) + ' (' + (n === 2 ? 'consigliato' : n ? n + ' sotto la soglia' : 'la soglia') + ')'};
   };
   const add = key => { const c = choice(key); if (c.kmh <= thr + 1e-6 && !out.some(o => o.key === key || Math.abs(o.kmh - c.kmh) < 0.05)) out.push(c); };
   if (currentKey) add(currentKey);
