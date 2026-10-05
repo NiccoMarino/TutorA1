@@ -208,11 +208,18 @@ async function closePip(){
   await sleep(1500);   // il riquadro appena aperto ignora i tocchi finché non si è assestato
   const [l, tp, r, b] = task().bounds || t.bounds, cx = (l + r) >> 1, cy = (tp + b) >> 1;
   adb('shell', 'input', 'tap', String(cx), String(cy));
-  await sleep(600);
   // Il menu del riquadro è di sistema e uiautomator non lo vede: su One UI la X è l'ultima icona in alto a destra.
-  // Aperto il menu il riquadro si allarga un po': posizione misurata dallo screenshot con il riquadro quadrato,
-  // 84% della larghezza da sinistra e 13% della larghezza dall'alto
-  const [ml, mt, mr] = task().bounds || [l, tp, r];
+  // Aperto il menu il riquadro si allarga un po': si aspetta che sia allargato e fermo (due letture uguali),
+  // altrimenti il tocco cade sull'icona accanto, che riapre l'app.
+  // Posizione misurata dallo screenshot con il riquadro quadrato: 84% della larghezza da sinistra, 13% dall'alto
+  let mb = null;
+  for (let i = 0, prev = null; i < 10; i++){
+    await sleep(250);
+    const cur = task().bounds;
+    if (cur && prev && cur.join() === prev.join() && cur[2] - cur[0] > r - l){ mb = cur; break; }
+    prev = cur;
+  }
+  const [ml, mt, mr] = mb || task().bounds || [l, tp, r];
   adb('shell', 'input', 'tap', String(Math.round(ml + 0.84*(mr - ml))), String(Math.round(mt + 0.134*(mr - ml))));
   if ((await waitTask(t => t.mode !== 'pinned', 3000)).mode !== 'pinned') return 'pulsante X';
   const [sw, sh] = screenSize();

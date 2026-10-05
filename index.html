@@ -733,7 +733,7 @@ html.pip .gauge{width:min(100vw, 100vh)}
     const proj = vNow && vNow > 10 && elapsed > 0 ? (dist / 1e3 + remKm) / ((elapsed + remKm / vNow * 3600) / 3600) : null;
     let status = "ok";
     if (settled && avg >= warnAt) status = "alarm";
-    else if (settled && (overLimit(avg, lim) || proj != null && proj >= warnAt)) status = "warn";
+    else if (settled && overLimit(avg, lim)) status = "warn";
     return { elapsed, dist, rel, remKm, vNow, avg, lim, thr, warnAt, vLimRest, vThrRest, proj, status, settled };
   }
   function adviceText(m) {

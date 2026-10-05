@@ -89,3 +89,10 @@ test('consiglio e velocità da tenere dicono lo stesso numero', () => {
     assert.ok(adviceText(m).includes(' ' + n + ' km/h'), adviceText(m) + ' / ' + n);
   }
 });
+
+// Il giallo dipende solo dalla media sopra il limite, non dalla velocità di adesso
+test('giallo solo con la media sopra il limite', () => {
+  assert.equal(at(5, 144, 170).status, 'ok', 'media 125 andando a 170: resta verde');
+  assert.equal(at(5, 137.4, 100).status, 'warn', 'media 131 andando a 100: giallo');
+  assert.equal(at(5, 150, 130).status, 'ok', 'media esattamente 120: verde');
+});

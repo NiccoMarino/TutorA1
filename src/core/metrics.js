@@ -16,9 +16,10 @@ export function computeMetrics(a, f, km, settings){
   const restFor = target => { const t = Leff/target*3600 - elapsed; return t > 0 ? remKm/t*3600 : Infinity; };
   const vLimRest = restFor(lim), vThrRest = restFor(thr);
   const proj = vNow && vNow > 10 && elapsed > 0 ? (dist/1000 + remKm)/((elapsed + remKm/vNow*3600)/3600) : null;
+  // Colore del cartello solo dalla media: rosso oltre la soglia di allarme, giallo sopra il limite
   let status = 'ok';
   if (settled && avg >= warnAt) status = 'alarm';
-  else if (settled && (overLimit(avg, lim) || (proj != null && proj >= warnAt))) status = 'warn';
+  else if (settled && overLimit(avg, lim)) status = 'warn';
   return {elapsed, dist, rel, remKm, vNow, avg, lim, thr, warnAt, vLimRest, vThrRest, proj, status, settled};
 }
 
