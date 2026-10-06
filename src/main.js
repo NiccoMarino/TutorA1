@@ -20,13 +20,13 @@ import { applyTheme } from './ui/theme.js';
 
 function boot(){
   const DATA = JSON.parse(document.getElementById('tutor-data').textContent);
-  const {secs, lines} = buildNetwork(DATA);
+  const {secs, lines, velox} = buildNetwork(DATA);
   let storage = null;
   try { storage = window.localStorage; } catch(e){}
   const store = createStore(storage);
   const settings = store.settings;
   applyTheme(document.documentElement, settings.theme);
-  const tracker = createTracker({secs, lines, settings});
+  const tracker = createTracker({secs, lines, settings, velox});
   const st = tracker.st;
   const simulator = createSimulator({secs, lines});
   const hud = createHud();

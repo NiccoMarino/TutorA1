@@ -41,6 +41,14 @@
    sopra le altre app ha le sue misure (pip.css) */
 html:not(.pip) .gauge .big span{font-size:max(11px, 5.2cqw)}
 html:not(.pip) .keep-in .kl{font-size:max(11px, 4.4cqw)}
+/* Autovelox entro 500 m: etichetta gialla in alto nel cerchio, sopra il numero grande. Il bordo scuro la stacca
+   anche dal cartello giallo; nel riquadro ha una misura sua (pip.css) */
+.velox-in{position:absolute; top:9%; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center;
+  background:#F2B21E; color:#161100; box-shadow:0 0 0 .6cqw #161100; border-radius:3cqw; padding:.8cqw 3cqw; line-height:1.05;
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.velox-in b{font-size:4.6cqw; font-weight:900; letter-spacing:.04em; text-transform:uppercase}
+.velox-in span{font-size:4.6cqw; font-weight:800}
+html:not(.pip) .velox-in b,html:not(.pip) .velox-in span{font-size:max(11px, 4.6cqw)}
 /* Sotto il cerchio */
 .pside{display:grid; gap:6px; width:100%}
 .plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:#C9D6D0}

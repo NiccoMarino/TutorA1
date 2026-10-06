@@ -124,6 +124,20 @@ test('in guida niente più "Tieni il telefono con vista del cielo"', () => {
   assert.ok(!app.includes('vista del cielo'));
 });
 
+test('autovelox nella pagina: etichetta nel cerchio, riga in alto, interruttore', () => {
+  const {app} = buildPages();
+  const gauge = app.match(/<div class="gauge">[\s\S]*?<div class="pside">/)[0];
+  assert.match(gauge, /<div class="velox-in" id="pVelox" hidden><b>Autovelox<\/b><span id="pVeloxD"><\/span><\/div>/, "manca l'etichetta nel cerchio");
+  assert.match(app, /<label class="switch">Avvisi autovelox <input type="checkbox" id="setVelox"><\/label>/);
+  // gialla con il bordo scuro, così si vede anche sul cartello giallo; mai sotto 11 px fuori dal riquadro
+  assert.match(app, /\.velox-in\{[^}]*background:#F2B21E[^}]*box-shadow:0 0 0 [^}]*#161100/);
+  assert.match(app, /html:not\(\.pip\) \.velox-in b,html:not\(\.pip\) \.velox-in span\{font-size:max\(11px, *4\.6cqw\)\}/);
+  assert.match(app, /html\.pip \.velox-in b,html\.pip \.velox-in span\{font-size:7cqw\}/);
+  assert.match(app, /\.hud-top \.road small\.velox\{[^}]*color:#F2B21E/);
+  // il gancio dei collaudi e l'avvio passano gli autovelox al tracker
+  assert.match(app, /createTracker\(\{ ?secs, lines, settings, velox ?\}\)/);
+});
+
 test('tutte le autostrade: filtro a tendina e nessun testo rimasto a "A1 e A4"', () => {
   const {app} = buildPages();
   assert.match(app, /<select[^>]*id="filterRoad"/);

@@ -8,3 +8,5 @@ html.pip .hud{padding:0; gap:0; height:100vh; overflow:hidden; background:transp
 html.pip .plate{height:100vh; display:flex; align-items:center; justify-content:center}
 html.pip .plate-in{gap:0; width:100%}
 html.pip .gauge{width:min(100vw, 100vh)}
+/* etichetta dell'autovelox: più grande del resto, il cerchio del riquadro è piccolo */
+html.pip .velox-in b,html.pip .velox-in span{font-size:7cqw}

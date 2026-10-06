@@ -166,6 +166,7 @@ body.driving .app{max-width:760px}
 .hud-top .road{flex:1; min-width:0; font-weight:700; font-size:15px; line-height:1.25; font-variant-numeric:tabular-nums}
 .hud-top .road small{display:block; font-weight:600; color:#9FB2AA; font-size:12.5px}
 .hud-top .road,.hud-top .road small{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.hud-top .road small.velox{color:#F2B21E; font-weight:800}
 .hbtn{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; min-height:48px; white-space:nowrap}
 .hbtn[aria-pressed="true"]{background:#F2F6F4; color:#0A0F0D}
 .pill{display:inline-block; background:#F2B21E; color:#1a1300; border-radius:999px; padding:1px 8px; font-size:12px; font-weight:800; margin-left:6px; vertical-align:2px}
@@ -226,6 +227,12 @@ body.driving .app{max-width:760px}
 .keep-side{display:none}
 html:not(.pip) .gauge .big span{font-size:max(11px, 5.2cqw)}
 html:not(.pip) .keep-in .kl{font-size:max(11px, 4.4cqw)}
+.velox-in{position:absolute; top:9%; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center;
+  background:#F2B21E; color:#161100; box-shadow:0 0 0 .6cqw #161100; border-radius:3cqw; padding:.8cqw 3cqw; line-height:1.05;
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.velox-in b{font-size:4.6cqw; font-weight:900; letter-spacing:.04em; text-transform:uppercase}
+.velox-in span{font-size:4.6cqw; font-weight:800}
+html:not(.pip) .velox-in b,html:not(.pip) .velox-in span{font-size:max(11px, 4.6cqw)}
 .pside{display:grid; gap:6px; width:100%}
 .plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:#C9D6D0}
 .plate.flash .gauge{animation:flash .9s ease 2}
@@ -285,6 +292,7 @@ html.pip .hud{padding:0; gap:0; height:100vh; overflow:hidden; background:transp
 html.pip .plate{height:100vh; display:flex; align-items:center; justify-content:center}
 html.pip .plate-in{gap:0; width:100%}
 html.pip .gauge{width:min(100vw, 100vh)}
+html.pip .velox-in b,html.pip .velox-in span{font-size:7cqw}
 </style>
 </head>
 <body>
@@ -313,6 +321,7 @@ html.pip .gauge{width:min(100vw, 100vh)}
           </svg>
           <div class="big" id="pBigBox"><b id="pBig">–</b><span id="pUnit"></span></div>
           <div class="keep keep-in"><span class="kl"></span><b class="kv"></b></div>
+          <div class="velox-in" id="pVelox" hidden><b>Autovelox</b><span id="pVeloxD"></span></div>
         </div>
         <div class="pside">
           <div class="keep keep-side"><span class="kl"></span><b class="kv"></b></div>
@@ -431,6 +440,7 @@ html.pip .gauge{width:min(100vw, 100vh)}
         <label class="switch">Avvisi vocali <input type="checkbox" id="setVoice"></label>
         <label class="switch">Segnali acustici <input type="checkbox" id="setBeep"></label>
         <label class="switch">Avvisa anche se la velocità istantanea supera la soglia <input type="checkbox" id="setInst"></label>
+        <label class="switch">Avvisi autovelox <input type="checkbox" id="setVelox"></label>
       </div>
       <div class="card fields">
         <div class="field">
@@ -1941,6 +1951,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         renderMute();
       });
     });
+    const sv = $("#setVelox");
+    sv.checked = !settings.veloxOff;
+    sv.addEventListener("change", () => {
+      if (sv.checked) delete settings.veloxOff;
+      else settings.veloxOff = true;
+      save();
+      onChange();
+    });
     $("#hudMute").addEventListener("click", () => {
       const on = settings.voice || settings.beep;
       settings.voice = !on;
@@ -2019,6 +2037,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     $("#pArc").style.strokeDasharray = (frac * 75).toFixed(2) + " 100";
     $("#pRing").style.strokeDasharray = (frac * 100).toFixed(1) + " 100";
     p.querySelector(".gauge").classList.toggle("noarc", frac === 0);
+    $("#pVelox").hidden = !v.velox;
+    if (v.velox) $("#pVeloxD").textContent = v.velox.short;
     $("#pProg").hidden = !v.progress;
     if (v.progress) {
       $("#pFrom").textContent = v.progress.from;
@@ -2035,7 +2055,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         $("#sInst").textContent = v.stats.inst;
         $("#stInst").classList.toggle("hot", v.stats.instHot);
         $("#hudLimits").querySelectorAll(".hchip").forEach((h) => h.setAttribute("aria-pressed", String(+h.textContent === v.stats.lim)));
-        $("#hudRoad").innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : "") + (v.road.sub ? "<small>" + esc(v.road.sub) + "</small>" : "");
+        const sub = v.velox ? '<small class="velox">' + esc(v.velox.text) + "</small>" : v.road.sub ? "<small>" + esc(v.road.sub) + "</small>" : "";
+        $("#hudRoad").innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : "") + sub;
         renderPlate(v);
         $("#advice").textContent = v.advice;
       },
@@ -2252,7 +2273,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
   // src/main.js
   function boot() {
     const DATA = JSON.parse(document.getElementById("tutor-data").textContent);
-    const { secs, lines } = buildNetwork(DATA);
+    const { secs, lines, velox } = buildNetwork(DATA);
     let storage = null;
     try {
       storage = window.localStorage;
@@ -2261,7 +2282,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     const store = createStore(storage);
     const settings = store.settings;
     applyTheme(document.documentElement, settings.theme);
-    const tracker = createTracker({ secs, lines, settings });
+    const tracker = createTracker({ secs, lines, settings, velox });
     const st = tracker.st;
     const simulator = createSimulator({ secs, lines });
     const hud = createHud();
