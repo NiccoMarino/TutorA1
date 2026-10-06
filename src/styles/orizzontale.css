@@ -13,7 +13,9 @@
   html:not(.pip) .plate.flash{animation:flash .9s ease 2}
   html:not(.pip) .plate.flash .gauge{animation:none}
   html:not(.pip) .plate-in{height:100%; box-sizing:border-box; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
-    align-items:center; gap:18px; border:3px solid var(--pl); border-radius:11px; padding:10px 20px; text-align:left}
+    grid-template-rows:minmax(0,1fr); align-items:center; gap:18px; border:3px solid var(--pl); border-radius:11px; padding:10px 20px; text-align:left}
+  /* con il testo ingrandito di Android le colonne ai lati restano dentro il cartello: quello che non ci sta si taglia in fondo */
+  html:not(.pip) .ptext,html:not(.pip) .pside{max-height:100%; overflow:hidden}
   html:not(.pip) .plate .kicker{color:inherit; opacity:.92}
   html:not(.pip) .plate .title{font-size:clamp(17px,3vw,26px)}
   /* lato del cerchio: altezza dello schermo meno barra in alto, bordi e spaziature */
@@ -24,7 +26,6 @@
   html:not(.pip) .arc .a360{display:inline}
   html:not(.pip) .gauge.noarc .arc .fill{display:none}
   html:not(.pip) .gauge .big{inset:0}
-  html:not(.pip) .gauge .big span{font-size:max(11px, 5.2cqw)}
   html:not(.pip) .pside{justify-items:end; text-align:right; gap:10px}
   html:not(.pip) .keep-side{display:flex; align-items:flex-end; text-align:right}
   html:not(.pip) .keep-side .kl{font-size:14px}

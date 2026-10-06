@@ -1,6 +1,6 @@
 {
   "name": "tutor-a1-a4",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "type": "module",
   "description": "App Android dei tratti Tutor in autostrada (MediaVelocità), costruita con Capacitor a partire da src/",
@@ -9,6 +9,7 @@
     "test": "node --test \"test/*.test.js\"",
     "serve": "node tools/serve.mjs",
     "device-check": "node tools/device-check.mjs",
+    "schermi": "node tools/schermi.mjs",
     "sync": "npm run build && npx cap sync",
     "android": "npm run sync && npx cap open android",
     "apk": "npm run sync && cd android && gradlew assembleDebug",

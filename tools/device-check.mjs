@@ -383,7 +383,8 @@ async function phaseRotation(){
   // Come col GPS (senza i comandi della simulazione): schermata ferma, tutto dentro lo schermo, cerchio tondo
   const still = await js(`(async () => { document.getElementById('simBar').hidden = true; await new Promise(r => setTimeout(r, 300));
     scrollTo(0, 200); const g = document.querySelector('.gauge').getBoundingClientRect(), t = document.getElementById('toast').getBoundingClientRect();
-    const r = {scroll: document.documentElement.scrollHeight, view: innerHeight, y: scrollY, round: Math.abs(g.width - g.height) <= 1,
+    // schermata di guida (scorre solo se non ci sta) e pagina intera (non deve spostarsi): innerHeight è arrotondato, 100vh no
+    const h = document.querySelector('.hud'), r = {scroll: h.scrollHeight, view: h.clientHeight, y: Math.round(scrollY), round: Math.abs(g.width - g.height) <= 1,
       gauge: Math.round(g.width), toast: Math.round(t.bottom)};
     scrollTo(0, 0); document.getElementById('simBar').hidden = false; return r; })()`);
   check('Verticale col GPS: la schermata non scorre e tutto sta nello schermo', still.scroll <= still.view && still.y === 0 && still.round

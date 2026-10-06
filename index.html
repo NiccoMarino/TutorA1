@@ -55,7 +55,7 @@ button,input,select{font:inherit; color:inherit}
 .screen{min-height:100vh}
 body.driving .screen{display:none !important}
 svg{flex:none}
-.iconbtn{appearance:none; width:48px; height:48px; display:flex; align-items:center; justify-content:center; border:0; border-radius:12px;
+.iconbtn{appearance:none; flex:none; width:48px; height:48px; display:flex; align-items:center; justify-content:center; border:0; border-radius:12px;
   background:var(--bg); color:var(--ink); cursor:pointer; padding:0}
 .iconbtn svg{width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
 .home{display:flex; flex-direction:column;
@@ -224,18 +224,26 @@ body.driving .app{max-width:760px}
 .keep-in .kl{font-size:4.4cqw}
 .keep-in .kv{font-size:10.5cqw; margin-top:.5cqw}
 .keep-side{display:none}
+html:not(.pip) .gauge .big span{font-size:max(11px, 5.2cqw)}
+html:not(.pip) .keep-in .kl{font-size:max(11px, 4.4cqw)}
 .pside{display:grid; gap:6px; width:100%}
 .plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:#C9D6D0}
 .plate.flash .gauge{animation:flash .9s ease 2}
 @keyframes flash{50%{filter:brightness(1.35)}}
 .plabels{display:flex; justify-content:space-between; font-size:13px; font-weight:700; gap:10px; color:#C9D6D0}
 :where(.hud:has(#simBar:not([hidden]))) .gauge{width:min(100%, 36vh)}
-@media (orientation:portrait){
+@media not all and (orientation:landscape) and (max-height:560px){
   html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))){overflow:hidden; overscroll-behavior:none}
-  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .hud{height:100vh; min-height:0; box-sizing:border-box; overflow:hidden}
-  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate{flex:1 1 0; min-height:0; display:flex; flex-direction:column}
-  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate-in{flex:1 1 0; min-height:0; justify-content:center}
-  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .gauge{flex:1 1 0; min-height:0; width:auto; max-width:100%; max-height:46vh; aspect-ratio:1}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .hud{height:100vh; min-height:0; box-sizing:border-box; overflow-y:auto; overscroll-behavior:none}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate{flex:1 0 auto; display:flex; flex-direction:column}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate-in{flex:1 1 0; justify-content:center}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .gauge{flex:1 1 0; min-height:min(150px, 46vh); width:auto; max-width:100%; max-height:min(46vh, calc(100vw - 32px), 728px); aspect-ratio:1}
+}
+@media (max-height:640px){
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate .sub{display:none}
+}
+@media (max-width:340px){
+  .hud-limits .lab{display:none}
 }
 @media (orientation:landscape) and (max-height:560px){
   html:not(.pip) body.driving .app{max-width:none}
@@ -246,7 +254,8 @@ body.driving .app{max-width:760px}
   html:not(.pip) .plate.flash{animation:flash .9s ease 2}
   html:not(.pip) .plate.flash .gauge{animation:none}
   html:not(.pip) .plate-in{height:100%; box-sizing:border-box; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
-    align-items:center; gap:18px; border:3px solid var(--pl); border-radius:11px; padding:10px 20px; text-align:left}
+    grid-template-rows:minmax(0,1fr); align-items:center; gap:18px; border:3px solid var(--pl); border-radius:11px; padding:10px 20px; text-align:left}
+  html:not(.pip) .ptext,html:not(.pip) .pside{max-height:100%; overflow:hidden}
   html:not(.pip) .plate .kicker{color:inherit; opacity:.92}
   html:not(.pip) .plate .title{font-size:clamp(17px,3vw,26px)}
   html:not(.pip) .gauge{width:calc(100vh - 112px); background:none}
@@ -255,7 +264,6 @@ body.driving .app{max-width:760px}
   html:not(.pip) .arc .a360{display:inline}
   html:not(.pip) .gauge.noarc .arc .fill{display:none}
   html:not(.pip) .gauge .big{inset:0}
-  html:not(.pip) .gauge .big span{font-size:max(11px, 5.2cqw)}
   html:not(.pip) .pside{justify-items:end; text-align:right; gap:10px}
   html:not(.pip) .keep-side{display:flex; align-items:flex-end; text-align:right}
   html:not(.pip) .keep-side .kl{font-size:14px}
@@ -391,7 +399,7 @@ html.pip .gauge{width:min(100vw, 100vh)}
       <button class="mitem" type="button" data-go="pHow"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.5"/></svg></span><span class="mtx"><b>Come funziona</b><small>Il calcolo della media e la tolleranza</small></span></button>
       <button class="mitem" type="button" data-go="pInfo"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8-8 9-4.6-1-8-4.4-8-9V6z"/></svg></span><span class="mtx"><b>Privacy e diritti</b><small>Dati, fonti e informativa</small></span></button>
     </nav>
-    <p class="src menu-foot">Versione 1.0.2</p>
+    <p class="src menu-foot">Versione 1.0.3</p>
   </section>
 
   <section class="screen page" id="pSettings" aria-labelledby="tSettings" hidden>

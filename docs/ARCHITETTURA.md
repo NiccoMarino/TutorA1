@@ -62,8 +62,11 @@ Un solo markup (`#plate` in `src/index.html`) per tre forme, scelte solo dallo s
 | orizzontale: cartello a tutto schermo, nome a sinistra, anello intero con la media, velocità da tenere e km mancanti a destra | telefono girato (altezza fino a 560 px) | `styles/orizzontale.css` |
 | riquadro: solo il cerchio, trasparente intorno | riquadro sopra Maps (classe `pip` su `<html>`) | `styles/pip.css` |
 
-- In verticale, guidando col GPS, la schermata è ferma e alta quanto lo schermo (fondo di `styles/cartello.css`): il
-  cerchio prende lo spazio che resta (al massimo 46vh). In simulazione la pagina scorre, per i comandi sotto.
+- Guidando col GPS (telefono dritto, tablet, computer) la schermata è ferma e alta quanto lo schermo (fondo di
+  `styles/cartello.css`): il cerchio prende lo spazio che resta, al massimo 46vh e mai più della larghezza, almeno 150px;
+  se non ci sta neanche così scorre solo la guida. Sotto i 640px di altezza sparisce la frase sotto il cerchio, sotto i
+  340px di larghezza la parola "Limite". In simulazione la pagina scorre, per i comandi sotto. Misure diverse dal
+  telefono di prova: `npm run schermi` (`tools/schermi.mjs`, casi e giudizio in `tools/schermi-casi.mjs`).
 - Testi e numeri: `core/hud-view.js` (`plate`, `keep`, `gauge`, `progress`); `ui/hud.js` (`renderPlate`) li scrive.
 - Velocità da tenere: `keepText` in `core/metrics.js`. È la velocità che fa chiudere il tratto con la media entro il
   limite, anche se sopra il limite (il numero dice entro quale velocità la media del tratto resta sotto il limite); se non basta più, quella
