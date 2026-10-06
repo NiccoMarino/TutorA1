@@ -2074,7 +2074,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       // GPS muto da qualche secondo (galleria): resta così fino alla prossima posizione
       signalLost(gap, limit, inSection) {
         const sub = $("#hudRoad small");
-        if (sub) sub.textContent = "Segnale GPS assente da " + Math.round(gap) + " s, forse sei in galleria";
+        if (sub) {
+          sub.className = "";
+          sub.textContent = "Segnale GPS assente da " + Math.round(gap) + " s, forse sei in galleria";
+        }
         if (inSection) $("#advice").textContent = "Senza GPS la media si aggiorna all'uscita della galleria. Mantieni il limite di " + limit + ".";
       },
       gpsTrouble(text) {
