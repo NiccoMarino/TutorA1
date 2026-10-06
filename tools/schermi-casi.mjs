@@ -61,6 +61,7 @@ export function judge(kind, {audit, plate, velox}){
     else {
       if (!velox.inside) problems.push("l'etichetta dell'autovelox esce dal cerchio");
       if (velox.overlap) problems.push("l'etichetta dell'autovelox copre la media");
+      if (velox.clipped) problems.push("la scritta della fascia è tagliata dal cerchio");
     }
   }
   return {problems, notes};

@@ -132,8 +132,11 @@ test('autovelox nella pagina: etichetta nel cerchio, riga in alto, interruttore'
   assert.match(app, /<div class="big" id="pBigBox"><b id="pBig">–<\/b><span id="pUnit"><\/span><\/div>/, 'la fascia non deve stare nella colonna del numero');
   assert.match(app, /<label class="switch">Avvisi autovelox <input type="checkbox" id="setVelox"><\/label>/);
   // gialla con i bordi scuri sopra e sotto, così si vede anche sul cartello giallo; mai sotto 11 px fuori dal riquadro
-  assert.match(app, /\.velox-in\{[^}]*position:absolute; left:0; right:0; top:61%; min-height:11%[^}]*background:#F2B21E[^}]*border-block:\.6cqw solid #161100/);
+  assert.match(app, /\.velox-in\{[^}]*position:absolute; left:0; right:0; top:61%; min-height:11%[^}]*background:#F2B21E/);
   assert.match(app, /\.gauge:has\(\.velox-in:not\(\[hidden\]\)\)\{overflow:hidden\}/, 'la fascia esce dal cerchio');
+  // cerchio stretto (telefono piccolo, testo ingrandito): solo telecamera e metri, bordi mai sotto 1 px
+  assert.match(app, /@container \(max-width:200px\)\{\s*\.velox-in strong\{display:none\}/, 'sui cerchi piccoli la scritta esce dal cerchio');
+  assert.match(app, /\.velox-in\{[^}]*border-block:max\(1px, *\.6cqw\) solid #161100/, 'bordi della fascia sotto 1 px');
   assert.match(app, /html:not\(\.pip\) \.velox-in strong,html:not\(\.pip\) \.velox-in em\{font-size:max\(11px, *5cqw\)\}/);
   assert.match(app, /html\.pip \.velox-in strong,html\.pip \.velox-in em,html\.pip \.velox-in svg\{font-size:7cqw\}/);
   assert.match(app, /\.hud-top \.road small\.velox\{[^}]*color:#F2B21E[^}]*font-weight:700/);

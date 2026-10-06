@@ -228,7 +228,7 @@ body.driving .app{max-width:760px}
 html:not(.pip) .gauge .big span{font-size:max(11px, 5.2cqw)}
 html:not(.pip) .keep-in .kl{font-size:max(11px, 4.4cqw)}
 .velox-in{position:absolute; left:0; right:0; top:61%; min-height:11%; box-sizing:border-box; display:flex; align-items:center;
-  justify-content:center; gap:.4em; background:#F2B21E; color:#161100; border-block:.6cqw solid #161100; padding:.6cqw 0;
+  justify-content:center; gap:.4em; background:#F2B21E; color:#161100; border-block:max(1px, .6cqw) solid #161100; padding:.6cqw 0;
   line-height:1.05; font-variant-numeric:tabular-nums; white-space:nowrap}
 .velox-in svg{width:1.3em; height:1.3em; flex:none}
 .velox-in strong{font-size:5cqw; font-weight:900; letter-spacing:.04em; text-transform:uppercase}
@@ -237,6 +237,9 @@ html:not(.pip) .velox-in strong,html:not(.pip) .velox-in em{font-size:max(11px, 
 .velox-in svg{font-size:5cqw}
 html:not(.pip) .velox-in svg{font-size:max(11px, 5cqw)}
 .gauge:has(.velox-in:not([hidden])){overflow:hidden}
+@container (max-width:200px){
+  .velox-in strong{display:none}
+}
 .gauge:has(.velox-in:not([hidden])) .big{inset:0 0 30% 0}
 .pside{display:grid; gap:6px; width:100%}
 .plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:#C9D6D0}

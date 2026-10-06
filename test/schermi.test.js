@@ -84,3 +84,8 @@ test('etichetta autovelox: deve vedersi dentro il cerchio senza coprire la media
   assert.equal(r.problems.length, 2);
   assert.match(judge('guida-verticale', {audit: cleanAudit, plate: goodPlate, velox: {shown: false}}).problems.join(' '), /manca/);
 });
+
+test('fascia autovelox: la scritta tagliata dal cerchio è un problema', () => {
+  const r = judge('guida-verticale', {audit: cleanAudit, plate: goodPlate, velox: {shown: true, inside: true, overlap: false, clipped: true}});
+  assert.match(r.problems.join(' '), /tagliata dal cerchio/);
+});

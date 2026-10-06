@@ -174,7 +174,12 @@ async function main(){
       const velox = await ev(`(() => { const e = document.getElementById('pVelox'), g = document.querySelector('.gauge').getBoundingClientRect();
         if (e.hidden) return {shown: false}; const r = e.getBoundingClientRect();
         const hits = b => b.width > 0 && r.bottom > b.top + 1 && r.top < b.bottom - 1 && r.right > b.left && r.left < b.right;
-        return {shown: true, inside: r.left >= g.left && r.right <= g.right && r.top >= g.top && r.bottom <= g.bottom,
+        // gli angoli della scritta (telecamera, parola, metri) devono stare dentro il cerchio, non solo nel suo quadrato
+        const cx = g.left + g.width/2, cy = g.top + g.height/2, R = g.width/2;
+        const parts = [...e.children].filter(c => getComputedStyle(c).display !== 'none').map(c => c.getBoundingClientRect());
+        const L = Math.min(...parts.map(p => p.left)), Rt = Math.max(...parts.map(p => p.right)), T = Math.min(...parts.map(p => p.top)), B = Math.max(...parts.map(p => p.bottom));
+        const clipped = [[L, T], [Rt, T], [L, B], [Rt, B]].some(([x, y]) => Math.hypot(x - cx, y - cy) > R + 0.5);
+        return {shown: true, clipped, inside: r.left >= g.left && r.right <= g.right && r.top >= g.top && r.bottom <= g.bottom,
           overlap: ['#pBig', '#pUnit', '.keep-in .kl', '.keep-in .kv'].some(s => hits(document.querySelector(s).getBoundingClientRect()))}; })()`);
       await add('guida-autovelox', plateV.form === 'orizzontale' ? 'guida-orizzontale' : 'guida-verticale', {audit: await call(pageAudit), plate: plateV, velox}, true);
       await ev(`document.getElementById('hudExit').click(); true`);
