@@ -102,6 +102,12 @@ dell'elenco:
 
 ## 3. Pagina (`src/ui/`, `src/index.html`, stili)
 
+> **Aggiornato durante il lavoro.** L'utente ha scelto la prova 5 di 10 (canvas delle prove): una fascia gialla da
+> bordo a bordo del cerchio, con la telecamera, AUTOVELOX e i metri, sopra la velocità da tenere. Ha i bordi scuri
+> sopra e sotto, e il numero sale un po' quando la fascia c'è. Sostituisce l'etichetta in alto descritta qui sotto.
+> La riga in alto dice "Velox 420 m", perché sul telefono ha 98 px e "Autovelox 420 m" non ci sta.
+> Il tracciato: gli estremi saltano i punti di riferimento che non hanno la strada vicina (vedi il registro del lavoro).
+
 - **Riga in alto**: con `view.velox` presente, la seconda riga di `#hudRoad` mostra `view.velox.text` in giallo (classe `velox`) al posto di direzione e precisione GPS.
 - **Nel cerchio**: un elemento nuovo, `<div class="velox-in" id="pVelox" hidden>`, dentro `.gauge`, in alto e sopra il numero grande. Il testo è "AUTOVELOX" su una riga e i metri sotto.
   - **Stile**: fondo giallo `#F2B21E`, testo scuro, angoli tondi, dimensione in `cqw` con un minimo di 11 px, fuori dal riquadro come le altre scritte del cerchio.
