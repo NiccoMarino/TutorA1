@@ -19,6 +19,7 @@ import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { verdictOf } from '../src/core/rules.js';
+import { AKEY, DISCLAIMER_VERSION } from '../src/core/store.js';
 import { pageFingerprint, pageAudit, showScreen, listCheck, driveSection, plateForm } from './device-page.mjs';
 
 const PKG = 'it.niccomarino.tutora1a4.prova';
@@ -191,7 +192,7 @@ async function freshStart(){
   currentPhase = phase + ', riavvio';
   adb('shell', 'am', 'force-stop', PKG);
   await launch();
-  await js(`localStorage.setItem('tutorA1.v1.settings', ${JSON.stringify(JSON.stringify(TEST_SETTINGS))}); true`);
+  await js(`localStorage.setItem('tutorA1.v1.settings', ${JSON.stringify(JSON.stringify(TEST_SETTINGS))}); localStorage.setItem('${AKEY}', '${DISCLAIMER_VERSION}'); true`);
   await reload();
   currentPhase = phase;
 }
@@ -298,6 +299,15 @@ async function phasePage(){
     && /giallo sopra 105 .* da 110 km\/h/.test(col.help), col.help.slice(0, 140));
   await js(`localStorage.setItem('tutorA1.v1.settings', ${JSON.stringify(JSON.stringify(TEST_SETTINGS))}); localStorage.setItem('tutorA1.v1.history', '[]'); true`);
   await reload();
+
+  // Avviso alla prima apertura: compare, Indietro non lo salta, accettato porta alla schermata iniziale e resta salvato
+  await js(`localStorage.removeItem('${AKEY}'); true`);
+  await reload();
+  const av = await js(`(() => { const shown = !document.getElementById('pAvviso').hidden && document.getElementById('home').hidden;
+    const backSkips = window.tutorBack(); document.getElementById('avvisoOk').click();
+    return {shown, backSkips, home: !document.getElementById('home').hidden, saved: localStorage.getItem('${AKEY}')}; })()`);
+  check('Avviso alla prima apertura: compare, Indietro non lo salta, accettato porta alla home', av.shown && !av.backSkips && av.home
+    && av.saved === String(DISCLAIMER_VERSION), JSON.stringify(av));
 
   // Elenco dei tratti e filtri
   await call(showScreen, 'pSim', 'Come il telefono');

@@ -38,6 +38,10 @@ GitHub Pages (GitHub registra gli IP per sicurezza) e il nuovo pulsante di cance
 sanzioni; la velocità da tenere non autorizza a superare il limite, che vale sempre; niente telefono in mano alla
 guida (art. 173 del Codice della Strada); 18 anni; responsabilità nei limiti di legge, senza toccare i diritti dei
 consumatori; legge italiana e giudice del consumatore. Linkati dall'app e dall'informativa.
+Alla prima apertura l'app mostra l'avviso "Prima di partire" (`#pAvviso`) con i punti principali: non invita a
+superare i limiti, portali e dati possono contenere errori, chi guida è l'unico responsabile e, nei limiti di legge,
+l'app non risponde di multe e danni. Va accettato per usare l'app; si rilegge da Privacy e diritti. Se il testo
+cambia, si aumenta `DISCLAIMER_VERSION` in `src/core/store.js` e ricompare una volta.
 
 **3. Rimborsi.** Oggi non si vende niente, quindi pubblicare una politica di rimborso confonderebbe. La bozza è
 pronta per l'abbonamento da 2 € all'anno: prezzo IVA inclusa, rinnovo, disdetta, recesso e rimborso entro 14 giorni.
@@ -106,7 +110,7 @@ consenso dei genitori da raccogliere.
 avrà il link per disiscriversi e servirà il consenso prima dell'iscrizione.
 
 **19. Licenze.**
-- **Carattere:** Overpass, SIL Open Font License.
+- **Carattere:** Figtree, SIL Open Font License.
 - **Software:** Capacitor e plugin con licenza MIT, AndroidX con Apache 2.0.
 - **Testi completi:** sono dentro l'app, in Privacy e diritti, Licenze. La build li prende dalle librerie
   installate e un test controlla che ci siano.

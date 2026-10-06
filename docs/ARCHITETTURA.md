@@ -34,11 +34,13 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
   la guida usa tutto lo schermo.
 - Schermate fuori dalla guida: la schermata iniziale (`#home`, due cartelli: "Avvia guida" e "Prova in
   simulazione"), il menù (`#menu`) e una pagina per voce (`#pSettings`, `#pSim`, `#pHist`, `#pHow`, `#pInfo`).
+  Finché non è accettato, l'app parte dall'avviso `#pAvviso` (`createNav({start})`); l'accettazione è nella chiave
+  `tutorA1.v1.avviso` con il numero `DISCLAIMER_VERSION` di `core/store.js`, da aumentare se cambia il testo.
   Un elemento con `data-go="id"` apre quella schermata, `data-back` torna indietro; la cronologia è in
   `ui/nav.js`. Il tasto Indietro di Android chiede prima alla pagina (`window.tutorBack`, da `MainActivity.java`).
 - Tema: `settings.theme` (`auto`, `light`, `dark`), applicato da `ui/theme.js` con `data-theme` su `<html>`;
   i colori sono in cima a `styles/app.css`. La schermata di guida resta scura in entrambi i temi.
-  Il carattere Overpass è dentro la pagina (`scripts/build.mjs`), quindi l'app non si collega a internet.
+  Il carattere Figtree è dentro la pagina (`scripts/build.mjs`), quindi l'app non si collega a internet.
 - Versione: `package.json`; la build la scrive nella pagina, `android/app/build.gradle` ne ricava versionName e versionCode.
 - Icona, avvio e immagini dello store: `tools/make-icons.mjs` e `tools/store-screenshots.mjs` (`npm run grafica`).
 - Cartello di guida e sue tre forme (verticale, orizzontale, riquadro): sezione "Il cartello di guida" qui sotto.

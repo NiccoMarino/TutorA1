@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createStore, SKEY, HKEY, DEFAULT_SETTINGS } from '../src/core/store.js';
+import { createStore, SKEY, HKEY, AKEY, DISCLAIMER_VERSION, DEFAULT_SETTINGS } from '../src/core/store.js';
 
 function memoryStorage(init = {}){
   const m = new Map(Object.entries(init));
@@ -66,12 +66,48 @@ test('lo storico tiene gli ultimi 60 tratti, il più recente per primo, e li sal
 });
 
 // Diritto alla cancellazione: tutto quello che l'app conserva è qui, e si cancella dall'app
-test('cancella tutti i dati: storico e impostazioni spariscono dal telefono', () => {
+test("cancella tutti i dati: storico, impostazioni e avviso accettato spariscono dal telefono", () => {
   const removed = [];
   const storage = {...memoryStorage({[SKEY]: JSON.stringify({limit:110}), [HKEY]: JSON.stringify([{sec:'x'}])}), removeItem: k => removed.push(k)};
   const s = createStore(storage);
   s.clearAll();
-  assert.deepEqual(removed.sort(), [HKEY, SKEY].sort());
+  assert.deepEqual(removed.sort(), [AKEY, HKEY, SKEY].sort());
   assert.deepEqual(s.history, []);
   assert.deepEqual(s.settings, DEFAULT_SETTINGS);
+});
+
+// Avviso alla prima apertura: si accetta una volta, ricompare se cambia il testo (DISCLAIMER_VERSION) o si cancellano i dati
+test("l'avviso compare alla prima apertura e, accettato, non compare più", () => {
+  const storage = memoryStorage();
+  const s = createStore(storage);
+  assert.equal(s.disclaimerAccepted(), false);
+  s.acceptDisclaimer();
+  assert.equal(s.disclaimerAccepted(), true);
+  assert.equal(createStore(storage).disclaimerAccepted(), true);
+});
+
+test("l'avviso è salvato a parte: le impostazioni di guida non cambiano", () => {
+  assert.equal(AKEY, 'tutorA1.v1.avviso');
+  const s = createStore(memoryStorage());
+  s.acceptDisclaimer();
+  assert.deepEqual(s.settings, DEFAULT_SETTINGS);
+});
+
+test("se il testo dell'avviso cambia versione, ricompare una volta", () => {
+  const s = createStore(memoryStorage({[AKEY]: String(DISCLAIMER_VERSION - 1)}));
+  assert.equal(s.disclaimerAccepted(), false);
+});
+
+test("cancellare i dati fa ricomparire l'avviso", () => {
+  const m = new Map(); const storage = {getItem: k => m.has(k) ? m.get(k) : null, setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k)};
+  const s = createStore(storage);
+  s.acceptDisclaimer(); s.clearAll();
+  assert.equal(s.disclaimerAccepted(), false);
+  assert.equal(createStore(storage).disclaimerAccepted(), false);
+});
+
+test("senza localStorage l'avviso accettato vale finché l'app resta aperta", () => {
+  const s = createStore(null);
+  s.acceptDisclaimer();
+  assert.equal(s.disclaimerAccepted(), true);
 });

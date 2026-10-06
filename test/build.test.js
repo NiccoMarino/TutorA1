@@ -87,7 +87,8 @@ test('la pagina non scarica niente da internet: script, stili e caratteri sono d
     assert.ok(!/<(script|img|iframe)[^>]+src="https?:/i.test(page), 'script o immagine esterni');
     assert.ok(!/<link[^>]+href="https?:/i.test(page), 'stile o carattere esterno');
     assert.ok(!/url\(\s*['"]?https?:/i.test(page), 'url() esterno nello stile');
-    assert.match(page, /@font-face\{font-family:"Overpass"/);
+    assert.match(page, /@font-face\{font-family:"Figtree"/);
+    assert.ok(!page.includes('Overpass'), 'è rimasto il vecchio carattere Overpass');
     assert.match(page, /font\/woff2;base64,/);
   }
 });
@@ -106,6 +107,16 @@ test('schermata iniziale con i due cartelli, menù e una pagina per ogni voce', 
   assert.ok(app.includes('data-go="home"'), 'il menù non ha la voce Home');
   assert.ok(app.includes('id="setTheme"'), 'manca la scelta del tema nelle impostazioni');
   assert.ok(!app.includes('class="side"'), 'è rimasta la vecchia colonna laterale');
+});
+
+test("avviso alla prima apertura: non invita a superare i limiti, possibili errori, nessuna responsabilità per multe", () => {
+  const {app} = buildPages();
+  const avviso = app.match(/<section[^>]*id="pAvviso"[\s\S]*?<\/section>/);
+  assert.ok(avviso, 'manca la schermata pAvviso');
+  for (const t of ['id="avvisoOk"', 'Ho capito e accetto', 'superare i limiti', 'errori', 'multe', 'unico responsabile', 'termini.html'])
+    assert.ok(avviso[0].includes(t), "nell'avviso manca: " + t);
+  assert.ok(!avviso[0].includes('data-back'), "l'avviso non ha la freccia per tornare indietro");
+  assert.ok(app.includes('data-go="pAvviso"'), "da Privacy e diritti non si rilegge l'avviso");
 });
 
 test('tutte le autostrade: filtro a tendina e nessun testo rimasto a "A1 e A4"', () => {
@@ -147,7 +158,7 @@ test('nella pagina lo stile non ha commenti (restano nei sorgenti)', () => {
 test('licenze di carattere, Capacitor, plugin e librerie Android nella pagina', () => {
   const {app, web} = buildPages();
   for (const page of [app, web]){
-    for (const t of ['Copyright 2021 The Overpass Project Authors', 'SIL OPEN FONT LICENSE', 'Copyright (c) 2017-present Drifty Co.',
+    for (const t of ['Copyright 2022 The Figtree Project Authors', 'SIL OPEN FONT LICENSE', 'Copyright (c) 2017-present Drifty Co.',
       'Copyright 2021 James Diacono', 'Copyright (c) 2019 The keep-awake developers.', 'Copyright (c) 2021 Robin Genz',
       'Copyright 2020-present Ionic', 'Apache License', 'OpenStreetMap', 'ODbL']) assert.ok(page.includes(t), 'manca: ' + t);
   }

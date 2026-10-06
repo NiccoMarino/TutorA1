@@ -102,6 +102,22 @@
     </div>
   </section>
 
+  <!-- Avviso alla prima apertura: compare finché non si accetta (core/store.js, DISCLAIMER_VERSION). Se cambi il testo,
+       aumenta DISCLAIMER_VERSION e allinea termini.html. Si rilegge da Privacy e diritti. -->
+  <section class="screen page avviso" id="pAvviso" aria-labelledby="tAvviso" hidden>
+    <header class="pagebar"><h2 id="tAvviso">Prima di partire</h2></header>
+    <div class="page-body">
+      <div class="card prose">
+        <p><b>MediaVelocità serve a rispettare i limiti, non a superarli.</b> Non invita né consiglia mai di superare i limiti di velocità: la velocità da tenere è un'indicazione prudente, e il limite vale in ogni momento, anche dentro i tratti Tutor.</p>
+        <p><b>I dati possono contenere errori.</b> La posizione dei portali, i limiti e i tratti attivi sono ricavati da fonti pubbliche e possono essere sbagliati o non aggiornati: un Tutor può essere spostato, acceso dove l'app non lo indica o spento dove lo indica. Anche il GPS del telefono può sbagliare, per esempio in galleria.</p>
+        <p><b>Chi guida è l'unico responsabile</b> della propria velocità e del rispetto della segnaletica e del Codice della Strada. Nei limiti consentiti dalla legge, l'app e il suo autore non rispondono di multe, punti tolti dalla patente o altri danni legati al suo uso.</p>
+        <p>Non usare il telefono mentre guidi: imposta tutto prima di partire, l'app ti avvisa con la voce.</p>
+        <p>Proseguendo accetti i <a href="https://niccomarino.github.io/TutorA1/termini.html" target="_blank" rel="noopener">Termini d'uso</a>.</p>
+      </div>
+      <button class="btn btn-primary" id="avvisoOk" type="button">Ho capito e accetto</button>
+    </div>
+  </section>
+
   <section class="screen page" id="menu" aria-labelledby="tMenu" hidden>
     <header class="pagebar"><button class="iconbtn" type="button" data-back aria-label="Torna alla schermata iniziale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button><h2 id="tMenu">Menù</h2></header>
     <nav class="menu-list" aria-labelledby="tMenu">
@@ -208,7 +224,7 @@
     <div class="page-body">
       <div class="card prose">
         <h3>I tuoi dati</h3>
-        <p>La posizione GPS resta sul telefono: l'app non la invia a nessuno, funziona anche senza internet e non ha account, pubblicità né statistiche di utilizzo. Impostazioni e storico dei tratti sono salvati solo nella memoria del telefono (o del browser) e servono solo a farti usare l'app: niente cookie, quindi nessun consenso da chiedere.</p>
+        <p>La posizione GPS resta sul telefono: l'app non la invia a nessuno, funziona anche senza internet e non ha account, pubblicità né statistiche di utilizzo. Impostazioni, storico dei tratti e avviso iniziale accettato sono salvati solo nella memoria del telefono (o del browser) e servono solo a farti usare l'app: niente cookie, quindi nessun consenso da chiedere.</p>
         <p><a href="https://niccomarino.github.io/TutorA1/privacy.html" target="_blank" rel="noopener">Informativa sulla privacy</a> · <a href="https://niccomarino.github.io/TutorA1/termini.html" target="_blank" rel="noopener">Termini d'uso</a></p>
         <button class="btn" id="dataClear" type="button">Cancella storico e impostazioni</button>
       </div>
@@ -217,6 +233,7 @@
         <p>Non usare il telefono mentre guidi: fissalo a un supporto e imposta tutto prima di partire, l'app ti avvisa con la voce. Valgono sempre i cartelli e il limite indicato sulla strada.</p>
         <p>Media, velocità da tenere e posizione dei portali sono stime fatte con il GPS del telefono: possono differire da quelle del Tutor, e l'app non garantisce di evitare sanzioni.</p>
         <p>Non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato.</p>
+        <div><button class="btn btn-small" type="button" data-go="pAvviso">Rileggi l'avviso iniziale</button></div>
       </div>
       <div class="card prose">
         <h3>Fonti e precisione</h3>
