@@ -165,9 +165,12 @@ select.sel{padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); 
 body.driving .hud{display:flex; min-height:100vh}
 body.driving .app{max-width:760px}
 .hud-top{display:flex; align-items:center; gap:10px}
-.hud-top .road{flex:1; font-weight:700; font-size:15px; line-height:1.25; font-variant-numeric:tabular-nums}
+.hud-top .road{flex:1; min-width:0; font-weight:700; font-size:15px; line-height:1.25; font-variant-numeric:tabular-nums}
 .hud-top .road small{display:block; font-weight:600; color:#9FB2AA; font-size:12.5px}
-.hbtn{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; min-height:48px}
+/* Una riga ciascuna, con i puntini se non ci stanno: sul telefono stretto, con tre pulsanti, andrebbero a capo
+   e toglierebbero spazio al cerchio */
+.hud-top .road,.hud-top .road small{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.hbtn{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; min-height:48px; white-space:nowrap}
 .hbtn[aria-pressed="true"]{background:#F2F6F4; color:#0A0F0D}
 .pill{display:inline-block; background:#F2B21E; color:#1a1300; border-radius:999px; padding:1px 8px; font-size:12px; font-weight:800; margin-left:6px; vertical-align:2px}
 /* Il cartello (#plate) è in cartello.css, la guida col telefono in orizzontale in orizzontale.css */
@@ -180,7 +183,7 @@ body.driving .app{max-width:760px}
 .advice{margin:0; font-size:17px; font-weight:700; line-height:1.3; min-height:1.3em}
 .hud-limits{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
 .hud-limits .lab{font-size:13px; color:#A8BAB2; font-weight:600; margin-right:2px}
-.hchip{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:999px; padding:6px 13px; font-weight:800; cursor:pointer; font-variant-numeric:tabular-nums; min-height:48px; min-width:48px}
+.hchip{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:999px; padding:6px 8px; font-weight:800; cursor:pointer; font-variant-numeric:tabular-nums; min-height:48px; min-width:48px; flex:1 1 0; max-width:72px}
 .hchip[aria-pressed="true"]{background:#F2F6F4; color:#0A0F0D; border-color:#F2F6F4}
 .toast{font-size:14px; color:#C9D6D0; min-height:1.3em; margin:0}
 .simbar{border:1.5px dashed #F2B21E; border-radius:12px; padding:10px 12px; display:grid; gap:8px}
@@ -190,6 +193,8 @@ body.driving .app{max-width:760px}
 
 @media (max-width:820px) and (orientation:portrait){
   .hud{gap:10px; padding:10px 12px 12px}
+  .hud-top{gap:8px}
+  .hbtn{padding:8px 9px}
   .stat{padding:7px 9px}
   .simbar{padding:8px 10px; gap:6px}
 }

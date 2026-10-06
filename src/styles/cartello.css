@@ -45,3 +45,13 @@
 .plabels{display:flex; justify-content:space-between; font-size:13px; font-weight:700; gap:10px; color:#C9D6D0}
 /* In simulazione i comandi si prendono un po' dello spazio del cerchio */
 :where(.hud:has(#simBar:not([hidden]))) .gauge{width:min(100%, 36vh)}
+/* Guida col GPS in verticale: schermata ferma, alta quanto lo schermo, senza scorrere né rimbalzare. Il cartello prende
+   lo spazio che resta e il cerchio si rimpicciolisce quanto serve (al massimo 46vh, come sopra). In simulazione sotto
+   ci sono i comandi e la pagina scorre come prima; orizzontale e riquadro sono già fermi (orizzontale.css, pip.css). */
+@media (orientation:portrait){
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))){overflow:hidden; overscroll-behavior:none}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .hud{height:100vh; min-height:0; box-sizing:border-box; overflow:hidden}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate{flex:1 1 0; min-height:0; display:flex; flex-direction:column}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate-in{flex:1 1 0; min-height:0; justify-content:center}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .gauge{flex:1 1 0; min-height:0; width:auto; max-width:100%; max-height:46vh; aspect-ratio:1}
+}

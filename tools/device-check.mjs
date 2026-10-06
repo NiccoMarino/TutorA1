@@ -380,6 +380,14 @@ async function phaseRotation(){
   check('Verticale: cerchio con la velocità da tenere dentro, statistiche e consiglio sotto',
     v.form === 'verticale' && has(v, ['.keep-in', '.stats', '.advice', '.simbar']) && hasNone(v, ['.keep-side']) && v.round && v.bigInside && v.keepInside,
     v.form + ', ' + v.shown.join(' ') + ', cerchio ' + v.gaugeShare + '% della larghezza');
+  // Come col GPS (senza i comandi della simulazione): schermata ferma, tutto dentro lo schermo, cerchio tondo
+  const still = await js(`(async () => { document.getElementById('simBar').hidden = true; await new Promise(r => setTimeout(r, 300));
+    scrollTo(0, 200); const g = document.querySelector('.gauge').getBoundingClientRect(), t = document.getElementById('toast').getBoundingClientRect();
+    const r = {scroll: document.documentElement.scrollHeight, view: innerHeight, y: scrollY, round: Math.abs(g.width - g.height) <= 1,
+      gauge: Math.round(g.width), toast: Math.round(t.bottom)};
+    scrollTo(0, 0); document.getElementById('simBar').hidden = false; return r; })()`);
+  check('Verticale col GPS: la schermata non scorre e tutto sta nello schermo', still.scroll <= still.view && still.y === 0 && still.round
+    && still.toast <= still.view, JSON.stringify(still));
   // gira a sinistra (rotazione 1): la pagina deve accorgersene senza ricaricarsi
   rotate(1);
   const turned = await waitFor('innerWidth > innerHeight', 6000);

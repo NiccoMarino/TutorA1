@@ -148,6 +148,23 @@ test('il cartello ha le sue tre forme nella pagina: verticale, orizzontale e riq
   assert.ok(!app.includes('id="pFill"'), 'è tornata la vecchia barra di avanzamento');
 });
 
+// Guida col GPS in verticale: schermata ferma alta quanto lo schermo, il cerchio si adatta a quello che resta.
+// In simulazione (barra dei comandi visibile) la pagina può ancora scorrere.
+test('guida in verticale senza scorrimento: schermata alta quanto lo schermo, cerchio che si adatta', () => {
+  const {app} = buildPages();
+  const fixed = app.match(/@media \(orientation:portrait\)\{([\s\S]*?)\n\}/);
+  assert.ok(fixed, 'manca la regola per la guida in verticale');
+  const css = fixed[1];
+  assert.match(css, /body\.driving:not\(:has\(#simBar:not\(\[hidden\]\)\)\)\{[^}]*overflow:hidden[^}]*overscroll-behavior:none/, 'la pagina scorre ancora');
+  assert.match(css, /\.hud\{[^}]*height:100vh[^}]*overflow:hidden/, 'la schermata di guida non è alta quanto lo schermo');
+  assert.match(css, /\.gauge\{[^}]*flex:1 1 0[^}]*aspect-ratio:1/, 'il cerchio non si adatta allo spazio');
+  assert.ok(!/html\.pip/.test(css) && /html:not\(\.pip\)/.test(css), 'la regola tocca anche il riquadro');
+  // Sul telefono (360 px, con il pulsante Riquadro) la riga in alto e i limiti non devono andare a capo e rubare spazio al cerchio
+  assert.match(app, /\.hbtn\{[^}]*white-space:nowrap/, 'i pulsanti in alto vanno a capo');
+  assert.match(app, /\.hud-top \.road,\.hud-top \.road small\{[^}]*white-space:nowrap[^}]*text-overflow:ellipsis/, 'la riga della strada va a capo');
+  assert.match(app, /\.hchip\{[^}]*flex:1 1 0/, 'i limiti non si dividono la riga');
+});
+
 test('nella pagina lo stile non ha commenti (restano nei sorgenti)', () => {
   assert.equal(stripCssComments('/* a */\n.x{color:red}\n  /* b\n c */\n.y{top:0} /* d */'), '.x{color:red}\n.y{top:0} ');
   const {app} = buildPages();
