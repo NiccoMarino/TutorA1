@@ -14,6 +14,7 @@ Struttura e flusso dei dati: `docs/ARCHITETTURA.md`. Difetti noti e idee: `NOTE-
   sopra Maps). `-- --solo pagina`, `rotazione` o `uscite` per una fase sola, `-- --gps` per il GPS vero.
 - `npm run schermi`: senza telefono, prova la pagina in Chrome su 8 misure (dal 4" al tablet), dritta e girata, con il
   testo normale e ingrandito al 130%; resoconto con le schermate in `device-check/schermi/index.html`.
+- Autovelox fissi: elenco della Polizia in `tools/autovelox.json`, come aggiornarlo in `tools/autovelox.md`.
 - Cartello di guida: tre forme (verticale, orizzontale, riquadro), vedi "Il cartello di guida" in `docs/ARCHITETTURA.md`.
 - `npm run bundle`: AAB firmato per il Play Store (chiave in `android/keystore.properties`, mai in git).
 - `npm run grafica`: icona, avvio e immagini dello store (`tools/make-icons.mjs`, `tools/store-screenshots.mjs`).

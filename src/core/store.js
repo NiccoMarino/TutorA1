@@ -3,7 +3,7 @@
 export const SKEY = 'tutorA1.v1.settings', HKEY = 'tutorA1.v1.history';
 // Avviso alla prima apertura (schermata pAvviso di index.html): si salva il numero della versione accettata.
 // Se si cambia il testo dell'avviso, si aumenta DISCLAIMER_VERSION e l'avviso ricompare una volta a tutti.
-export const AKEY = 'tutorA1.v1.avviso', DISCLAIMER_VERSION = 1;
+export const AKEY = 'tutorA1.v1.avviso', DISCLAIMER_VERSION = 2;
 export const DEFAULT_SETTINGS = {limit:130, margin:2, preAlert:1, voice:true, beep:true, instWarn:true, theme:'auto'};
 
 export function createStore(storage){

@@ -138,6 +138,20 @@ test('autovelox nella pagina: etichetta nel cerchio, riga in alto, interruttore'
   assert.match(app, /createTracker\(\{ ?secs, lines, settings, velox ?\}\)/);
 });
 
+test('autovelox nei testi: fonte con la data dell\'elenco, come funziona, avviso iniziale', () => {
+  const {app} = buildPages();
+  const fonte = JSON.parse(readFileSync(new URL('../tools/autovelox.json', import.meta.url), 'utf8')).fonte;
+  const MESI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  const [y, m, d] = fonte.data.split('-').map(Number);
+  const info = app.match(/<section[^>]*id="pInfo"[\s\S]*?<\/section>/)[0];
+  assert.ok(info.includes('aggiornato al ' + d + ' ' + MESI[m - 1] + ' ' + y), 'data della fonte degli autovelox diversa da tools/autovelox.json');
+  assert.ok(info.includes(fonte.url), 'manca il collegamento alla pagina della Polizia');
+  const how = app.match(/<section[^>]*id="pHow"[\s\S]*?<\/section>/)[0];
+  assert.match(how, /autovelox/i);
+  const avviso = app.match(/<section[^>]*id="pAvviso"[\s\S]*?<\/section>/)[0];
+  assert.match(avviso, /autovelox/);
+});
+
 test('tutte le autostrade: filtro a tendina e nessun testo rimasto a "A1 e A4"', () => {
   const {app} = buildPages();
   assert.match(app, /<select[^>]*id="filterRoad"/);
