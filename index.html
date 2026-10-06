@@ -285,7 +285,7 @@ html.pip .gauge{width:min(100vw, 100vh)}
   <section class="hud" id="hud" aria-label="Modalità guida">
     <div class="hud-top">
       <button class="hbtn" id="hudExit" type="button">Esci</button>
-      <div class="road" id="hudRoad">In attesa del segnale GPS<small id="hudRoadSub">Tieni il telefono con vista del cielo</small></div>
+      <div class="road" id="hudRoad">In attesa del segnale GPS</div>
       <button class="hbtn" id="hudMute" type="button" aria-pressed="false" title="Disattiva voce e suoni">Audio sì</button>
     </div>
 
@@ -1579,7 +1579,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         inst: speed,
         instHot: vNow != null && vNow > thr
       },
-      road: !f ? { title: "In attesa del segnale GPS", sim, sub: "Tieni il telefono con vista del cielo" } : st.onRoad && st.ram ? {
+      road: !f ? { title: "In attesa del segnale GPS", sim, sub: "" } : st.onRoad && st.ram ? {
         title: RAMS[st.ram].name + ", km " + nf1.format(st.km),
         sim,
         sub: (st.sign ? st.sign > 0 ? RAMS[st.ram].plus : RAMS[st.ram].minus : "direzione da determinare") + ", precisione GPS " + nf0.format(f.acc) + " m"
@@ -1977,7 +1977,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         $("#sInst").textContent = v.stats.inst;
         $("#stInst").classList.toggle("hot", v.stats.instHot);
         $("#hudLimits").querySelectorAll(".hchip").forEach((h) => h.setAttribute("aria-pressed", String(+h.textContent === v.stats.lim)));
-        $("#hudRoad").innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : "") + "<small>" + esc(v.road.sub) + "</small>";
+        $("#hudRoad").innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : "") + (v.road.sub ? "<small>" + esc(v.road.sub) + "</small>" : "");
         renderPlate(v);
         $("#advice").textContent = v.advice;
       },

@@ -33,7 +33,7 @@ export function createHud(){
       $('#sInst').textContent = v.stats.inst;
       $('#stInst').classList.toggle('hot', v.stats.instHot);
       $('#hudLimits').querySelectorAll('.hchip').forEach(h => h.setAttribute('aria-pressed', String(+h.textContent === v.stats.lim)));
-      $('#hudRoad').innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : '') + '<small>' + esc(v.road.sub) + '</small>';
+      $('#hudRoad').innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : '') + (v.road.sub ? '<small>' + esc(v.road.sub) + '</small>' : '');
       renderPlate(v);
       $('#advice').textContent = v.advice;
     },

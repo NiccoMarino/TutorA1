@@ -119,6 +119,11 @@ test("avviso alla prima apertura: non invita a superare i limiti, possibili erro
   assert.ok(app.includes('data-go="pAvviso"'), "da Privacy e diritti non si rilegge l'avviso");
 });
 
+test('in guida niente più "Tieni il telefono con vista del cielo"', () => {
+  const {app} = buildPages();
+  assert.ok(!app.includes('vista del cielo'));
+});
+
 test('tutte le autostrade: filtro a tendina e nessun testo rimasto a "A1 e A4"', () => {
   const {app} = buildPages();
   assert.match(app, /<select[^>]*id="filterRoad"/);
