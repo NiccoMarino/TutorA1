@@ -6,21 +6,26 @@ import { thresholdFor } from './rules.js';
 import { matchPoint, secRel } from './network.js';
 import { computeMetrics } from './metrics.js';
 
+// Distanza in km a cui parte l'avviso di un autovelox; la postazione si può riavvisare solo 200 m dopo averla superata
+export const VELOX_KM = 0.5;
+const VELOX_RESET_KM = 0.2;
+
 export function toHistoryEntry(r, t){
   return {t, id:r.sec.id, da:r.sec.da, a:r.sec.a, avg:r.avg, lim:r.lim, partial:r.partial, sim:r.sim, dur:r.dur};
 }
 
-export function createTracker({secs, lines, settings}){
+export function createTracker({secs, lines, settings, velox = []}){
   const st = {running:false, source:null, fix:null, prevFix:null, odo:0, jumps:0,
     onRoad:false, matchStreak:0, missStreak:0, ram:null, km:null, sign:0, trendSign:0, trendKm:null,
-    active:null, next:null, alerted:new Set(), result:null, instSince:null, lastInst:0, lastWall:0};
+    active:null, next:null, alerted:new Set(), result:null, instSince:null, lastInst:0, lastWall:0,
+    veloxNext:null, veloxAlerted:new Set(), veloxOver:new Set()};
   const listeners = [];
   const emit = (type, data) => { const ev = Object.assign({type}, data); listeners.forEach(fn => fn(ev)); };
 
   function reset(){
     Object.assign(st, {fix:null, prevFix:null, odo:0, jumps:0, onRoad:false, matchStreak:0, missStreak:0, ram:null, km:null,
-      sign:0, trendSign:0, trendKm:null, active:null, next:null, result:null, instSince:null, lastInst:0, lastWall:0});
-    st.alerted = new Set();
+      sign:0, trendSign:0, trendKm:null, active:null, next:null, result:null, instSince:null, lastInst:0, lastWall:0, veloxNext:null});
+    st.alerted = new Set(); st.veloxAlerted = new Set(); st.veloxOver = new Set();
   }
 
   function pushPosition(p){
@@ -60,13 +65,14 @@ export function createTracker({secs, lines, settings}){
       st.missStreak = 0; st.matchStreak++;
       st.ram = m.ram; st.km = m.km; st.sign = m.sign || st.trendSign || 0;
       st.onRoad = st.matchStreak >= 2;
-      if (st.onRoad && st.sign) updateSections(prevKm, prevSign);
+      if (st.onRoad && st.sign){ updateSections(prevKm, prevSign); updateVelox(); } else st.veloxNext = null;
     } else {
       st.missStreak++; st.matchStreak = 0;
       if (st.missStreak >= 6){
         if (st.active) abort('off-road');
         st.onRoad = false; st.ram = null; st.km = null; st.sign = 0; st.next = null; st.trendKm = null; st.trendSign = 0;
         st.alerted.clear();
+        st.veloxNext = null; st.veloxAlerted.clear(); st.veloxOver.clear();
       }
     }
     checkInstant(fix);
@@ -112,6 +118,29 @@ export function createTracker({secs, lines, settings}){
     if (!st.active && next && best <= settings.preAlert + 0.05 && !st.alerted.has(next.id)){
       st.alerted.add(next.id);
       emit('pre-alert', {sec:next, dist:best, limit:settings.limit});
+    }
+  }
+
+  // Autovelox davanti (stesso ramo, stesso verso) entro VELOX_KM: un avviso per postazione, e uno forte se si va
+  // oltre il limite impostato. Conta la velocità del momento, non la media.
+  function updateVelox(){
+    st.veloxNext = null;
+    if (settings.veloxOff) return;
+    for (const v of velox){
+      if (v.r !== st.ram || v.sign !== st.sign) continue;
+      const d = (v.km - st.km)*v.sign;
+      if (d < -VELOX_RESET_KM){ st.veloxAlerted.delete(v.id); st.veloxOver.delete(v.id); }
+      if (d >= 0 && d <= VELOX_KM && (!st.veloxNext || d < st.veloxNext.dist)) st.veloxNext = {v, dist:d};
+    }
+    if (!st.veloxNext) return;
+    const {v, dist} = st.veloxNext, over = st.fix.v != null && st.fix.v*3.6 > settings.limit;
+    if (!st.veloxAlerted.has(v.id)){
+      st.veloxAlerted.add(v.id);
+      if (over) st.veloxOver.add(v.id);
+      emit('velox-alert', {velox:v, dist, limit:settings.limit, over});
+    } else if (over && !st.veloxOver.has(v.id)){
+      st.veloxOver.add(v.id);
+      emit('velox-over', {velox:v, limit:settings.limit});
     }
   }
 
@@ -174,6 +203,7 @@ export function createTracker({secs, lines, settings}){
     resetPosition(){
       if (st.active) abort(null);
       st.fix = null; st.prevFix = null; st.matchStreak = 0; st.trendKm = null; st.result = null; st.alerted.clear();
+      st.veloxNext = null; st.veloxAlerted.clear(); st.veloxOver.clear();
     }
   };
 }
