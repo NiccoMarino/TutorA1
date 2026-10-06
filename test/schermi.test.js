@@ -76,3 +76,11 @@ test('guida in orizzontale: cartello e cerchio dentro lo schermo', () => {
   assert.equal(r.problems.length, 1, 'in orizzontale conta il cartello dentro lo schermo, non lo scorrimento');
   assert.match(r.problems[0], /cartello/);
 });
+
+test('etichetta autovelox: deve vedersi dentro il cerchio senza coprire la media', () => {
+  const ok = judge('guida-verticale', {audit: cleanAudit, plate: goodPlate, velox: {shown: true, inside: true, overlap: false}});
+  assert.deepEqual(ok.problems, []);
+  const r = judge('guida-verticale', {audit: cleanAudit, plate: goodPlate, velox: {shown: true, inside: false, overlap: true}});
+  assert.equal(r.problems.length, 2);
+  assert.match(judge('guida-verticale', {audit: cleanAudit, plate: goodPlate, velox: {shown: false}}).problems.join(' '), /manca/);
+});

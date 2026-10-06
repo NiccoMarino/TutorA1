@@ -68,5 +68,6 @@ export function hudView(st, settings){
 
 function veloxText(dist){
   const m = Math.round(dist*100)*10;
-  return m < 50 ? {text:'Autovelox ora', short:'ora'} : {text:'Autovelox tra ' + m + ' m', short:m + ' m'};
+  // text per la riga in alto (stretta sul telefono), short per la fascia nel cerchio, che dice già AUTOVELOX
+  return m < 50 ? {text:'Velox ora', short:'ora'} : {text:'Velox ' + m + ' m', short:m + ' m'};
 }

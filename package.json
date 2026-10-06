@@ -1,6 +1,6 @@
 {
   "name": "tutor-a1-a4",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "type": "module",
   "description": "App Android dei tratti Tutor in autostrada (MediaVelocità), costruita con Capacitor a partire da src/",
