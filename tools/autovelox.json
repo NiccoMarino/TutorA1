@@ -1,0 +1,38 @@
+{
+  "fonte": {
+    "titolo": "Elenco delle postazioni autovelox fisse sulla rete autostradale",
+    "ente": "Ministero dell'Interno, Servizio Polizia Stradale",
+    "file": "mvpostazionefissaaut_07102025.pdf",
+    "url": "https://www.poliziadistato.it/articolo/175",
+    "data": "2025-10-07"
+  },
+  "postazioni": [
+    {"strada": null, "nome": "Traforo del Frejus (interno galleria)", "km": null, "direzione": "Italia", "comune": "Bardonecchia", "prov": "TO"},
+    {"strada": null, "nome": "Tangenziale Nord di Torino", "km": 8.25, "direzione": "Nord", "comune": "Collegno", "prov": "TO"},
+    {"strada": null, "nome": "Tangenziale Sud di Torino", "km": 15.68, "direzione": "Sud", "comune": "Nichelino", "prov": "TO"},
+    {"strada": "A04", "nome": "A4 Torino-Trieste", "km": 423.85, "direzione": "Ovest", "comune": "Noventa di Piave", "prov": "VE"},
+    {"strada": "A04", "nome": "A4 Torino-Trieste", "km": 417.9, "direzione": "Ovest", "comune": "Meolo", "prov": "VE"},
+    {"strada": "A04", "nome": "A4 Torino-Trieste", "km": 406.95, "direzione": "Est", "comune": "Quarto d'Altino", "prov": "VE"},
+    {"strada": "A04", "nome": "A4 Torino-Trieste", "km": 417.35, "direzione": "Est", "comune": "Meolo", "prov": "VE"},
+    {"strada": "A01", "nome": "A1 Milano-Napoli", "km": 305.5, "direzione": "Nord", "comune": "Bagno a Ripoli", "prov": "FI"},
+    {"strada": "A01", "nome": "A1 Milano-Napoli", "km": 362.5, "direzione": "Sud", "comune": "Civitella in Val di Chiana", "prov": "AR"},
+    {"strada": "A11", "nome": "A11 Firenze-Pisa Nord", "km": 35.5, "direzione": "Ovest", "comune": "Serravalle Pistoiese", "prov": "PT"},
+    {"strada": "A11", "nome": "A11 Firenze-Pisa Nord", "km": 71.0, "direzione": "Est", "comune": "Lucca", "prov": "LU"},
+    {"strada": null, "nome": "A12 Livorno-Rosignano", "km": 196.5, "direzione": "Nord", "comune": "Rosignano Marittimo", "prov": "LI"},
+    {"strada": null, "nome": "A12 Livorno-Rosignano", "km": 200.5, "direzione": "Sud", "comune": "Rosignano Marittimo", "prov": "LI"},
+    {"strada": null, "nome": "A15 Parma-La Spezia", "km": 53.0, "direzione": "Nord", "comune": "Berceto", "prov": "PR"},
+    {"strada": "A14", "nome": "A14 Bologna-Taranto", "km": 154.06, "direzione": "Sud", "comune": "Pesaro", "prov": "PU"},
+    {"strada": "A14", "nome": "A14 Bologna-Taranto", "km": 254.34, "direzione": "Nord", "comune": "Potenza Picena", "prov": "MC"},
+    {"strada": "A14", "nome": "A14 Bologna-Taranto", "km": 290.54, "direzione": "Nord", "comune": "Campofilone", "prov": "FM"},
+    {"strada": null, "nome": "Raccordo Ascoli-Mare", "km": 3.8, "direzione": "Est", "comune": "Ascoli Piceno", "prov": "AP"},
+    {"strada": null, "nome": "Raccordo Avellino-Salerno", "km": 17.825, "direzione": "Nord", "comune": "Solofra", "prov": "AV"},
+    {"strada": null, "nome": "Raccordo Avellino-Salerno", "km": 27.196, "direzione": "Nord", "comune": "Cesinali", "prov": "AV"},
+    {"strada": null, "nome": "Raccordo Avellino-Salerno", "km": 17.015, "direzione": "Sud", "comune": "Montoro", "prov": "AV"},
+    {"strada": null, "nome": "Raccordo Avellino-Salerno", "km": 24.368, "direzione": "Sud", "comune": "Serino", "prov": "AV"},
+    {"strada": null, "nome": "Raccordo di Benevento", "km": 10.48, "direzione": "Sud", "comune": "Benevento", "prov": "BN"},
+    {"strada": null, "nome": "Raccordo di Benevento", "km": 11.02, "direzione": "Nord", "comune": "Benevento", "prov": "BN"},
+    {"strada": null, "nome": "Raccordo Bettolle-Perugia", "km": 57.05, "direzione": "Est", "comune": "Perugia", "prov": "PG"},
+    {"strada": "A14", "nome": "A14 Bologna-Taranto", "km": 683.397, "direzione": "Sud", "comune": "Bitritto", "prov": "BA"},
+    {"strada": "A14", "nome": "A14 Bologna-Taranto", "km": 689.715, "direzione": "Nord", "comune": "Sannicandro di Bari", "prov": "BA"}
+  ]
+}
