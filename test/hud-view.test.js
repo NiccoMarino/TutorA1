@@ -78,3 +78,10 @@ test('statistiche: l\'allarme segue il rosso scelto nelle impostazioni', () => {
   assert.equal(hudView(emptyState, {limit:130, margin:2, preAlert:1, yellowOff:-5, redOff:0}).stats.thrLabel, 'soglia, allarme a 130');
   assert.equal(hudView(emptyState, {limit:130, margin:3, preAlert:1}).stats.thrLabel, 'soglia, allarme a 133,8');
 });
+
+test('autovelox davanti: distanza a passi di 10 m, sotto i 50 m "ora"', () => {
+  const st = {...emptyState, veloxNext:{v:{comune:'Meolo'}, dist:0.423}};
+  assert.deepEqual(hudView(st, {limit:130, margin:2, preAlert:1}).velox, {text:'Autovelox tra 420 m', short:'420 m'});
+  assert.deepEqual(hudView({...st, veloxNext:{v:{}, dist:0.04}}, {limit:130, margin:2, preAlert:1}).velox, {text:'Autovelox ora', short:'ora'});
+  assert.equal(hudView(emptyState, {limit:130, margin:2, preAlert:1}).velox, null);
+});

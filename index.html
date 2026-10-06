@@ -1608,6 +1608,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         return { text: "Media rientrata sotto la soglia.", tone: "soft" };
       case "instant-over":
         return { text: "Velocità oltre " + ev.limit, tone: "inst", silentVoice: ev.silentVoice };
+      case "velox-alert":
+        return ev.over ? { text: "Autovelox tra " + speakDist(ev.dist) + ", rallenta: limite " + ev.limit + ".", tone: "alarm", vibrate: ALARM_VIBRATION } : { text: "Autovelox tra " + speakDist(ev.dist) + ", limite " + ev.limit + ".", tone: "pre" };
+      case "velox-over":
+        return { text: "Autovelox vicino, rallenta: limite " + ev.limit + ".", tone: "alarm", vibrate: ALARM_VIBRATION };
       default:
         return null;
     }
@@ -1636,7 +1640,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       progress: null,
       advice: "",
       gauge: null,
-      keep: { label: "", value: "" }
+      keep: { label: "", value: "" },
+      // autovelox entro 500 m: riga in alto e etichetta nel cerchio (ui/hud.js)
+      velox: st.veloxNext ? veloxText(st.veloxNext.dist) : null
     };
     const keep = (label, value = "") => {
       view.keep = { label, value };
@@ -1700,6 +1706,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       keep("nessun Tutor avanti");
     }
     return view;
+  }
+  function veloxText(dist) {
+    const m = Math.round(dist * 100) * 10;
+    return m < 50 ? { text: "Autovelox ora", short: "ora" } : { text: "Autovelox tra " + m + " m", short: m + " m" };
   }
 
   // src/core/simulator.js

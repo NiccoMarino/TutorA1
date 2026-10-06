@@ -35,6 +35,12 @@ export function announcementFor(ev){
       return {text:'Media rientrata sotto la soglia.', tone:'soft'};
     case 'instant-over':
       return {text:'Velocità oltre ' + ev.limit, tone:'inst', silentVoice:ev.silentVoice};
+    case 'velox-alert':
+      return ev.over
+        ? {text:'Autovelox tra ' + speakDist(ev.dist) + ', rallenta: limite ' + ev.limit + '.', tone:'alarm', vibrate:ALARM_VIBRATION}
+        : {text:'Autovelox tra ' + speakDist(ev.dist) + ', limite ' + ev.limit + '.', tone:'pre'};
+    case 'velox-over':
+      return {text:'Autovelox vicino, rallenta: limite ' + ev.limit + '.', tone:'alarm', vibrate:ALARM_VIBRATION};
     default:
       return null;
   }

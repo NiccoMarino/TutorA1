@@ -18,7 +18,9 @@ export function hudView(st, settings){
           sub:(st.sign ? (st.sign > 0 ? RAMS[st.ram].plus : RAMS[st.ram].minus) : 'direzione da determinare') + ', precisione GPS ' + nf0.format(f.acc) + ' m'}
       : {title:'Fuori dalle autostrade seguite', sim, sub:'Precisione GPS ' + nf0.format(f.acc) + ' m'},
     plate: null, progress: null, advice: '',
-    gauge: null, keep: {label:'', value:''}
+    gauge: null, keep: {label:'', value:''},
+    // autovelox entro 500 m: riga in alto e etichetta nel cerchio (ui/hud.js)
+    velox: st.veloxNext ? veloxText(st.veloxNext.dist) : null
   };
   const keep = (label, value = '') => { view.keep = {label, value}; };
   const plate = (cls, kicker, title, big, unit, sub) => { view.plate = {cls, kicker, title, big, unit, sub}; };
@@ -62,4 +64,9 @@ export function hudView(st, settings){
     keep('nessun Tutor avanti');
   }
   return view;
+}
+
+function veloxText(dist){
+  const m = Math.round(dist*100)*10;
+  return m < 50 ? {text:'Autovelox ora', short:'ora'} : {text:'Autovelox tra ' + m + ' m', short:m + ' m'};
 }
