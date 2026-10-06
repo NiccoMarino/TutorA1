@@ -429,8 +429,8 @@ test('autovelox: il GPS che oscilla dopo il passaggio non ripete l\'avviso', () 
   tracker.start('gps');
   const a = along(A01N, 306.2, 305.4, 120);
   a.forEach(tracker.pushPosition);
-  // un punto GPS sbagliato 60 m prima della postazione (dopo 2 s, così non è scartato come salto impossibile)
-  const b = along(A01N, 305.56, 305.55, 120, lastT(a) + 1000);
+  // un punto GPS sbagliato 60 m prima della postazione (dopo 3 s, così non è scartato come salto impossibile)
+  const b = along(A01N, 305.56, 305.55, 120, lastT(a) + 2000);
   b.forEach(tracker.pushPosition);
   assert.equal(tracker.st.km.toFixed(2), '305.56', 'il punto sbagliato deve essere accettato');
   along(A01N, 305.4, 305.0, 120, lastT(b) + 2000).forEach(tracker.pushPosition);
