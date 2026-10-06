@@ -133,9 +133,10 @@ export async function carriageways(code, k0, k1){
     const f = w.tags.ref ? 1 : 1.6, ow = w.tags.oneway === 'no' ? 0 : w.tags.oneway === '-1' ? -1 : 1;
     for (let i = 0; i < w.nodes.length - 1; i++){ const a = w.nodes[i], b = w.nodes[i+1]; if (ow >= 0) edge(a, b, f); if (ow <= 0) edge(b, a, f); }
   });
-  // estremi del percorso: le webcam o aree più vicine a k0 e k1; si parte e si arriva sugli archi a meno di 300 m
-  const near = km => pts.filter(a => a.kind !== 'casello').sort((a, b) => Math.abs(a.km - km) - Math.abs(b.km - km))[0];
+  // estremi del percorso: le webcam o aree più vicine a k0 e k1; si parte e si arriva sugli archi a meno di 300 m.
+  // Si saltano i punti senza archi vicini: alcune aree hanno le coordinate fuori strada (oltre Lucca sulla A11)
   const around = (p, end) => { const out = new Set(); for (const [a, es] of adj) for (const [b] of es) if (segProj(p, node.get(a), node.get(b)).d < 300) out.add(end ? b : a); return out; };
+  const near = km => pts.filter(a => a.kind !== 'casello').sort((a, b) => Math.abs(a.km - km) - Math.abs(b.km - km)).find(a => around(a.p, false).size);
   const brg = (a, b) => Math.atan2((b[1]-a[1])*Math.cos(a[0]*D2R), b[0]-a[0]);
   const turn = (x, y) => { const d = Math.abs(x - y) % (2*Math.PI); return d > Math.PI ? 2*Math.PI - d : d; };
   function extend(graph, path, back){
@@ -168,6 +169,22 @@ export async function carriageways(code, k0, k1){
   return res;
 }
 
+// Autovelox di tools/autovelox.json sulle autostrade seguite: il verso viene dai tratti con la stessa direzione,
+// la carreggiata deve contenere la postazione e i 600 m prima (l'avviso parte a 500 m)
+const LINE_KEY = {A01: s => s > 0 ? 'S' : 'N', A04: s => s > 0 ? 'AE' : 'AW'};
+export function veloxEntries(postazioni, secs, ch){
+  return postazioni.filter(p => p.strada).map((p, i) => {
+    const s = secs.find(x => x.r === p.strada && x.d === p.direzione);
+    if (!s) throw new Error('Autovelox ' + p.strada + ' km ' + p.km + ' ' + p.direzione + ': nessun tratto in quella direzione, verso sconosciuto');
+    const sign = Math.sign(s.kb - s.ka), key = LINE_KEY[p.strada] ? LINE_KEY[p.strada](sign) : p.strada + p.direzione[0];
+    const line = ch[key], kms = line ? [line[0][2], line.at(-1)[2]] : [];
+    const from = p.km - sign*0.6;
+    if (!line || Math.min(from, p.km) < Math.min(...kms) || Math.max(from, p.km) > Math.max(...kms))
+      throw new Error('Autovelox ' + p.strada + ' km ' + p.km + ' ' + p.direzione + ': fuori dal tracciato (' + key + ')');
+    return {id:i + 1, r:p.strada, km:p.km, sign, comune:p.comune};
+  });
+}
+
 const r5 = v => Math.round(v*1e5)/1e5, r3 = v => Math.round(v*1e3)/1e3;
 const roundLine = l => l.map(p => [r5(p[0]), r5(p[1]), r3(p[2])]);
 
@@ -176,13 +193,16 @@ async function main(){
   const list = JSON.parse(readFileSync(new URL('tools/tratti-autostrade.json', ROOT), 'utf8'));
   const dataUrl = new URL('src/data/tutor-data.json', ROOT);
   const data = JSON.parse(readFileSync(dataUrl, 'utf8'));
+  const autovelox = JSON.parse(readFileSync(new URL('tools/autovelox.json', ROOT), 'utf8'));
   const codes = [...new Set(list.map(x => x.r))];
   // il tracciato di ogni tratto (g) serviva solo alla mappa, tolta: non si salva più
   const kept = data.secs.filter(s => !codes.includes(s.r)).map(({g, ...s}) => s);
   let id = Math.max(...kept.map(s => s.id));
   const secs = [...kept], ch = {...data.ch}, report = [];
   for (const code of codes){
-    const mine = list.filter(x => x.r === code), kms = mine.flatMap(x => [x.ka, x.kb]);
+    // il tracciato copre i tratti e gli autovelox della strada, più MARGIN km
+    const mine = list.filter(x => x.r === code);
+    const kms = [...mine.flatMap(x => [x.ka, x.kb]), ...autovelox.postazioni.filter(p => p.strada === code).map(p => p.km)];
     const k0 = Math.max(0, Math.floor(Math.min(...kms) - MARGIN)), k1 = Math.ceil(Math.max(...kms) + MARGIN);
     const cw = await carriageways(code, k0, k1);
     for (const key of ['plus', 'minus']){
@@ -198,9 +218,11 @@ async function main(){
       }
     }
   }
+  const velox = veloxEntries(autovelox.postazioni, secs, ch);
+  report.push(velox.length + ' autovelox sulle autostrade seguite');
   console.log(report.join('\n'));
   console.log(secs.length + ' tratti, ' + Object.keys(ch).length + ' carreggiate');
-  writeFileSync(check ? new URL(process.env.TRATTI_OUT || "tools/.cache/check-data.json", ROOT) : dataUrl, JSON.stringify({ch, secs}));
+  writeFileSync(check ? new URL(process.env.TRATTI_OUT || "tools/.cache/check-data.json", ROOT) : dataUrl, JSON.stringify({ch, secs, velox, veloxFonte:autovelox.fonte}));
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/').split('/').pop())) await main();
