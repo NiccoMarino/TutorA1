@@ -50,7 +50,11 @@ function boot(){
   }
 
   /* ---------- schermate fuori dalla guida ---------- */
-  const nav = createNav({win: window, show: id => document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; })});
+  // Finché l'avviso non è accettato l'app parte da lì (Indietro non lo salta: chiude l'app)
+  const nav = createNav({win: window, show: id => document.querySelectorAll('.screen').forEach(s => { s.hidden = s.id !== id; }),
+    start: store.disclaimerAccepted() ? 'home' : 'pAvviso'});
+  // Accettato: alla prima apertura si passa alla schermata iniziale, riletto da Privacy e diritti si torna lì
+  $('#avvisoOk').addEventListener('click', () => { store.acceptDisclaimer(); if (!nav.back()) nav.replace('home'); });
   document.addEventListener('click', e => {
     const go = e.target.closest('[data-go]');
     if (go){ nav.go(go.dataset.go); return; }

@@ -7,6 +7,7 @@ import { existsSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { AKEY, DISCLAIMER_VERSION } from '../src/core/store.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const OUT = ROOT + 'docs/play-store/grafica/';
@@ -77,7 +78,7 @@ async function main(){
       await c.send('Page.navigate', {url: 'http://localhost:' + PORT + '/index.html'});
       await waitFor(() => ev('!!window.__tutor'), 'pagina');
       // Impostazioni come al primo avvio, ma senza voce (in Chrome senza finestra non serve)
-      await ev(`localStorage.setItem('tutorA1.v1.settings', JSON.stringify({limit:130, margin:2, preAlert:1, voice:false, beep:false, instWarn:true})); localStorage.removeItem('tutorA1.v1.history'); true`);
+      await ev(`localStorage.setItem('tutorA1.v1.settings', JSON.stringify({limit:130, margin:2, preAlert:1, voice:false, beep:false, instWarn:true})); localStorage.removeItem('tutorA1.v1.history'); localStorage.setItem('${AKEY}', '${DISCLAIMER_VERSION}'); true`);
       await c.send('Page.reload');
       await waitFor(() => ev('!!window.__tutor'), 'pagina ricaricata');
       await ev(SETUP);

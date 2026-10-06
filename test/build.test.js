@@ -87,7 +87,8 @@ test('la pagina non scarica niente da internet: script, stili e caratteri sono d
     assert.ok(!/<(script|img|iframe)[^>]+src="https?:/i.test(page), 'script o immagine esterni');
     assert.ok(!/<link[^>]+href="https?:/i.test(page), 'stile o carattere esterno');
     assert.ok(!/url\(\s*['"]?https?:/i.test(page), 'url() esterno nello stile');
-    assert.match(page, /@font-face\{font-family:"Overpass"/);
+    assert.match(page, /@font-face\{font-family:"Figtree"/);
+    assert.ok(!page.includes('Overpass'), 'è rimasto il vecchio carattere Overpass');
     assert.match(page, /font\/woff2;base64,/);
   }
 });
@@ -106,6 +107,21 @@ test('schermata iniziale con i due cartelli, menù e una pagina per ogni voce', 
   assert.ok(app.includes('data-go="home"'), 'il menù non ha la voce Home');
   assert.ok(app.includes('id="setTheme"'), 'manca la scelta del tema nelle impostazioni');
   assert.ok(!app.includes('class="side"'), 'è rimasta la vecchia colonna laterale');
+});
+
+test("avviso alla prima apertura: non invita a superare i limiti, possibili errori, nessuna responsabilità per multe", () => {
+  const {app} = buildPages();
+  const avviso = app.match(/<section[^>]*id="pAvviso"[\s\S]*?<\/section>/);
+  assert.ok(avviso, 'manca la schermata pAvviso');
+  for (const t of ['id="avvisoOk"', 'Ho capito e accetto', 'superare i limiti', 'errori', 'multe', 'unico responsabile', 'termini.html'])
+    assert.ok(avviso[0].includes(t), "nell'avviso manca: " + t);
+  assert.ok(!avviso[0].includes('data-back'), "l'avviso non ha la freccia per tornare indietro");
+  assert.ok(app.includes('data-go="pAvviso"'), "da Privacy e diritti non si rilegge l'avviso");
+});
+
+test('in guida niente più "Tieni il telefono con vista del cielo"', () => {
+  const {app} = buildPages();
+  assert.ok(!app.includes('vista del cielo'));
 });
 
 test('tutte le autostrade: filtro a tendina e nessun testo rimasto a "A1 e A4"', () => {
@@ -137,6 +153,38 @@ test('il cartello ha le sue tre forme nella pagina: verticale, orizzontale e riq
   assert.ok(!app.includes('id="pFill"'), 'è tornata la vecchia barra di avanzamento');
 });
 
+// Guida col GPS in verticale: schermata ferma alta quanto lo schermo, il cerchio si adatta a quello che resta.
+// In simulazione (barra dei comandi visibile) la pagina può ancora scorrere.
+test('guida in verticale senza scorrimento: schermata alta quanto lo schermo, cerchio che si adatta', () => {
+  const {app} = buildPages();
+  // ovunque tranne il telefono girato (orizzontale.css, altezza fino a 560 px): anche il tablet in orizzontale
+  const fixed = app.match(/@media not all and \(orientation:landscape\) and \(max-height:560px\)\{([\s\S]*?)\n\}/);
+  assert.ok(fixed, 'manca la regola per la guida in verticale');
+  const css = fixed[1];
+  assert.match(css, /body\.driving:not\(:has\(#simBar:not\(\[hidden\]\)\)\)\{[^}]*overflow:hidden[^}]*overscroll-behavior:none/, 'la pagina scorre ancora');
+  assert.match(css, /\.hud\{[^}]*height:100vh[^}]*overflow-y:auto/, 'la schermata di guida non è alta quanto lo schermo');
+  // se proprio non ci sta (telefono piccolo con il testo ingrandito) il cerchio resta leggibile e scorre solo la guida
+  assert.match(css, /\.plate\{[^}]*flex:1 0 auto/, 'il cartello si schiaccia sotto il suo contenuto');
+  assert.match(css, /\.gauge\{[^}]*min-height:min\(150px, *46vh\)/, 'il cerchio può sparire');
+  // schermi bassi o stretti: via la frase lunga sotto il cerchio e la parola "Limite", per lasciare spazio al cerchio
+  assert.match(app, /@media \(max-height:640px\)\{\s*html:not\(\.pip\) body\.driving:not\(:has\(#simBar:not\(\[hidden\]\)\)\) \.plate \.sub\{display:none\}/, 'sugli schermi bassi resta la frase lunga');
+  assert.match(app, /@media \(max-width:340px\)\{\s*\.hud-limits \.lab\{display:none\}/, 'sugli schermi stretti i limiti vanno a capo');
+  // con il cerchio piccolo le scritte dentro non scendono sotto 11 px (non nel riquadro, disegnato a parte)
+  assert.match(app, /html:not\(\.pip\) \.gauge \.big span\{font-size:max\(11px, *5\.2cqw\)\}/, '"km/h di media" diventa minuscolo');
+  assert.match(app, /html:not\(\.pip\) \.keep-in \.kl\{font-size:max\(11px, *4\.4cqw\)\}/, '"per chiudere entro" diventa minuscolo');
+  assert.match(css, /\.gauge\{[^}]*flex:1 1 0[^}]*aspect-ratio:1/, 'il cerchio non si adatta allo spazio');
+  // sugli schermi alti il cerchio non deve diventare più alto della larghezza (sarebbe ovale)
+  assert.match(css, /\.gauge\{[^}]*max-height:min\(46vh, *calc\(100vw - 32px\), *728px\)/, 'il cerchio può diventare ovale');
+  assert.ok(!/html\.pip/.test(css) && /html:not\(\.pip\)/.test(css), 'la regola tocca anche il riquadro');
+  // Sul telefono (360 px, con il pulsante Riquadro) la riga in alto e i limiti non devono andare a capo e rubare spazio al cerchio
+  assert.match(app, /\.hbtn\{[^}]*white-space:nowrap/, 'i pulsanti in alto vanno a capo');
+  assert.match(app, /\.hud-top \.road,\.hud-top \.road small\{[^}]*white-space:nowrap[^}]*text-overflow:ellipsis/, 'la riga della strada va a capo');
+  assert.match(app, /\.hchip\{[^}]*flex:1 1 0/, 'i limiti non si dividono la riga');
+  assert.match(app, /\.iconbtn\{[^}]*flex:none/, 'la freccia per tornare indietro si stringe');
+  // telefono girato con il testo ingrandito: le colonne ai lati del cerchio restano dentro il cartello
+  assert.match(app, /html:not\(\.pip\) \.ptext,html:not\(\.pip\) \.pside\{[^}]*overflow:hidden/, 'il testo ai lati esce dal cartello');
+});
+
 test('nella pagina lo stile non ha commenti (restano nei sorgenti)', () => {
   assert.equal(stripCssComments('/* a */\n.x{color:red}\n  /* b\n c */\n.y{top:0} /* d */'), '.x{color:red}\n.y{top:0} ');
   const {app} = buildPages();
@@ -147,7 +195,7 @@ test('nella pagina lo stile non ha commenti (restano nei sorgenti)', () => {
 test('licenze di carattere, Capacitor, plugin e librerie Android nella pagina', () => {
   const {app, web} = buildPages();
   for (const page of [app, web]){
-    for (const t of ['Copyright 2021 The Overpass Project Authors', 'SIL OPEN FONT LICENSE', 'Copyright (c) 2017-present Drifty Co.',
+    for (const t of ['Copyright 2022 The Figtree Project Authors', 'SIL OPEN FONT LICENSE', 'Copyright (c) 2017-present Drifty Co.',
       'Copyright 2021 James Diacono', 'Copyright (c) 2019 The keep-awake developers.', 'Copyright (c) 2021 Robin Genz',
       'Copyright 2020-present Ionic', 'Apache License', 'OpenStreetMap', 'ODbL']) assert.ok(page.includes(t), 'manca: ' + t);
   }

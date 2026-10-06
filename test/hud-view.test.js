@@ -7,6 +7,7 @@ const emptyState = {fix:null, source:'gps', active:null, result:null, onRoad:fal
 test('prima del primo segnale GPS', () => {
   const v = hudView(emptyState, {limit:130, margin:2, preAlert:1});
   assert.equal(v.road.title, 'In attesa del segnale GPS');
+  assert.equal(v.road.sub, '', 'niente seconda riga sotto "In attesa del segnale GPS"');
   assert.equal(v.plate.kicker, 'Avvio');
   assert.equal(v.progress, null);
   assert.equal(v.stats.inst, '–');

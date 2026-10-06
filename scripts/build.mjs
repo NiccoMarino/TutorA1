@@ -13,11 +13,11 @@ const SRC = ROOT + 'src/';
 const NOTICE = '\n<!-- Pagina generata da scripts/build.mjs: i sorgenti sono in src/ -->';
 // La versione è una sola, in package.json: la usano la pagina e l'app Android (android/app/build.gradle)
 const VERSION = JSON.parse(readFileSync(ROOT + 'package.json', 'utf8')).version;
-// Carattere Overpass dentro la pagina (licenza SIL OFL), così l'app non scarica niente da internet
+// Carattere Figtree dentro la pagina (licenza SIL OFL), così l'app non scarica niente da internet
 const FONT_WEIGHTS = [400, 600, 700, 800, 900];
 const FONTS = FONT_WEIGHTS.map(w => {
-  const file = ROOT + 'node_modules/@fontsource/overpass/files/overpass-latin-' + w + '-normal.woff2';
-  return '@font-face{font-family:"Overpass";font-style:normal;font-weight:' + w + ';font-display:swap;' +
+  const file = ROOT + 'node_modules/@fontsource/figtree/files/figtree-latin-' + w + '-normal.woff2';
+  return '@font-face{font-family:"Figtree";font-style:normal;font-weight:' + w + ';font-display:swap;' +
     'src:url(data:font/woff2;base64,' + readFileSync(file).toString('base64') + ') format("woff2")}';
 }).join('\n');
 // Licenze del software incluso nell'app, con i testi presi dalle librerie installate: le licenze chiedono che
@@ -25,7 +25,7 @@ const FONTS = FONT_WEIGHTS.map(w => {
 const esc = t => t.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const pkgLicense = pkg => readFileSync(ROOT + 'node_modules/' + pkg + '/LICENSE', 'utf8').replace(/\r\n/g, '\n').trim();
 export const LICENSED = [
-  ['Carattere Overpass', '@fontsource/overpass', 'SIL Open Font License 1.1'],
+  ['Carattere Figtree', '@fontsource/figtree', 'SIL Open Font License 1.1'],
   ['Capacitor', '@capacitor/core', 'MIT'], ['Capacitor per Android', '@capacitor/android', 'MIT'],
   ['Posizione in secondo piano', '@capacitor-community/background-geolocation', 'MIT'],
   ['Schermo acceso', '@capacitor-community/keep-awake', 'MIT'],

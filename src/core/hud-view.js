@@ -13,7 +13,7 @@ export function hudView(st, settings){
   const view = {
     stats: {lim, thr:thrText(lim), thrLabel: Math.abs(red - thr) > 1e-6 ? 'soglia, allarme a ' + (Number.isInteger(red) ? red : nf1.format(red)) : 'soglia con tolleranza',
             inst:speed, instHot: vNow != null && vNow > thr},
-    road: !f ? {title:'In attesa del segnale GPS', sim, sub:'Tieni il telefono con vista del cielo'}
+    road: !f ? {title:'In attesa del segnale GPS', sim, sub:''}
       : st.onRoad && st.ram ? {title:RAMS[st.ram].name + ', km ' + nf1.format(st.km), sim,
           sub:(st.sign ? (st.sign > 0 ? RAMS[st.ram].plus : RAMS[st.ram].minus) : 'direzione da determinare') + ', precisione GPS ' + nf0.format(f.acc) + ' m'}
       : {title:'Fuori dalle autostrade seguite', sim, sub:'Precisione GPS ' + nf0.format(f.acc) + ' m'},

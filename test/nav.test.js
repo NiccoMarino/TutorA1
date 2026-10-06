@@ -18,9 +18,9 @@ function fakeWindow(){
     scrollTo(){}
   };
 }
-function make(){
+function make(start){
   const win = fakeWindow(), shown = [];
-  const nav = createNav({win, show: id => shown.push(id)});
+  const nav = createNav({win, show: id => shown.push(id), start});
   return {win, nav, shown, current: () => shown[shown.length - 1]};
 }
 
@@ -66,4 +66,22 @@ test('il tasto Indietro del browser (popstate) segue la stessa strada', () => {
   assert.equal(current(), 'menu');
   win.history.back();
   assert.equal(current(), 'home');
+});
+
+// Avviso alla prima apertura: è la prima schermata, Indietro non lo salta, accettato si passa alla schermata iniziale
+test("con l'avviso da accettare parte da lì e Indietro non lo salta", () => {
+  const {nav, current} = make('pAvviso');
+  assert.equal(current(), 'pAvviso');
+  assert.equal(nav.back(), false);
+  assert.equal(current(), 'pAvviso');
+});
+
+test("accettato l'avviso si passa alla schermata iniziale, che resta il fondo della cronologia", () => {
+  const {win, nav, current} = make('pAvviso');
+  nav.replace('home');
+  assert.equal(current(), 'home');
+  nav.go('menu');
+  win.history.back();
+  assert.equal(current(), 'home');
+  assert.equal(nav.back(), false);
 });

@@ -34,11 +34,13 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
   la guida usa tutto lo schermo.
 - Schermate fuori dalla guida: la schermata iniziale (`#home`, due cartelli: "Avvia guida" e "Prova in
   simulazione"), il menù (`#menu`) e una pagina per voce (`#pSettings`, `#pSim`, `#pHist`, `#pHow`, `#pInfo`).
+  Finché non è accettato, l'app parte dall'avviso `#pAvviso` (`createNav({start})`); l'accettazione è nella chiave
+  `tutorA1.v1.avviso` con il numero `DISCLAIMER_VERSION` di `core/store.js`, da aumentare se cambia il testo.
   Un elemento con `data-go="id"` apre quella schermata, `data-back` torna indietro; la cronologia è in
   `ui/nav.js`. Il tasto Indietro di Android chiede prima alla pagina (`window.tutorBack`, da `MainActivity.java`).
 - Tema: `settings.theme` (`auto`, `light`, `dark`), applicato da `ui/theme.js` con `data-theme` su `<html>`;
   i colori sono in cima a `styles/app.css`. La schermata di guida resta scura in entrambi i temi.
-  Il carattere Overpass è dentro la pagina (`scripts/build.mjs`), quindi l'app non si collega a internet.
+  Il carattere Figtree è dentro la pagina (`scripts/build.mjs`), quindi l'app non si collega a internet.
 - Versione: `package.json`; la build la scrive nella pagina, `android/app/build.gradle` ne ricava versionName e versionCode.
 - Icona, avvio e immagini dello store: `tools/make-icons.mjs` e `tools/store-screenshots.mjs` (`npm run grafica`).
 - Cartello di guida e sue tre forme (verticale, orizzontale, riquadro): sezione "Il cartello di guida" qui sotto.
@@ -60,6 +62,11 @@ Un solo markup (`#plate` in `src/index.html`) per tre forme, scelte solo dallo s
 | orizzontale: cartello a tutto schermo, nome a sinistra, anello intero con la media, velocità da tenere e km mancanti a destra | telefono girato (altezza fino a 560 px) | `styles/orizzontale.css` |
 | riquadro: solo il cerchio, trasparente intorno | riquadro sopra Maps (classe `pip` su `<html>`) | `styles/pip.css` |
 
+- Guidando col GPS (telefono dritto, tablet, computer) la schermata è ferma e alta quanto lo schermo (fondo di
+  `styles/cartello.css`): il cerchio prende lo spazio che resta, al massimo 46vh e mai più della larghezza, almeno 150px;
+  se non ci sta neanche così scorre solo la guida. Sotto i 640px di altezza sparisce la frase sotto il cerchio, sotto i
+  340px di larghezza la parola "Limite". In simulazione la pagina scorre, per i comandi sotto. Misure diverse dal
+  telefono di prova: `npm run schermi` (`tools/schermi.mjs`, casi e giudizio in `tools/schermi-casi.mjs`).
 - Testi e numeri: `core/hud-view.js` (`plate`, `keep`, `gauge`, `progress`); `ui/hud.js` (`renderPlate`) li scrive.
 - Velocità da tenere: `keepText` in `core/metrics.js`. È la velocità che fa chiudere il tratto con la media entro il
   limite, anche se sopra il limite (il numero dice entro quale velocità la media del tratto resta sotto il limite); se non basta più, quella
