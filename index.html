@@ -1056,7 +1056,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       s.cls = s.pos ? "sud" : "nord";
     });
     const lines = LINE_DEFS.map(([id, ram, key, fixedSign, maxDist]) => makeLine(id, ram, data.ch[key], fixedSign, maxDist));
-    return { secs, lines };
+    return { secs, lines, velox: data.velox || [] };
   }
   function matchPoint(lines, lat, lon, heading, speedMs, acc, trendSign, curRam) {
     const hasHeading = heading != null && !isNaN(heading) && speedMs != null && speedMs > 4;
@@ -1266,10 +1266,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
   }
 
   // src/core/tracker.js
+  var VELOX_KM = 0.5;
+  var VELOX_RESET_KM = 0.2;
   function toHistoryEntry(r, t) {
     return { t, id: r.sec.id, da: r.sec.da, a: r.sec.a, avg: r.avg, lim: r.lim, partial: r.partial, sim: r.sim, dur: r.dur };
   }
-  function createTracker({ secs, lines, settings }) {
+  function createTracker({ secs, lines, settings, velox = [] }) {
     const st = {
       running: false,
       source: null,
@@ -1291,7 +1293,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       result: null,
       instSince: null,
       lastInst: 0,
-      lastWall: 0
+      lastWall: 0,
+      veloxNext: null,
+      veloxAlerted: /* @__PURE__ */ new Set(),
+      veloxOver: /* @__PURE__ */ new Set()
     };
     const listeners = [];
     const emit = (type, data) => {
@@ -1317,9 +1322,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         result: null,
         instSince: null,
         lastInst: 0,
-        lastWall: 0
+        lastWall: 0,
+        veloxNext: null
       });
       st.alerted = /* @__PURE__ */ new Set();
+      st.veloxAlerted = /* @__PURE__ */ new Set();
+      st.veloxOver = /* @__PURE__ */ new Set();
     }
     function pushPosition(p) {
       if (!st.running) return;
@@ -1375,7 +1383,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         st.km = m.km;
         st.sign = m.sign || st.trendSign || 0;
         st.onRoad = st.matchStreak >= 2;
-        if (st.onRoad && st.sign) updateSections(prevKm, prevSign);
+        if (st.onRoad && st.sign) {
+          updateSections(prevKm, prevSign);
+          updateVelox();
+        } else st.veloxNext = null;
       } else {
         st.missStreak++;
         st.matchStreak = 0;
@@ -1389,6 +1400,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
           st.trendKm = null;
           st.trendSign = 0;
           st.alerted.clear();
+          st.veloxNext = null;
+          st.veloxAlerted.clear();
+          st.veloxOver.clear();
         }
       }
       checkInstant(fix);
@@ -1451,6 +1465,29 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       if (!st.active && next && best <= settings.preAlert + 0.05 && !st.alerted.has(next.id)) {
         st.alerted.add(next.id);
         emit("pre-alert", { sec: next, dist: best, limit: settings.limit });
+      }
+    }
+    function updateVelox() {
+      st.veloxNext = null;
+      if (settings.veloxOff) return;
+      for (const v2 of velox) {
+        if (v2.r !== st.ram || v2.sign !== st.sign) continue;
+        const d = (v2.km - st.km) * v2.sign;
+        if (d < -VELOX_RESET_KM) {
+          st.veloxAlerted.delete(v2.id);
+          st.veloxOver.delete(v2.id);
+        }
+        if (d >= 0 && d <= VELOX_KM && (!st.veloxNext || d < st.veloxNext.dist)) st.veloxNext = { v: v2, dist: d };
+      }
+      if (!st.veloxNext) return;
+      const { v, dist } = st.veloxNext, over = st.fix.v != null && st.fix.v * 3.6 > settings.limit;
+      if (!st.veloxAlerted.has(v.id)) {
+        st.veloxAlerted.add(v.id);
+        if (over) st.veloxOver.add(v.id);
+        emit("velox-alert", { velox: v, dist, limit: settings.limit, over });
+      } else if (over && !st.veloxOver.has(v.id)) {
+        st.veloxOver.add(v.id);
+        emit("velox-over", { velox: v, limit: settings.limit });
       }
     }
     function startSection(s, tStart, odoStart, mid, after) {
@@ -1533,6 +1570,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         st.trendKm = null;
         st.result = null;
         st.alerted.clear();
+        st.veloxNext = null;
+        st.veloxAlerted.clear();
+        st.veloxOver.clear();
       }
     };
   }
