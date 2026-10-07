@@ -21,6 +21,9 @@ function renderPlate(v){
   $('#pArc').style.strokeDasharray = (frac*75).toFixed(2) + ' 100';
   $('#pRing').style.strokeDasharray = (frac*100).toFixed(1) + ' 100';
   p.querySelector('.gauge').classList.toggle('noarc', frac === 0);
+  // autovelox entro 500 m: etichetta in alto nel cerchio
+  $('#pVelox').hidden = !v.velox;
+  if (v.velox) $('#pVeloxD').textContent = v.velox.short;
   $('#pProg').hidden = !v.progress;
   if (v.progress){ $('#pFrom').textContent = v.progress.from; $('#pTo').textContent = v.progress.to; }
 }
@@ -33,7 +36,9 @@ export function createHud(){
       $('#sInst').textContent = v.stats.inst;
       $('#stInst').classList.toggle('hot', v.stats.instHot);
       $('#hudLimits').querySelectorAll('.hchip').forEach(h => h.setAttribute('aria-pressed', String(+h.textContent === v.stats.lim)));
-      $('#hudRoad').innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : '') + (v.road.sub ? '<small>' + esc(v.road.sub) + '</small>' : '');
+      // con un autovelox entro 500 m la seconda riga dice quanto manca, al posto di direzione e precisione GPS
+      const sub = v.velox ? '<small class="velox">' + esc(v.velox.text) + '</small>' : v.road.sub ? '<small>' + esc(v.road.sub) + '</small>' : '';
+      $('#hudRoad').innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : '') + sub;
       renderPlate(v);
       $('#advice').textContent = v.advice;
     },
@@ -45,7 +50,7 @@ export function createHud(){
     // GPS muto da qualche secondo (galleria): resta così fino alla prossima posizione
     signalLost(gap, limit, inSection){
       const sub = $('#hudRoad small');
-      if (sub) sub.textContent = 'Segnale GPS assente da ' + Math.round(gap) + ' s, forse sei in galleria';
+      if (sub){ sub.className = ''; sub.textContent = 'Segnale GPS assente da ' + Math.round(gap) + ' s, forse sei in galleria'; }
       if (inSection) $('#advice').textContent = 'Senza GPS la media si aggiorna all\'uscita della galleria. Mantieni il limite di ' + limit + '.';
     },
     gpsTrouble(text){ $('#hudRoad').firstChild.textContent = text; }

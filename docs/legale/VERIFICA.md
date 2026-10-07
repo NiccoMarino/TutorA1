@@ -42,6 +42,10 @@ Alla prima apertura l'app mostra l'avviso "Prima di partire" (`#pAvviso`) con i 
 superare i limiti, portali e dati possono contenere errori, chi guida è l'unico responsabile e, nei limiti di legge,
 l'app non risponde di multe e danni. Va accettato per usare l'app; si rilegge da Privacy e diritti. Se il testo
 cambia, si aumenta `DISCLAIMER_VERSION` in `src/core/store.js` e ricompare una volta.
+Autovelox: l'app segnala le postazioni fisse dell'elenco pubblico della Polizia Stradale (pagina articolo/175,
+elenco del 7 ottobre 2025). Segnalarle è lecito: la Polizia le pubblica perché si rispettino i limiti, e il Codice
+della Strada (art. 142, comma 6-bis) chiede che le postazioni siano segnalate e ben visibili. Avviso iniziale,
+termini e Fonti dicono che l'elenco può non essere aggiornato; l'avviso iniziale è alla versione 2.
 
 **3. Rimborsi.** Oggi non si vende niente, quindi pubblicare una politica di rimborso confonderebbe. La bozza è
 pronta per l'abbonamento da 2 € all'anno: prezzo IVA inclusa, rinnovo, disdetta, recesso e rimborso entro 14 giorni.

@@ -124,6 +124,41 @@ test('in guida niente più "Tieni il telefono con vista del cielo"', () => {
   assert.ok(!app.includes('vista del cielo'));
 });
 
+test('autovelox nella pagina: etichetta nel cerchio, riga in alto, interruttore', () => {
+  const {app} = buildPages();
+  // fascia gialla da bordo a bordo del cerchio (prova 5 scelta dall'utente), sopra la velocità da tenere
+  const gauge = app.match(/<div class="gauge">[\s\S]*?<div class="pside">/)[0];
+  assert.match(gauge, /<div class="velox-in" id="pVelox" hidden><svg [^>]*aria-hidden="true">[\s\S]*?<\/svg><strong>Autovelox<\/strong><em id="pVeloxD"><\/em><\/div>/, "manca la fascia nel cerchio");
+  assert.match(app, /<div class="big" id="pBigBox"><b id="pBig">–<\/b><span id="pUnit"><\/span><\/div>/, 'la fascia non deve stare nella colonna del numero');
+  assert.match(app, /<label class="switch">Avvisi autovelox <input type="checkbox" id="setVelox"><\/label>/);
+  // gialla con i bordi scuri sopra e sotto, così si vede anche sul cartello giallo; mai sotto 11 px fuori dal riquadro
+  assert.match(app, /\.velox-in\{[^}]*position:absolute; left:0; right:0; top:61%; min-height:11%[^}]*background:#F2B21E/);
+  assert.match(app, /\.gauge:has\(\.velox-in:not\(\[hidden\]\)\)\{overflow:hidden\}/, 'la fascia esce dal cerchio');
+  // cerchio stretto (telefono piccolo, testo ingrandito): solo telecamera e metri, bordi mai sotto 1 px
+  assert.match(app, /@container \(max-width:200px\)\{\s*\.velox-in strong\{display:none\}/, 'sui cerchi piccoli la scritta esce dal cerchio');
+  assert.match(app, /\.velox-in\{[^}]*border-block:max\(1px, *\.6cqw\) solid #161100/, 'bordi della fascia sotto 1 px');
+  assert.match(app, /html:not\(\.pip\) \.velox-in strong,html:not\(\.pip\) \.velox-in em\{font-size:max\(11px, *5cqw\)\}/);
+  assert.match(app, /html\.pip \.velox-in strong,html\.pip \.velox-in em,html\.pip \.velox-in svg\{font-size:7cqw\}/);
+  assert.match(app, /\.hud-top \.road small\.velox\{[^}]*color:#F2B21E[^}]*font-weight:700/);
+  assert.match(app, /\.gauge:has\(\.velox-in:not\(\[hidden\]\)\) \.big\{inset:0 0 30% 0\}/, 'il numero non sale per la fascia');
+  // il gancio dei collaudi e l'avvio passano gli autovelox al tracker
+  assert.match(app, /createTracker\(\{ ?secs, lines, settings, velox ?\}\)/);
+});
+
+test('autovelox nei testi: fonte con la data dell\'elenco, come funziona, avviso iniziale', () => {
+  const {app} = buildPages();
+  const fonte = JSON.parse(readFileSync(new URL('../tools/autovelox.json', import.meta.url), 'utf8')).fonte;
+  const MESI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  const [y, m, d] = fonte.data.split('-').map(Number);
+  const info = app.match(/<section[^>]*id="pInfo"[\s\S]*?<\/section>/)[0];
+  assert.ok(info.includes('aggiornato al ' + d + ' ' + MESI[m - 1] + ' ' + y), 'data della fonte degli autovelox diversa da tools/autovelox.json');
+  assert.ok(info.includes(fonte.url), 'manca il collegamento alla pagina della Polizia');
+  const how = app.match(/<section[^>]*id="pHow"[\s\S]*?<\/section>/)[0];
+  assert.match(how, /autovelox/i);
+  const avviso = app.match(/<section[^>]*id="pAvviso"[\s\S]*?<\/section>/)[0];
+  assert.match(avviso, /autovelox/);
+});
+
 test('tutte le autostrade: filtro a tendina e nessun testo rimasto a "A1 e A4"', () => {
   const {app} = buildPages();
   assert.match(app, /<select[^>]*id="filterRoad"/);

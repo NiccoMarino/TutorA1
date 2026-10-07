@@ -36,6 +36,10 @@ La pagina è un solo file HTML, ma i sorgenti sono divisi in `src/`. `npm run bu
   simulazione"), il menù (`#menu`) e una pagina per voce (`#pSettings`, `#pSim`, `#pHist`, `#pHow`, `#pInfo`).
   Finché non è accettato, l'app parte dall'avviso `#pAvviso` (`createNav({start})`); l'accettazione è nella chiave
   `tutorA1.v1.avviso` con il numero `DISCLAIMER_VERSION` di `core/store.js`, da aumentare se cambia il testo.
+- Autovelox fissi: elenco in `tools/autovelox.json` (istruzioni in `tools/autovelox.md`). `make-tratti` scrive in
+  `tutor-data.json` la lista `velox` (ramo, km, verso). Il tracker emette `velox-alert` a 500 m e `velox-over`
+  oltre il limite (`updateVelox`). La vista `velox` va nella riga in alto e nell'etichetta `#pVelox` del cerchio.
+  `settings.veloxOff` li spegne.
   Un elemento con `data-go="id"` apre quella schermata, `data-back` torna indietro; la cronologia è in
   `ui/nav.js`. Il tasto Indietro di Android chiede prima alla pagina (`window.tutorBack`, da `MainActivity.java`).
 - Tema: `settings.theme` (`auto`, `light`, `dark`), applicato da `ui/theme.js` con `data-theme` su `<html>`;

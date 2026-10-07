@@ -57,7 +57,7 @@ export function buildNetwork(data){
   const secs = data.secs.map(s => Object.assign({}, s, {sign: Math.sign(s.kb - s.ka)}));
   secs.forEach(s => { s.towards = s.sign > 0 ? RAMS[s.r].plus : RAMS[s.r].minus; s.name = s.da + ' → ' + s.a; s.pos = isPos(s.d); s.cls = s.pos ? 'sud' : 'nord'; });
   const lines = LINE_DEFS.map(([id, ram, key, fixedSign, maxDist]) => makeLine(id, ram, data.ch[key], fixedSign, maxDist));
-  return {secs, lines};
+  return {secs, lines, velox: data.velox || []};
 }
 
 export function matchPoint(lines, lat, lon, heading, speedMs, acc, trendSign, curRam){

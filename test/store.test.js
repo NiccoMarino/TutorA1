@@ -111,3 +111,7 @@ test("senza localStorage l'avviso accettato vale finché l'app resta aperta", ()
   s.acceptDisclaimer();
   assert.equal(s.disclaimerAccepted(), true);
 });
+
+test("avviso iniziale alla versione 2: parla anche degli autovelox", () => {
+  assert.equal(DISCLAIMER_VERSION, 2);
+});

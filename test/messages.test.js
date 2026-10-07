@@ -50,3 +50,16 @@ test('gli altri eventi non si annunciano', () => {
   assert.equal(announcementFor({type:'position', fix:{}}), null);
   assert.equal(announcementFor({type:'section-finish', result:{}}), null);
 });
+
+test('autovelox: avviso a 500 metri con il limite', () => {
+  assert.deepEqual(announcementFor({type:'velox-alert', velox:{comune:'Meolo'}, dist:0.5, limit:130, over:false}),
+    {text:'Autovelox tra 500 metri, limite 130.', tone:'pre'});
+  assert.equal(announcementFor({type:'velox-alert', velox:{}, dist:0.28, limit:110, over:false}).text, 'Autovelox tra 300 metri, limite 110.');
+});
+
+test('autovelox oltre il limite: avviso forte con vibrazione', () => {
+  assert.deepEqual(announcementFor({type:'velox-alert', velox:{}, dist:0.5, limit:130, over:true}),
+    {text:'Autovelox tra 500 metri, rallenta: limite 130.', tone:'alarm', vibrate:[220,100,220]});
+  assert.deepEqual(announcementFor({type:'velox-over', velox:{}, limit:130}),
+    {text:'Autovelox vicino, rallenta: limite 130.', tone:'alarm', vibrate:[220,100,220]});
+});

@@ -389,6 +389,19 @@ async function phaseRotation(){
     scrollTo(0, 0); document.getElementById('simBar').hidden = false; return r; })()`);
   check('Verticale col GPS: la schermata non scorre e tutto sta nello schermo', still.scroll <= still.view && still.y === 0 && still.round
     && still.toast <= still.view, JSON.stringify(still));
+  // Autovelox con la simulazione: tratto 81 (A4 verso Venezia), poi la postazione di Noventa di Piave al km 423,85
+  await js(`(() => { document.getElementById('hudExit').click(); document.getElementById('simSec').value = '81'; document.getElementById('simV').value = '125';
+    document.getElementById('btnSimStart').click(); window.__tutor.simControls.stopTimer(); return true; })()`);
+  const seen = await stepUntil(`!document.getElementById('pVelox').hidden`);
+  const vx = await js(`(() => { const e = document.getElementById('pVelox').getBoundingClientRect(), g = document.querySelector('.gauge').getBoundingClientRect();
+    return {inside: e.top >= g.top && e.bottom <= g.bottom && e.left >= g.left && e.right <= g.right, road: document.querySelector('#hudRoad small').textContent,
+      toast: document.getElementById('toast').textContent}; })()`);
+  check('Autovelox (A4, Noventa di Piave): etichetta nel cerchio, riga in alto e avviso', seen && vx.inside && /^Velox \d+ m$/.test(vx.road)
+    && /^Autovelox tra \d+ metri/.test(vx.toast), JSON.stringify(vx));
+  screenshot('guida-autovelox.png');
+  await js(`(() => { document.getElementById('hudExit').click(); document.getElementById('simSec').value = '15'; document.getElementById('simV').value = '160';
+    document.getElementById('btnSimStart').click(); window.__tutor.simControls.stopTimer(); return true; })()`);
+  await stepUntil('p === "alarm"');
   // gira a sinistra (rotazione 1): la pagina deve accorgersene senza ricaricarsi
   rotate(1);
   const turned = await waitFor('innerWidth > innerHeight', 6000);

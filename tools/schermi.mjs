@@ -54,6 +54,20 @@ const SETUP = `(() => {
     }
     return -1;
   };
+  // guida lungo una carreggiata (id di window.__tutor.LINES) da un km all'altro, una posizione al secondo
+  window.__drive = (id, from, to, kmh) => {
+    const P = window.__tutor.LINES.find(l => l.id === id).pts;
+    const at = km => { for (let i = 0; i < P.length - 1; i++){ const a = P[i], b = P[i+1];
+      if (a[2] !== b[2] && (km - a[2])*(km - b[2]) <= 0){ const f = (km - a[2])/(b[2] - a[2]); return [a[0] + f*(b[0] - a[0]), a[1] + f*(b[1] - a[1])]; } } return null; };
+    const dir = Math.sign(to - from); let prev = null, t = Date.now() - 600000;
+    for (let km = from; (to - km)*dir > 0; km += dir*kmh/3600){
+      const p = at(km); if (!p) return false;
+      const hd = prev ? (Math.atan2((p[1] - prev[1])*Math.cos(p[0]*Math.PI/180), p[0] - prev[0])*180/Math.PI + 360) % 360 : null;
+      deliver({coords: {latitude: p[0], longitude: p[1], accuracy: 6, speed: kmh/3.6, heading: hd}, timestamp: t += 1000});
+      prev = p;
+    }
+    return true;
+  };
   return true;
 })()`;
 // Nella pagina: testo ingrandito come fa Android, moltiplicando ogni font-size degli stili
@@ -148,6 +162,26 @@ async function main(){
         await add('guida-' + what, plate.form === 'orizzontale' ? 'guida-orizzontale' : 'guida-verticale', {audit: await call(pageAudit), plate},
           what === 'allarme');
       }
+      await ev(`document.getElementById('hudExit').click(); true`);
+
+      // Autovelox: A1 verso Nord fino a 420 m dalla postazione di Bagno a Ripoli (km 305,5)
+      await open(c0, true);
+      await ev(`document.getElementById('btnDrive').click(); true`);
+      if (!await ev(`__drive('A01N', 307.2, 305.92, 120)`)) throw new Error(c0.id + ': guida verso l\'autovelox non riuscita');
+      await sleep(450);
+      const plateV = {...await call(plateForm), ...await ev(`(() => { const h = document.querySelector('.hud'); return {scroll: h.scrollHeight, view: h.clientHeight, y: Math.round(scrollY)}; })()`)};
+      // l'etichetta non deve toccare il numero, "km al portale" né la velocità da tenere
+      const velox = await ev(`(() => { const e = document.getElementById('pVelox'), g = document.querySelector('.gauge').getBoundingClientRect();
+        if (e.hidden) return {shown: false}; const r = e.getBoundingClientRect();
+        const hits = b => b.width > 0 && r.bottom > b.top + 1 && r.top < b.bottom - 1 && r.right > b.left && r.left < b.right;
+        // gli angoli della scritta (telecamera, parola, metri) devono stare dentro il cerchio, non solo nel suo quadrato
+        const cx = g.left + g.width/2, cy = g.top + g.height/2, R = g.width/2;
+        const parts = [...e.children].filter(c => getComputedStyle(c).display !== 'none').map(c => c.getBoundingClientRect());
+        const L = Math.min(...parts.map(p => p.left)), Rt = Math.max(...parts.map(p => p.right)), T = Math.min(...parts.map(p => p.top)), B = Math.max(...parts.map(p => p.bottom));
+        const clipped = [[L, T], [Rt, T], [L, B], [Rt, B]].some(([x, y]) => Math.hypot(x - cx, y - cy) > R + 0.5);
+        return {shown: true, clipped, inside: r.left >= g.left && r.right <= g.right && r.top >= g.top && r.bottom <= g.bottom,
+          overlap: ['#pBig', '#pUnit', '.keep-in .kl', '.keep-in .kv'].some(s => hits(document.querySelector(s).getBoundingClientRect()))}; })()`);
+      await add('guida-autovelox', plateV.form === 'orizzontale' ? 'guida-orizzontale' : 'guida-verticale', {audit: await call(pageAudit), plate: plateV, velox}, true);
       await ev(`document.getElementById('hudExit').click(); true`);
 
       const p = row.results.reduce((n, r) => n + r.problems.length, 0), n = row.results.reduce((k, r) => k + r.notes.length, 0);

@@ -41,6 +41,26 @@
    sopra le altre app ha le sue misure (pip.css) */
 html:not(.pip) .gauge .big span{font-size:max(11px, 5.2cqw)}
 html:not(.pip) .keep-in .kl{font-size:max(11px, 4.4cqw)}
+/* Autovelox entro 500 m: fascia gialla da bordo a bordo del cerchio, sopra la velocità da tenere (prova 5 del canvas
+   delle prove). I bordi scuri sopra e sotto la staccano anche dal cartello giallo; il cerchio taglia la fascia ai lati.
+   Nel riquadro le scritte hanno una misura loro (pip.css) */
+.velox-in{position:absolute; left:0; right:0; top:61%; min-height:11%; box-sizing:border-box; display:flex; align-items:center;
+  justify-content:center; gap:.4em; background:#F2B21E; color:#161100; border-block:max(1px, .6cqw) solid #161100; padding:.6cqw 0;
+  line-height:1.05; font-variant-numeric:tabular-nums; white-space:nowrap}
+.velox-in svg{width:1.3em; height:1.3em; flex:none}
+.velox-in strong{font-size:5cqw; font-weight:900; letter-spacing:.04em; text-transform:uppercase}
+.velox-in em{font-size:5cqw; font-weight:900; font-style:normal}
+html:not(.pip) .velox-in strong,html:not(.pip) .velox-in em{font-size:max(11px, 5cqw)}
+.velox-in svg{font-size:5cqw}
+html:not(.pip) .velox-in svg{font-size:max(11px, 5cqw)}
+.gauge:has(.velox-in:not([hidden])){overflow:hidden}
+/* cerchio stretto (telefono piccolo, testo ingrandito di Android): solo telecamera e metri, altrimenti il cerchio
+   taglierebbe la scritta ai lati */
+@container (max-width:200px){
+  .velox-in strong{display:none}
+}
+/* con la fascia il numero sale un po' (in tutte le forme) */
+.gauge:has(.velox-in:not([hidden])) .big{inset:0 0 30% 0}
 /* Sotto il cerchio */
 .pside{display:grid; gap:6px; width:100%}
 .plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:#C9D6D0}

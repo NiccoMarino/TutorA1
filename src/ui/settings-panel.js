@@ -57,6 +57,10 @@ export function createSettingsPanel({settings, save, onChange, say}){
     const el = $(id); el.checked = !!settings[k];
     el.addEventListener('change', () => { settings[k] = el.checked; save(); renderMute(); });
   });
+  // Avvisi autovelox: accesi salvo settings.veloxOff (chiave facoltativa, così le impostazioni predefinite non cambiano)
+  const sv = $('#setVelox');
+  sv.checked = !settings.veloxOff;
+  sv.addEventListener('change', () => { if (sv.checked) delete settings.veloxOff; else settings.veloxOff = true; save(); onChange(); });
   $('#hudMute').addEventListener('click', () => {
     const on = settings.voice || settings.beep;
     settings.voice = !on; settings.beep = !on; save();

@@ -32,7 +32,7 @@ export function scaledFontSize(value, zoom){
 
 // kind: 'pagina' (schermate fuori dalla guida), 'guida-verticale', 'guida-orizzontale'.
 // audit è il risultato di pageAudit, plate quello di plateForm più scroll e view (tools/device-page.mjs)
-export function judge(kind, {audit, plate}){
+export function judge(kind, {audit, plate, velox}){
   const problems = [], notes = [];
   const few = a => a.slice(0, 4).join('; ') + (a.length > 4 ? '; e altri ' + (a.length - 4) : '');
   if (audit.overflowX) problems.push('la pagina scorre di lato');
@@ -55,5 +55,14 @@ export function judge(kind, {audit, plate}){
     if (plate.gaugeShare < 50) notes.push('cerchio piccolo: ' + plate.gaugeShare + '% della larghezza');
   }
   if (kind === 'guida-orizzontale' && !(plate.plateInside && plate.gaugeInside)) problems.push('il cartello esce dallo schermo');
+  // etichetta dell'autovelox nel cerchio (solo nel momento in cui deve esserci)
+  if (velox){
+    if (!velox.shown) problems.push("manca l'etichetta dell'autovelox nel cerchio");
+    else {
+      if (!velox.inside) problems.push("l'etichetta dell'autovelox esce dal cerchio");
+      if (velox.overlap) problems.push("l'etichetta dell'autovelox copre la media");
+      if (velox.clipped) problems.push("la scritta della fascia è tagliata dal cerchio");
+    }
+  }
   return {problems, notes};
 }
