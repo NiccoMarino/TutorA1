@@ -1,4 +1,4 @@
-# Pubblicare MediaVelocità sul Play Store
+# Pubblicare TutOK sul Play Store
 
 Guida passo passo. Le parti già pronte nel repository:
 
@@ -46,7 +46,7 @@ Google rifiuta un AAB con lo stesso numero di versione di uno già caricato.
 3. Indirizzo di contatto per gli utenti: niccofantini2000@gmail.com.
 
 ## 5. Creare l'app nella console
-"Crea app": nome **MediaVelocità**, lingua predefinita **Italiano – it-IT**, **App**, **Gratuita**, accetta le
+"Crea app": nome **TutOK**, lingua predefinita **Italiano – it-IT**, **App**, **Gratuita**, accetta le
 dichiarazioni. Attenzione: una volta pubblicata come gratuita non può avere un prezzo d'acquisto, ma può vendere
 un abbonamento dentro l'app (Google Play Billing): per l'abbonamento annuale pensato resta **Gratuita**.
 Prima di vendere leggi `docs/legale/ABBONAMENTO-BOZZA.md` e `docs/legale/VERIFICA.md` (dati del venditore
@@ -76,7 +76,7 @@ Google chiede almeno **12 tester iscritti per 14 giorni di fila** prima di aprir
 
 ## 9. Sul tuo telefono
 L'app "Tutor A1 A4" installata dal PC ha lo stesso identificativo ma un'altra firma: prima di installare
-MediaVelocità dal Play Store va **disinstallata** (lo storico dei tratti si perde). "Tutor prova" è separata
+TutOK dal Play Store va **disinstallata** (lo storico dei tratti si perde). "Tutor prova" è separata
 e può restare.
 
 ---

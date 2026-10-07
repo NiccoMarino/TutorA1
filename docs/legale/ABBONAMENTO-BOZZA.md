@@ -14,12 +14,12 @@ commercialista è consigliata: questa bozza segue le regole generali, non sostit
 
 ## Testo per la pagina pubblica
 
-### Abbonamento a MediaVelocità
+### Abbonamento a TutOK
 - **Prezzo:** 2 € all'anno, IVA inclusa, pagati tramite Google Play. Non ci sono altri costi.
 - **Cosa comprende:** [elenco delle funzioni]. Senza abbonamento restano disponibili [elenco].
 - **Rinnovo:** l'abbonamento si rinnova da solo ogni anno allo stesso prezzo. Google Play ti avvisa prima del
   rinnovo; se il prezzo cambiasse, ti verrebbe chiesto di accettarlo prima.
-- **Disdetta:** quando vuoi, da Google Play > Pagamenti e abbonamenti > Abbonamenti > MediaVelocità.
+- **Disdetta:** quando vuoi, da Google Play > Pagamenti e abbonamenti > Abbonamenti > TutOK.
   L'abbonamento resta attivo fino alla fine dell'anno già pagato e poi non si rinnova.
 - **Recesso e rimborsi:** entro 14 giorni dall'acquisto o dal rinnovo puoi chiedere il rimborso completo, senza
   dare spiegazioni, scrivendo a niccofantini2000@gmail.com (indica l'email del tuo account Google e la data

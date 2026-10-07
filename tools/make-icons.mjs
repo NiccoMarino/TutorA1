@@ -1,7 +1,7 @@
 // Genera icona dell'app, schermata di avvio e grafica del Play Store a partire dal disegno qui sotto,
 // facendo le foto con Chrome senza finestra. Uso: node tools/make-icons.mjs
 // Scrive in android/app/src/main/res/ (mipmap-*, drawable*/splash.png) e in docs/play-store/grafica/.
-import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
+import { writeFileSync, mkdirSync, rmSync, existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -14,23 +14,47 @@ const CHROME = ['C:/Program Files/Google/Chrome/Application/chrome.exe',
                 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(existsSync);
 
 export const GREEN = '#00794C', DARK = '#0E1412', RED = '#FF6B61';
+// Fondo dell'icona (anche in android/app/src/main/res/values/ic_launcher_background.xml)
+export const ICON_BG = '#0B0B0C';
 
-// Disegno nella griglia 108×108 delle icone adattive di Android: tutto dentro il cerchio sicuro di raggio 33.
-// Contachilometri con la zona rossa in fondo e sotto un tratto con i due portali (inizio e fine).
-const GLYPH = `
-  <path d="M36.68 62 A20 20 0 0 1 71.32 42" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
-  <path d="M71.32 42 A20 20 0 0 1 71.32 62" fill="none" stroke="${RED}" stroke-width="6" stroke-linecap="round"/>
-  <path d="M54 52 L64.6 41.4" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
-  <circle cx="54" cy="52" r="4.5" fill="#fff"/>
-  <path d="M41 77 H67" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
-  <path d="M41 72.5 V81.5 M67 72.5 V81.5" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>`;
+// Disegno dell'utente (ottobre 2026): quadrante con la strada, arco verde, zona rossa, lancetta e "Ø MEDIA km/h".
+// Le coordinate sono quelle misurate sulla sua immagine (1375×768): il gruppo le porta nella griglia 108×108 delle
+// icone adattive di Android, con quadrante e scritte dentro il cerchio sicuro di raggio 33.
+const C = [686, 536], D2R = Math.PI/180;
+const pt = (r, a) => [C[0] + r*Math.cos(a*D2R), C[1] + r*Math.sin(a*D2R)].map(v => +v.toFixed(1));
+const arc = (r, a0, a1) => { const [x0, y0] = pt(r, a0), [x1, y1] = pt(r, a1), span = ((a1 - a0) % 360 + 360) % 360;
+  return `M${x0} ${y0} A${r} ${r} 0 ${span > 180 ? 1 : 0} 1 ${x1} ${y1}`; };
+const TICKS = [150, 180, 210, 240, 270, 300].map(a => { const [x0, y0] = pt(172, a), [x1, y1] = pt(188, a); return `M${x0} ${y0} L${x1} ${y1}`; }).join(' ');
+const PIVOT = [775, 455], TIP = [836, 391];
+const NEEDLE = (() => { const l = Math.hypot(TIP[0] - PIVOT[0], TIP[1] - PIVOT[1]), n = [-(TIP[1] - PIVOT[1])/l, (TIP[0] - PIVOT[0])/l];
+  return [[PIVOT[0] + n[0]*5.5, PIVOT[1] + n[1]*5.5], TIP, [PIVOT[0] - n[0]*5.5, PIVOT[1] - n[1]*5.5]].map(p => p.map(v => v.toFixed(1)).join(',')).join(' '); })();
+// Nelle immagini SVG il browser non usa i caratteri della pagina: Figtree va dentro il disegno
+const FONT = [400, 500].map(w => '@font-face{font-family:"Figtree";font-weight:' + w + ';src:url(data:font/woff2;base64,'
+  + readFileSync(ROOT + 'node_modules/@fontsource/figtree/files/figtree-latin-' + w + '-normal.woff2').toString('base64') + ') format("woff2")}').join('');
+export function art({font = true} = {}){
+  return (font ? '<style>' + FONT + '</style>' : '') + `<g transform="translate(54 54) scale(0.13) translate(-686 -445)">
+  <g fill="#FFFFFF"><polygon points="660,263 667,265 577,336 565,330"/><polygon points="705,265 712,263 807,330 795,336"/>
+    <polygon points="683,262 689,262 689,272 683,272"/><polygon points="682,281 690,281 690,294 682,294"/><polygon points="681,302 691,302 691,317 681,317"/>
+    <polygon points="470,452 479,458 437,523 425,515"/><polygon points="902,452 893,458 935,523 947,515"/></g>
+  <path d="${TICKS}" stroke="#8A8A8A" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="${arc(208, 153, 310)}" stroke="#3F9C48" stroke-width="15" stroke-linecap="round" fill="none"/>
+  <path d="${arc(200, 321, 26)}" stroke="#D93230" stroke-width="15" stroke-linecap="round" fill="none"/>
+  <path d="${arc(178, 331, 19)}" stroke="#D93230" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <polygon points="${NEEDLE}" fill="#D93230"/>
+  <circle cx="${PIVOT[0]}" cy="${PIVOT[1]}" r="10" fill="#111111" stroke="#D93230" stroke-width="6"/>
+  <g font-family="Figtree" text-anchor="middle" fill="#FFFFFF"><text x="686" y="490" font-size="100" font-weight="500">Ø</text>
+    <text x="686" y="574" font-size="74" font-weight="500" letter-spacing="2.5">MEDIA</text>
+    <text x="686" y="624" font-size="45" font-weight="400" fill="#9B9B9B">km/h</text></g>
+</g>`;
+}
+export const GLYPH = art();
 
 // shape: 'none' (solo disegno, sfondo trasparente), 'square', 'rounded', 'circle'; view: porzione della griglia
 function iconSvg({shape, view = '0 0 108 108'}){
   const [x, y, w] = view.split(' ').map(Number);
   const bg = shape === 'none' ? ''
-    : shape === 'circle' ? `<circle cx="54" cy="54" r="${w/2}" fill="${GREEN}"/>`
-    : `<rect x="${x}" y="${y}" width="${w}" height="${w}" rx="${shape === 'rounded' ? w*0.22 : 0}" fill="${GREEN}"/>`;
+    : shape === 'circle' ? `<circle cx="54" cy="54" r="${w/2}" fill="${ICON_BG}"/>`
+    : `<rect x="${x}" y="${y}" width="${w}" height="${w}" rx="${shape === 'rounded' ? w*0.22 : 0}" fill="${ICON_BG}"/>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" width="100%" height="100%">${bg}${GLYPH}</svg>`;
 }
 
@@ -81,7 +105,7 @@ function main(){
   for (const [d, k] of Object.entries(dens)){
     const dir = RES + 'mipmap-' + d + '/';
     draw({svg: sized(iconSvg({shape: 'none'})), w: 108*k, h: 108*k}, dir + 'ic_launcher_foreground.png');
-    // Icone per Android 7 (senza icone adattive): il disegno ingrandito sul fondo verde
+    // Icone per Android 7 (senza icone adattive): il disegno ingrandito sul fondo nero
     draw({svg: sized(iconSvg({shape: 'rounded', view: '17 17 74 74'})), w: 48*k, h: 48*k}, dir + 'ic_launcher.png');
     draw({svg: sized(iconSvg({shape: 'circle', view: '17 17 74 74'})), w: 48*k, h: 48*k}, dir + 'ic_launcher_round.png');
   }
@@ -100,9 +124,9 @@ function main(){
   // Grafica in evidenza 1024×500
   shoot(page(`<div style="display:flex;align-items:center;gap:56px;padding:0 72px;color:#fff">
       <div style="width:300px;height:300px;flex:none">${iconSvg({shape: 'circle', view: '17 17 74 74'})}</div>
-      <div><div style="font-size:84px;font-weight:700;letter-spacing:-1px">MediaVelocità</div>
-      <div style="font-size:38px;margin-top:14px;line-height:1.25;color:#CFE9DD">La tua velocità media nei tratti Tutor in autostrada</div></div>
-    </div>`, `linear-gradient(135deg, ${GREEN}, #004D30)`), 1024, 500, STORE + 'grafica-1024x500.png');
+      <div><div style="font-size:96px;font-weight:700;letter-spacing:-1px">TutOK</div>
+      <div style="font-size:38px;margin-top:14px;line-height:1.25;color:#C9D6D0">La tua velocità media nei tratti Tutor in autostrada</div></div>
+    </div>`, `radial-gradient(ellipse at 30% 40%, #2E3032, ${ICON_BG})`), 1024, 500, STORE + 'grafica-1024x500.png');
   rmSync(TMP, {recursive: true, force: true});
 }
 
