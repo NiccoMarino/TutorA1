@@ -259,6 +259,13 @@ html:not(.pip) .velox-in svg{font-size:max(11px, 5cqw)}
 }
 @media (max-height:640px){
   html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate .sub{display:none}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .advice{display:none}
+}
+@media (orientation:portrait) and (max-height:560px){
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .stats{grid-template-columns:repeat(2, 1fr)}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .stat-lim{display:none}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .hud{gap:6px}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .toast{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 }
 @media (max-width:340px){
   .hud-limits .lab{display:none}
@@ -347,7 +354,7 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
 
     <div class="stats">
       <div class="stat" id="stInst"><b id="sInst">–</b><span>km/h adesso</span></div>
-      <div class="stat"><b id="sLim">130</b><span>limite impostato</span></div>
+      <div class="stat stat-lim"><b id="sLim">130</b><span>limite impostato</span></div>
       <div class="stat"><b id="sThr">136,8</b><span id="sThrL">soglia con tolleranza</span></div>
     </div>
 

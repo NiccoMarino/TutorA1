@@ -68,8 +68,10 @@ Un solo markup (`#plate` in `src/index.html`) per tre forme, scelte solo dallo s
 
 - Guidando col GPS (telefono dritto, tablet, computer) la schermata è ferma e alta quanto lo schermo (fondo di
   `styles/cartello.css`): il cerchio prende lo spazio che resta, al massimo 46vh e mai più della larghezza, almeno 150px;
-  se non ci sta neanche così scorre solo la guida. Sotto i 640px di altezza sparisce la frase sotto il cerchio, sotto i
-  340px di larghezza la parola "Limite". In simulazione la pagina scorre, per i comandi sotto. Misure diverse dal
+  se non ci sta neanche così scorre solo la guida. Sotto i 640px di altezza spariscono la frase sotto il cerchio e il
+  consiglio scritto sotto i numeri (ripete la velocità da tenere del cerchio); in verticale sotto i 560px (4") i numeri
+  vanno su due colonne senza "limite impostato", gli spazi si stringono e l'ultimo messaggio sta su una riga; sotto i
+  340px di larghezza sparisce la parola "Limite". In simulazione la pagina scorre, per i comandi sotto. Misure diverse dal
   telefono di prova: `npm run schermi` (`tools/schermi.mjs`, casi e giudizio in `tools/schermi-casi.mjs`).
 - Testi e numeri: `core/hud-view.js` (`plate`, `keep`, `gauge`, `progress`); `ui/hud.js` (`renderPlate`) li scrive.
 - Velocità da tenere: `keepText` in `core/metrics.js`.

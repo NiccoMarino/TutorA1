@@ -226,6 +226,20 @@ test('guida in verticale senza scorrimento: schermata alta quanto lo schermo, ce
   // schermi bassi o stretti: via la frase lunga sotto il cerchio e la parola "Limite", per lasciare spazio al cerchio
   assert.match(app, /@media \(max-height:640px\)\{\s*html:not\(\.pip\) body\.driving:not\(:has\(#simBar:not\(\[hidden\]\)\)\) \.plate \.sub\{display:none\}/, 'sugli schermi bassi resta la frase lunga');
   assert.match(app, /@media \(max-width:340px\)\{\s*\.hud-limits \.lab\{display:none\}/, 'sugli schermi stretti i limiti vanno a capo');
+  // schermi bassi: via anche il consiglio scritto, che ripete la velocità da tenere già nel cerchio
+  const low = app.match(/@media \(max-height:640px\)\{([\s\S]*?)\n\}/)[1];
+  assert.match(low, /body\.driving:not\(:has\(#simBar:not\(\[hidden\]\)\)\) \.advice\{display:none\}/, 'sugli schermi bassi resta il consiglio scritto');
+  // telefono piccolo in verticale (4"): numeri su due colonne senza "limite impostato" (è il limite evidenziato
+  // nei pulsanti sotto) e spazi più stretti
+  const tiny = app.match(/@media \(orientation:portrait\) and \(max-height:560px\)\{([\s\S]*?)\n\}/);
+  assert.ok(tiny, 'manca la regola per i telefoni piccoli');
+  assert.match(tiny[1], /\.stats\{grid-template-columns:repeat\(2, *1fr\)\}/);
+  assert.match(tiny[1], /\.stat-lim\{display:none\}/);
+  assert.match(tiny[1], /\.hud\{[^}]*gap:6px/);
+  // l'ultimo messaggio (lo stesso detto a voce) su una riga sola, con i puntini se non ci sta
+  assert.match(tiny[1], /\.toast\{white-space:nowrap; *overflow:hidden; *text-overflow:ellipsis\}/);
+  assert.match(app, /<div class="stat stat-lim"><b id="sLim">/);
+  assert.ok(!/html\.pip/.test(tiny[1]) && /html:not\(\.pip\)/.test(tiny[1]), 'la regola tocca anche il riquadro');
   // con il cerchio piccolo le scritte dentro non scendono sotto 11 px (non nel riquadro, disegnato a parte)
   assert.match(app, /html:not\(\.pip\) \.gauge \.big span\{font-size:max\(11px, *5\.2cqw\)\}/, '"km/h di media" diventa minuscolo');
   assert.match(app, /html:not\(\.pip\) \.keep-in \.kl\{font-size:max\(11px, *4\.4cqw\)\}/, '"per chiudere entro" diventa minuscolo');
