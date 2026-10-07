@@ -58,7 +58,8 @@ export async function showScreen(id, theme){
   const wait = async want => { for (let i = 0; i < 40 && cur() !== want; i++) await new Promise(r => setTimeout(r, 25)); };
   const chip = [...document.querySelectorAll('#setTheme .chip')].find(b => b.textContent === theme);
   if (chip) chip.click();
-  if (cur() !== 'home'){ document.querySelector('#menu [data-go="home"]').click(); await wait('home'); }
+  // indietro fino alla schermata iniziale (il menù non ha più la voce Home)
+  for (let i = 0; i < 8 && cur() !== 'home'; i++){ const was = cur(); window.tutorBack(); for (let k = 0; k < 40 && cur() === was; k++) await new Promise(r => setTimeout(r, 25)); }
   if (id === 'menu') document.getElementById('btnMenu').click();
   else if (id !== 'home') document.querySelector('#menu [data-go="' + id + '"]').click();
   window.scrollTo(0, 0);

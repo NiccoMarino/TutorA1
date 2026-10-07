@@ -20,6 +20,8 @@
   --sign-green:#00794C; --sign-blue:#0F5AA6;
   --sud:#C2185B; --nord:#1565C0;
   --focus:#0B57D0; --ok:#0E7A47; --warn:#8A5A00; --bad:#B3261E;
+  --hud-bg:#0A0F0D; --hud-ink:#F2F6F4; --hud-panel:#141C19; --hud-line:#34423C; --hud-line-2:#26312C;
+  --hud-muted:#A8BAB2; --hud-dim:#9FB2AA; --hud-soft:#C9D6D0; --hud-amber:#F2B21E; --hud-amber-ink:#1A1300; --hud-hot:#FF7A70;
   color-scheme:light;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -51,8 +53,8 @@ body{margin:0; min-height:100%; background:var(--bg); color:var(--ink);
 button,input,select{font:inherit; color:inherit}
 :focus-visible{outline:3px solid var(--focus); outline-offset:2px}
 [hidden]{display:none !important}
-.app{max-width:680px; margin:0 auto; min-height:100vh}
-.screen{min-height:100vh}
+.app{max-width:680px; margin:0 auto; min-height:100vh; min-height:100dvh}
+.screen{min-height:100vh; min-height:100dvh}
 body.driving .screen{display:none !important}
 svg{flex:none}
 .iconbtn{appearance:none; flex:none; width:48px; height:48px; display:flex; align-items:center; justify-content:center; border:0; border-radius:12px;
@@ -86,7 +88,7 @@ svg{flex:none}
 .page{background:var(--bg)}
 .pagebar{position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:6px; padding:14px 16px 8px 8px; background:var(--bg)}
 .pagebar h2{margin:0; font-size:22px; line-height:1.1; font-weight:800}
-.avviso .pagebar{padding-left:16px}
+.pagebar:not(:has([data-back])){padding-left:16px}
 .oltre .pagebar h2{color:var(--bad)}
 .page-body{padding:8px 16px 32px; display:grid; grid-template-columns:minmax(0,1fr); gap:16px}
 .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px}
@@ -117,14 +119,16 @@ svg{flex:none}
 .btn-danger{background:#B3261E; border-color:#B3261E; color:#FFFFFF}
 .btn-danger:hover{background:#8C1D18; border-color:#8C1D18}
 .btn-small{min-height:48px; padding:6px 11px; font-size:14px; border-radius:8px}
-.note{border-left:4px solid var(--warn); background:var(--panel); padding:10px 12px; border-radius:6px; font-size:14px; margin:0}
-.note.good{border-left-color:var(--ok)}
+.note{border:1.5px solid var(--warn); background:var(--panel); padding:10px 12px; border-radius:12px; font-size:14px; margin:0}
+.note.good{border-color:var(--ok)}
+.actionbar{position:sticky; bottom:0; display:grid; padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));
+  margin-bottom:-32px; background:linear-gradient(transparent, var(--bg) 14px)}
 .simsetup{display:grid; gap:12px}
 .simsetup label{display:grid; gap:5px; font-weight:600; font-size:14px}
 .simsetup select,.simsetup input[type=number]{width:100%; padding:9px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--panel-2); min-height:48px}
 .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
 .tratti{display:grid; gap:10px}
-.sect{margin:6px 0 0; font-size:18px; font-weight:800}
+.sect{margin:6px 0 0; font-size:21px; font-weight:800}
 .lede{margin:0; color:var(--muted); font-size:14px; max-width:52ch}
 .filters{display:grid; gap:8px}
 .filter{display:flex; gap:6px; flex-wrap:wrap}
@@ -133,7 +137,7 @@ svg{flex:none}
 .dot{width:10px; height:10px; border-radius:50%; display:inline-block}
 .dot.sud{background:var(--sud)} .dot.nord{background:var(--nord)}
 .group{display:grid; gap:4px}
-.group h2{font-size:16px; margin:10px 0 2px; font-weight:800}
+.group h2{font-size:18px; margin:14px 0 2px; font-weight:800}
 .group h3{font-size:13.5px; margin:8px 0 2px; color:var(--muted); font-weight:600; display:flex; gap:7px; align-items:center}
 .sec{appearance:none; width:100%; text-align:left; border:1px solid var(--line); background:var(--panel); padding:9px 12px 9px 16px; border-radius:12px;
   display:grid; grid-template-columns:1fr auto; gap:2px 10px; cursor:pointer; position:relative; min-height:56px}
@@ -143,7 +147,7 @@ svg{flex:none}
 .sec .nm{font-weight:700}
 .sec .len{font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap}
 .sec .meta{grid-column:1 / -1; color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums}
-.sec-detail{margin:2px 0 8px 13px; padding:10px 12px; border-left:3px solid var(--line); font-size:14px; display:grid; gap:4px}
+.sec-detail{margin:2px 0 8px; padding:10px 12px; background:var(--panel-2); border-radius:12px; font-size:14px; display:grid; gap:4px}
 .sec-detail p{margin:0}
 .sec-detail .muted{color:var(--muted)}
 .sec-detail .btn{justify-self:start; margin-top:6px}
@@ -162,29 +166,35 @@ select.sel{padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); 
 .v.ok{color:var(--ok)} .v.tol{color:var(--warn)} .v.bad{color:var(--bad)}
 .src{font-size:13px; color:var(--muted)}
 .hud > *{flex-shrink:0}
-.hud{display:none; flex-direction:column; gap:12px; background:#0A0F0D; color:#F2F6F4; padding:14px 16px 16px; min-height:0; overflow:auto}
-body.driving .hud{display:flex; min-height:100vh}
+.hud{display:none; flex-direction:column; gap:12px; background:var(--hud-bg); color:var(--hud-ink); padding:14px 16px 16px; min-height:0; overflow:auto}
+body.driving .hud{display:flex; min-height:100vh; min-height:100dvh}
 body.driving .app{max-width:760px}
 .hud-top{display:flex; align-items:center; gap:10px}
 .hud-top .road{flex:1; min-width:0; font-weight:700; font-size:15px; line-height:1.25; font-variant-numeric:tabular-nums}
-.hud-top .road small{display:block; font-weight:600; color:#9FB2AA; font-size:12.5px}
+.hud-top .road small{display:block; font-weight:600; color:var(--hud-dim); font-size:12.5px}
 .hud-top .road,.hud-top .road small{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-.hud-top .road small.velox{color:#F2B21E; font-weight:700}
-.hbtn{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; min-height:48px; white-space:nowrap}
-.hbtn[aria-pressed="true"]{background:#F2F6F4; color:#0A0F0D}
-.pill{display:inline-block; background:#F2B21E; color:#1a1300; border-radius:999px; padding:1px 8px; font-size:12px; font-weight:800; margin-left:6px; vertical-align:2px}
-.stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
-.stat{background:#141C19; border:1px solid #26312C; border-radius:12px; padding:9px 10px; display:grid; gap:2px}
+.hud-top .road small.velox{color:var(--hud-amber); font-weight:700}
+.hbtn{appearance:none; border:1.5px solid var(--hud-line); background:var(--hud-panel); color:var(--hud-ink); border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; min-height:48px; white-space:nowrap}
+.hbtn[aria-pressed="true"]{background:var(--hud-ink); color:var(--hud-bg)}
+.hbtn.armed{background:var(--hud-amber); border-color:var(--hud-amber); color:var(--hud-amber-ink)}
+.pill{display:inline-block; background:var(--hud-amber); color:var(--hud-amber-ink); border-radius:999px; padding:1px 8px; font-size:12px; font-weight:800; margin-left:6px; vertical-align:2px}
+.stats{display:grid; grid-template-columns:repeat(2,1fr); gap:8px}
+.stat{background:var(--hud-panel); border:1px solid var(--hud-line-2); border-radius:12px; padding:9px 10px; display:grid; gap:2px}
 .stat b{font-size:clamp(26px,6.5vw,36px); font-weight:900; font-variant-numeric:tabular-nums; line-height:1}
-.stat span{font-size:12.5px; color:#A8BAB2; font-weight:600; line-height:1.2}
-.stat.hot b{color:#FF7A70}
+.stat span{font-size:12.5px; color:var(--hud-muted); font-weight:600; line-height:1.2}
+.stat.hot b{color:var(--hud-hot)}
 .advice{margin:0; font-size:17px; font-weight:700; line-height:1.3; min-height:1.3em}
 .hud-limits{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
-.hud-limits .lab{font-size:13px; color:#A8BAB2; font-weight:600; margin-right:2px}
-.hchip{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:999px; padding:6px 8px; font-weight:800; cursor:pointer; font-variant-numeric:tabular-nums; min-height:48px; min-width:48px; flex:1 1 0; max-width:72px}
-.hchip[aria-pressed="true"]{background:#F2F6F4; color:#0A0F0D; border-color:#F2F6F4}
-.toast{font-size:14px; color:#C9D6D0; min-height:1.3em; margin:0}
-.simbar{border:1.5px dashed #F2B21E; border-radius:12px; padding:10px 12px; display:grid; gap:8px}
+.hud-limits .hlim b{font-weight:900; font-variant-numeric:tabular-nums; margin-left:2px}
+.hud-limits .hlim::after{content:""; display:inline-block; width:7px; height:7px; margin:0 2px 3px 9px; border-right:2.2px solid currentColor;
+  border-bottom:2.2px solid currentColor; transform:rotate(45deg); vertical-align:middle}
+.hud-limits .hlim[aria-expanded="true"]::after{transform:rotate(-135deg); margin-bottom:-2px}
+.hlim-choice{display:flex; gap:6px; flex-wrap:wrap; flex:1 1 100%}
+.hchip{appearance:none; border:1.5px solid var(--hud-line); background:var(--hud-panel); color:var(--hud-ink); border-radius:999px; padding:6px 8px; font-weight:800; cursor:pointer; font-variant-numeric:tabular-nums; min-height:48px; min-width:48px; flex:1 1 0; max-width:72px}
+.hchip[aria-pressed="true"]{background:var(--hud-ink); color:var(--hud-bg); border-color:var(--hud-ink)}
+.hchip.lim{flex:0 1 auto; max-width:none; padding:6px 14px}
+.toast{font-size:14px; color:var(--hud-soft); min-height:1.3em; margin:0}
+.simbar{border:1.5px dashed var(--hud-amber); border-radius:12px; padding:10px 12px; display:grid; gap:8px}
 .simbar .row{justify-content:space-between}
 .simbar label{font-weight:700; font-size:14px}
 .simbar output{font-weight:900; font-variant-numeric:tabular-nums}
@@ -204,7 +214,7 @@ body.driving .app{max-width:760px}
 .plate.alarm,.plate.done-bad{--pc:#C62828; --pf:#FFFFFF; --pt:rgba(0,0,0,.28); --pl:#FFFFFF}
 .plate-in{display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center}
 .ptext{display:grid; gap:2px; max-width:100%}
-.plate .kicker{font-weight:700; font-size:15px; color:#A8BAB2}
+.plate .kicker{font-weight:700; font-size:15px; color:var(--hud-muted)}
 .plate .title{font-weight:800; font-size:clamp(19px,4.6vw,26px); line-height:1.15}
 .gauge{position:relative; flex:none; width:min(100%, 46vh); aspect-ratio:1; border-radius:50%; background:var(--pc); color:var(--pf);
   container-type:inline-size; transition:background-color .35s ease}
@@ -245,14 +255,14 @@ html:not(.pip) .velox-in svg{font-size:max(11px, 5cqw)}
 }
 .gauge:has(.velox-in:not([hidden])) .big{inset:0 0 30% 0}
 .pside{display:grid; gap:6px; width:100%}
-.plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:#C9D6D0}
+.plate .sub{font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums; color:var(--hud-soft)}
 .plate.flash .gauge{animation:flash .9s ease 2}
 @keyframes flash{50%{filter:brightness(1.35)}}
-.plabels{display:flex; justify-content:space-between; font-size:13px; font-weight:700; gap:10px; color:#C9D6D0}
+.plabels{display:flex; justify-content:space-between; font-size:13px; font-weight:700; gap:10px; color:var(--hud-soft)}
 :where(.hud:has(#simBar:not([hidden]))) .gauge{width:min(100%, 36vh)}
 @media not all and (orientation:landscape) and (max-height:560px){
   html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))){overflow:hidden; overscroll-behavior:none}
-  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .hud{height:100vh; min-height:0; box-sizing:border-box; overflow-y:auto; overscroll-behavior:none}
+  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .hud{height:100vh; height:100dvh; min-height:0; box-sizing:border-box; overflow-y:auto; overscroll-behavior:none}
   html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate{flex:1 0 auto; display:flex; flex-direction:column}
   html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .plate-in{flex:1 1 0; justify-content:center}
   html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .gauge{flex:1 1 0; min-height:min(150px, 46vh); width:auto; max-width:100%; max-height:min(46vh, calc(100vw - 32px), 728px); aspect-ratio:1}
@@ -262,13 +272,8 @@ html:not(.pip) .velox-in svg{font-size:max(11px, 5cqw)}
   html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .advice{display:none}
 }
 @media (orientation:portrait) and (max-height:560px){
-  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .stats{grid-template-columns:repeat(2, 1fr)}
-  html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .stat-lim{display:none}
   html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .hud{gap:6px}
   html:not(.pip) body.driving:not(:has(#simBar:not([hidden]))) .toast{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-}
-@media (max-width:340px){
-  .hud-limits .lab{display:none}
 }
 @media (orientation:landscape) and (max-height:560px){
   html:not(.pip) body.driving .app{max-width:none}
@@ -320,7 +325,7 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
     <div class="hud-top">
       <button class="hbtn" id="hudExit" type="button">Esci</button>
       <div class="road" id="hudRoad">In attesa del segnale GPS</div>
-      <button class="hbtn" id="hudMute" type="button" aria-pressed="false" title="Disattiva voce e suoni">Audio sì</button>
+      <button class="hbtn" id="hudMute" type="button">Audio sì</button>
     </div>
 
     <div class="plate" id="plate">
@@ -354,14 +359,15 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
 
     <div class="stats">
       <div class="stat" id="stInst"><b id="sInst">–</b><span>km/h adesso</span></div>
-      <div class="stat stat-lim"><b id="sLim">130</b><span>limite impostato</span></div>
       <div class="stat"><b id="sThr">136,8</b><span id="sThrL">soglia con tolleranza</span></div>
     </div>
 
     <p class="advice" id="advice"></p>
 
-    <div class="hud-limits" id="hudLimits" role="group" aria-label="Limite di velocità">
-      <span class="lab">Limite</span>
+    <!-- Limite: un pulsante che apre la scelta, così in guida non si cambia per sbaglio (ui/settings-panel.js) -->
+    <div class="hud-limits" id="hudLimits">
+      <button class="hbtn hlim" id="hudLimBtn" type="button" aria-expanded="false" aria-controls="hudLimChoice">Limite <b id="sLim">130</b></button>
+      <div class="hlim-choice" id="hudLimChoice" role="group" aria-label="Scegli il limite di velocità" hidden></div>
     </div>
 
     <div class="simbar" id="simBar" hidden>
@@ -413,14 +419,14 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
         <p>Non usare il telefono mentre guidi: imposta tutto prima di partire, l'app ti avvisa con la voce.</p>
         <p>Proseguendo accetti i <a href="https://niccomarino.github.io/TutorA1/termini.html" target="_blank" rel="noopener">Termini d'uso</a>.</p>
       </div>
-      <button class="btn btn-primary" id="avvisoOk" type="button">Ho capito e accetto</button>
+      <!-- fisso in fondo allo schermo: si vede senza dover scorrere il testo -->
+      <div class="actionbar"><button class="btn btn-primary" id="avvisoOk" type="button">Ho capito e accetto</button></div>
     </div>
   </section>
 
   <section class="screen page" id="menu" aria-labelledby="tMenu" hidden>
     <header class="pagebar"><button class="iconbtn" type="button" data-back aria-label="Torna alla schermata iniziale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button><h2 id="tMenu">Menù</h2></header>
     <nav class="menu-list" aria-labelledby="tMenu">
-      <button class="mitem" type="button" data-go="home"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5.5 9.5V20h13V9.5M10 20v-6h4v6"/></svg></span><span class="mtx"><b>Home</b></span></button>
       <button class="mitem" type="button" data-go="pSettings"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"/></svg></span><span class="mtx"><b>Impostazioni di guida</b><small>Limite, avvisi e tema</small></span></button>
       <button class="mitem" type="button" data-go="pSim"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.2l5.6 3.8-5.6 3.8z"/></svg></span><span class="mtx"><b>Simulazione</b><small>Prova un tratto senza guidare, elenco dei tratti</small></span></button>
       <button class="mitem" type="button" data-go="pHist"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v5l3.5 2"/></svg></span><span class="mtx"><b>Storico</b><small>Tratti percorsi, media ed esito</small></span></button>
@@ -478,7 +484,7 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
   </section>
 
   <section class="screen page avviso oltre" id="pOltre" aria-labelledby="tOltre" hidden>
-    <header class="pagebar"><h2 id="tOltre"><span aria-hidden="true">⚠ </span>ATTENZIONE: LA RESPONSABILITÀ È TUA</h2></header>
+    <header class="pagebar"><button class="iconbtn" type="button" data-back aria-label="Annulla e torna alle impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button><h2 id="tOltre"><span aria-hidden="true">⚠ </span>ATTENZIONE: LA RESPONSABILITÀ È TUA</h2></header>
     <div class="page-body">
       <div class="card prose">
         <p>Con questa opzione il cartello mostra la velocità calcolata anche quando è <b>SOPRA IL LIMITE</b>.</p>
@@ -486,8 +492,9 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
         <p><b>Se superi il limite lo fai sotto la tua sola responsabilità</b>: multe, punti della patente, incidenti e danni a te, ai passeggeri o ad altri sono solo tuoi.</p>
         <p>Attivando l'opzione accetti che, nei limiti consentiti dalla legge, lo sviluppatore di TutOK non risponde delle conseguenze del superamento dei limiti e rinunci a chiedergli risarcimenti per questo.</p>
       </div>
+      <!-- la scelta prudente è quella in evidenza; attivare resta rosso ma secondario -->
+      <button class="btn btn-primary" id="oltreNo" type="button">Annulla</button>
       <button class="btn btn-danger" id="oltreOk" type="button">Ho capito, attiva</button>
-      <button class="btn" id="oltreNo" type="button">Annulla</button>
     </div>
   </section>
 
@@ -523,7 +530,9 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
     <header class="pagebar"><button class="iconbtn" type="button" data-back aria-label="Torna al menù"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button><h2 id="tHist">Storico</h2></header>
     <div class="page-body">
       <ul class="hist" id="hist"></ul>
-      <div><button class="btn btn-small" id="histClear" type="button">Cancella lo storico</button></div>
+      <div class="row"><button class="btn btn-small" id="histClear" type="button">Cancella lo storico</button>
+        <button class="btn btn-small" id="histUndo" type="button" hidden>Annulla la cancellazione</button></div>
+      <p class="src" id="histMsg" aria-live="polite"></p>
     </div>
   </section>
 
@@ -1250,6 +1259,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         history = [];
         set(HKEY, history);
       },
+      // Rimette lo storico appena cancellato (Annulla), dopo i tratti registrati nel frattempo, che sono più recenti
+      restoreHistory(list) {
+        history = history.concat(list).slice(0, 60);
+        set(HKEY, history);
+      },
       disclaimerAccepted() {
         return accepted === DISCLAIMER_VERSION;
       },
@@ -1906,29 +1920,38 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
 
   // src/ui/settings-panel.js
   function createSettingsPanel({ settings, save, onChange, say, go, back }) {
+    const limBtn = $("#hudLimBtn"), limBox = $("#hudLimChoice");
+    function openLimits(open) {
+      limBox.hidden = !open;
+      limBtn.setAttribute("aria-expanded", String(open));
+    }
+    limBtn.addEventListener("click", () => openLimits(limBox.hidden));
     function renderLimitChips() {
       const box = $("#setLimits");
       box.innerHTML = "";
-      const hbox = $("#hudLimits");
-      hbox.querySelectorAll(".hchip").forEach((x) => x.remove());
+      limBox.innerHTML = "";
       LIMITS.forEach(([v, lab]) => {
+        const text = lab ? v + " " + lab : String(v);
         const b = document.createElement("button");
         b.type = "button";
         b.className = "chip";
         b.setAttribute("aria-pressed", String(settings.limit === v));
-        b.textContent = lab ? v + " " + lab : String(v);
+        b.textContent = text;
         b.addEventListener("click", () => setLimit(v));
         box.appendChild(b);
         const h = document.createElement("button");
         h.type = "button";
-        h.className = "hchip";
+        h.className = "hchip lim";
+        h.dataset.v = v;
         h.setAttribute("aria-pressed", String(settings.limit === v));
-        h.textContent = v;
+        h.textContent = text;
         h.addEventListener("click", () => {
           setLimit(v);
+          openLimits(false);
+          limBtn.focus();
           say("Limite impostato a " + v, null, true);
         });
-        hbox.appendChild(h);
+        limBox.appendChild(h);
       });
     }
     function setLimit(v) {
@@ -1978,7 +2001,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     function renderMute() {
       const on = settings.voice || settings.beep, b = $("#hudMute");
       b.textContent = on ? "Audio sì" : "Audio no";
-      b.setAttribute("aria-pressed", String(!on));
+      b.title = on ? "Tocca per spegnere voce e suoni" : "Tocca per riaccendere voce e suoni";
     }
     $("#setPre").value = String(settings.preAlert);
     $("#setPre").addEventListener("change", (e) => {
@@ -2074,9 +2097,29 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         ul.appendChild(li);
       });
     }
+    let undo = null, undoT = null;
+    function endUndo() {
+      clearTimeout(undoT);
+      undo = null;
+      $("#histUndo").hidden = true;
+      $("#histMsg").textContent = "";
+    }
     $("#histClear").addEventListener("click", () => {
+      const old = store.history.slice();
       store.clearHistory();
       render();
+      if (!old.length) return;
+      endUndo();
+      undo = old;
+      $("#histUndo").hidden = false;
+      $("#histMsg").textContent = "Storico cancellato.";
+      undoT = setTimeout(endUndo, 1e4);
+    });
+    $("#histUndo").addEventListener("click", () => {
+      if (undo) store.restoreHistory(undo);
+      endUndo();
+      render();
+      $("#histMsg").textContent = "Storico ripristinato.";
     });
     render();
     return { render };
@@ -2117,7 +2160,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         $("#sThrL").textContent = v.stats.thrLabel;
         $("#sInst").textContent = v.stats.inst;
         $("#stInst").classList.toggle("hot", v.stats.instHot);
-        $("#hudLimits").querySelectorAll(".hchip").forEach((h) => h.setAttribute("aria-pressed", String(+h.textContent === v.stats.lim)));
+        $("#hudLimChoice").querySelectorAll(".hchip").forEach((h) => h.setAttribute("aria-pressed", String(+h.dataset.v === v.stats.lim)));
         const sub = v.velox ? '<small class="velox">' + esc(v.velox.text) + "</small>" : v.road.sub ? "<small>" + esc(v.road.sub) + "</small>" : "";
         $("#hudRoad").innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : "") + sub;
         renderPlate(v);
@@ -2466,9 +2509,29 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       }
       run.wake = null;
       audio.cancel();
+      disarmExit();
       document.body.classList.remove("driving");
     }
-    $("#hudExit").addEventListener("click", stopDrive);
+    let exitArm = null;
+    function disarmExit() {
+      clearTimeout(exitArm);
+      exitArm = null;
+      const b = $("#hudExit");
+      b.textContent = "Esci";
+      b.classList.remove("armed");
+    }
+    $("#hudExit").addEventListener("click", (e) => {
+      if (!document.body.classList.contains("driving")) return;
+      if (e.isTrusted && st.active && !exitArm) {
+        const b = $("#hudExit");
+        b.textContent = "Esci davvero?";
+        b.classList.add("armed");
+        hud.toast("Tocca di nuovo per uscire: la misura del tratto si interrompe.");
+        exitArm = setTimeout(disarmExit, 4e3);
+        return;
+      }
+      stopDrive();
+    });
     function gpsNote(html, good) {
       const n = $("#gpsNote");
       n.innerHTML = html;

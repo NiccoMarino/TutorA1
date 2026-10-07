@@ -69,10 +69,13 @@ Un solo markup (`#plate` in `src/index.html`) per tre forme, scelte solo dallo s
 - Guidando col GPS (telefono dritto, tablet, computer) la schermata è ferma e alta quanto lo schermo (fondo di
   `styles/cartello.css`): il cerchio prende lo spazio che resta, al massimo 46vh e mai più della larghezza, almeno 150px;
   se non ci sta neanche così scorre solo la guida. Sotto i 640px di altezza spariscono la frase sotto il cerchio e il
-  consiglio scritto sotto i numeri (ripete la velocità da tenere del cerchio); in verticale sotto i 560px (4") i numeri
-  vanno su due colonne senza "limite impostato", gli spazi si stringono e l'ultimo messaggio sta su una riga; sotto i
-  340px di larghezza sparisce la parola "Limite". In simulazione la pagina scorre, per i comandi sotto. Misure diverse dal
+  consiglio scritto sotto i numeri (ripete la velocità da tenere del cerchio); in verticale sotto i 560px (4") gli spazi
+  si stringono e l'ultimo messaggio sta su una riga. In simulazione la pagina scorre, per i comandi sotto. Misure diverse dal
   telefono di prova: `npm run schermi` (`tools/schermi.mjs`, casi e giudizio in `tools/schermi-casi.mjs`).
+- Sotto il cerchio: due numeri (velocità di adesso e soglia) e il pulsante "Limite 130", che apre la scelta del limite
+  (chiusa, così in guida non si cambia con un tocco per sbaglio; `ui/settings-panel.js`). Esci, dentro un tratto,
+  chiede conferma al primo tocco vero ("Esci davvero?" per 4 secondi, `main.js`); il clic dato da programma (riquadro
+  chiuso con la X, collaudi) esce subito. Colori della guida: variabili `--hud-*` in `styles/app.css`, uguali nei due temi.
 - Testi e numeri: `core/hud-view.js` (`plate`, `keep`, `gauge`, `progress`); `ui/hud.js` (`renderPlate`) li scrive.
 - Velocità da tenere: `keepText` in `core/metrics.js`.
   - È la velocità che fa chiudere il tratto con la media entro il limite; se non basta più, quella per restare in

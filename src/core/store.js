@@ -19,6 +19,8 @@ export function createStore(storage){
     get history(){ return history; },
     addHistory(entry){ history.unshift(entry); history = history.slice(0, 60); set(HKEY, history); },
     clearHistory(){ history = []; set(HKEY, history); },
+    // Rimette lo storico appena cancellato (Annulla), dopo i tratti registrati nel frattempo, che sono più recenti
+    restoreHistory(list){ history = history.concat(list).slice(0, 60); set(HKEY, history); },
     disclaimerAccepted(){ return accepted === DISCLAIMER_VERSION; },
     acceptDisclaimer(){ accepted = DISCLAIMER_VERSION; set(AKEY, accepted); },
     // Cancella tutto quello che l'app conserva (storico e impostazioni): torna come appena installata

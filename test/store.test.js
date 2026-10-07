@@ -115,3 +115,16 @@ test("senza localStorage l'avviso accettato vale finché l'app resta aperta", ()
 test("avviso iniziale alla versione 2: parla anche degli autovelox", () => {
   assert.equal(DISCLAIMER_VERSION, 2);
 });
+
+// "Cancella lo storico" si può annullare: lo storico torna, dopo i tratti registrati nel frattempo
+test('lo storico cancellato si può rimettere', () => {
+  const mem = memoryStorage();
+  const s = createStore(mem);
+  s.addHistory({id:1}); s.addHistory({id:2});
+  const old = s.history.slice();
+  s.clearHistory();
+  s.addHistory({id:3});
+  s.restoreHistory(old);
+  assert.deepEqual(s.history.map(h => h.id), [3, 2, 1]);
+  assert.deepEqual(JSON.parse(mem.getItem(HKEY)).map(h => h.id), [3, 2, 1]);
+});

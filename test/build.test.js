@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { buildPages, render, checkInlineScript, stripCssComments } from '../scripts/build.mjs';
 
+const read = p => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
 const saved = readFileSync(new URL('../index.html', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 test('index.html nel repository è aggiornato rispetto a src/ (se fallisce: npm run build)', () => {
@@ -104,7 +105,10 @@ test('schermata iniziale con i due cartelli, menù e una pagina per ogni voce', 
     assert.ok(app.includes('id="' + id + '"'), 'manca id="' + id + '"');
   for (const id of ['pSettings', 'pSim', 'pHist', 'pHow', 'pInfo'])
     assert.ok(app.includes('data-go="' + id + '"'), 'il menù non porta a ' + id);
-  assert.ok(app.includes('data-go="home"'), 'il menù non ha la voce Home');
+  // niente voce Home nel menù: faceva la stessa cosa della freccia in alto
+  const menu = app.match(/<section class="screen page" id="menu"[\s\S]*?<\/section>/)[0];
+  assert.ok(!menu.includes('data-go="home"'), 'il menù ha ancora la voce Home');
+  assert.match(menu, /<button class="iconbtn" type="button" data-back aria-label="Torna alla schermata iniziale">/);
   assert.ok(app.includes('id="setTheme"'), 'manca la scelta del tema nelle impostazioni');
   assert.ok(!app.includes('class="side"'), 'è rimasta la vecchia colonna laterale');
 });
@@ -136,8 +140,9 @@ test('numero sopra il limite: interruttore per tutti, spento, e avviso a schermo
     assert.match(text, /multe, punti della patente, incidenti e danni a te, ai passeggeri o ad altri sono solo tuoi/);
     // senza "nei limiti consentiti dalla legge" la rinuncia non reggerebbe (art. 1229 c.c., Codice del Consumo)
     assert.match(text, /nei limiti consentiti dalla legge, lo sviluppatore di TutOK non risponde delle conseguenze del superamento dei limiti e rinunci a chiedergli risarcimenti per questo/);
-    assert.match(sec[0], /<button class="btn btn-danger" id="oltreOk" type="button">Ho capito, attiva<\/button>/);
-    assert.match(sec[0], /<button class="btn" id="oltreNo" type="button">Annulla<\/button>/);
+    // la scelta prudente è quella in evidenza e viene prima; attivare resta rosso; la freccia annulla
+    assert.match(sec[0], /<button class="btn btn-primary" id="oltreNo" type="button">Annulla<\/button>\s*<button class="btn btn-danger" id="oltreOk" type="button">Ho capito, attiva<\/button>/);
+    assert.match(sec[0], /<header class="pagebar"><button class="iconbtn" type="button" data-back aria-label="Annulla e torna alle impostazioni">/);
   }
 });
 
@@ -161,7 +166,8 @@ test('autovelox nella pagina: etichetta nel cerchio, riga in alto, interruttore'
   assert.match(app, /\.velox-in\{[^}]*border-block:max\(1px, *\.6cqw\) solid #161100/, 'bordi della fascia sotto 1 px');
   assert.match(app, /html:not\(\.pip\) \.velox-in strong,html:not\(\.pip\) \.velox-in em\{font-size:max\(11px, *5cqw\)\}/);
   assert.match(app, /html\.pip \.velox-in strong,html\.pip \.velox-in em,html\.pip \.velox-in svg\{font-size:7cqw\}/);
-  assert.match(app, /\.hud-top \.road small\.velox\{[^}]*color:#F2B21E[^}]*font-weight:700/);
+  assert.match(app, /\.hud-top \.road small\.velox\{[^}]*color:var\(--hud-amber\)[^}]*font-weight:700/);
+  assert.match(app, /--hud-amber:#F2B21E/);
   assert.match(app, /\.gauge:has\(\.velox-in:not\(\[hidden\]\)\) \.big\{inset:0 0 30% 0\}/, 'il numero non sale per la fascia');
   // il gancio dei collaudi e l'avvio passano gli autovelox al tracker
   assert.match(app, /createTracker\(\{ ?secs, lines, settings, velox ?\}\)/);
@@ -225,20 +231,18 @@ test('guida in verticale senza scorrimento: schermata alta quanto lo schermo, ce
   assert.match(css, /\.gauge\{[^}]*min-height:min\(150px, *46vh\)/, 'il cerchio può sparire');
   // schermi bassi o stretti: via la frase lunga sotto il cerchio e la parola "Limite", per lasciare spazio al cerchio
   assert.match(app, /@media \(max-height:640px\)\{\s*html:not\(\.pip\) body\.driving:not\(:has\(#simBar:not\(\[hidden\]\)\)\) \.plate \.sub\{display:none\}/, 'sugli schermi bassi resta la frase lunga');
-  assert.match(app, /@media \(max-width:340px\)\{\s*\.hud-limits \.lab\{display:none\}/, 'sugli schermi stretti i limiti vanno a capo');
   // schermi bassi: via anche il consiglio scritto, che ripete la velocità da tenere già nel cerchio
   const low = app.match(/@media \(max-height:640px\)\{([\s\S]*?)\n\}/)[1];
   assert.match(low, /body\.driving:not\(:has\(#simBar:not\(\[hidden\]\)\)\) \.advice\{display:none\}/, 'sugli schermi bassi resta il consiglio scritto');
-  // telefono piccolo in verticale (4"): numeri su due colonne senza "limite impostato" (è il limite evidenziato
-  // nei pulsanti sotto) e spazi più stretti
+  // numeri su due colonne ovunque: niente "limite impostato", il limite è nel pulsante "Limite 130"
+  assert.match(app, /\.stats\{display:grid; grid-template-columns:repeat\(2,1fr\)/);
+  assert.ok(!app.includes('stat-lim'), 'è rimasto il riquadro "limite impostato"');
+  // telefono piccolo in verticale (4"): spazi più stretti
   const tiny = app.match(/@media \(orientation:portrait\) and \(max-height:560px\)\{([\s\S]*?)\n\}/);
   assert.ok(tiny, 'manca la regola per i telefoni piccoli');
-  assert.match(tiny[1], /\.stats\{grid-template-columns:repeat\(2, *1fr\)\}/);
-  assert.match(tiny[1], /\.stat-lim\{display:none\}/);
   assert.match(tiny[1], /\.hud\{[^}]*gap:6px/);
   // l'ultimo messaggio (lo stesso detto a voce) su una riga sola, con i puntini se non ci sta
   assert.match(tiny[1], /\.toast\{white-space:nowrap; *overflow:hidden; *text-overflow:ellipsis\}/);
-  assert.match(app, /<div class="stat stat-lim"><b id="sLim">/);
   assert.ok(!/html\.pip/.test(tiny[1]) && /html:not\(\.pip\)/.test(tiny[1]), 'la regola tocca anche il riquadro');
   // con il cerchio piccolo le scritte dentro non scendono sotto 11 px (non nel riquadro, disegnato a parte)
   assert.match(app, /html:not\(\.pip\) \.gauge \.big span\{font-size:max\(11px, *5\.2cqw\)\}/, '"km/h di media" diventa minuscolo');
@@ -297,4 +301,53 @@ test('privacy: pulsante per cancellare storico e impostazioni, collegamenti a in
 test('la pagina non usa le variabili --safe-area-inset-* di Capacitor', () => {
   const {app} = buildPages();
   assert.ok(!app.includes('var(--safe-area-inset'), 'la pagina usa le variabili di Capacitor');
+});
+
+// Rifiniture del design (critica di Impeccable): tocchi per sbaglio in guida, lettore di schermo, avviso iniziale
+test('in guida il limite si cambia da un pulsante che apre la scelta, chiusa all\'inizio', () => {
+  const {app} = buildPages();
+  assert.match(app, /<button class="hbtn hlim" id="hudLimBtn" type="button" aria-expanded="false" aria-controls="hudLimChoice">Limite <b id="sLim">130<\/b><\/button>/);
+  assert.match(app, /<div class="hlim-choice" id="hudLimChoice" role="group" aria-label="Scegli il limite di velocità" hidden><\/div>/);
+  const js = read('src/ui/settings-panel.js');
+  // stesse scritte delle impostazioni e, scelto il limite, la scelta si richiude
+  assert.match(js, /h\.className = 'hchip lim'[^\n]*\n[^\n]*h\.textContent = text/);
+  assert.match(js, /setLimit\(v\); openLimits\(false\)/);
+});
+
+test('Esci dentro un tratto chiede conferma solo ai tocchi veri (il riquadro chiuso con la X esce subito)', () => {
+  const main = read('src/main.js');
+  assert.match(main, /if \(e\.isTrusted && st\.active && !exitArm\)\{/);
+  assert.match(main, /b\.textContent = 'Esci davvero\?'/);
+  assert.match(main, /exitArm = setTimeout\(disarmExit, 4000\)/);
+  assert.match(read('native/tutor-native.js'), /exit\.click\(\)/);
+});
+
+test('pulsante Audio: la scritta dice lo stato, niente aria-pressed che la contraddice', () => {
+  const {app} = buildPages();
+  assert.match(app, /<button class="hbtn" id="hudMute" type="button">Audio sì<\/button>/);
+  const mute = read('src/ui/settings-panel.js').match(/function renderMute\(\)\{[\s\S]*?\n  \}/)[0];
+  assert.ok(!mute.includes('aria-pressed'), 'il pulsante Audio ha ancora aria-pressed');
+  assert.match(read('src/ui/settings-panel.js'), /b\.title = on \? 'Tocca per spegnere voce e suoni' : 'Tocca per riaccendere voce e suoni'/);
+});
+
+test('cancellare lo storico si può annullare', () => {
+  const {app} = buildPages();
+  assert.match(app, /<button class="btn btn-small" id="histUndo" type="button" hidden>Annulla la cancellazione<\/button>/);
+  assert.match(app, /<p class="src" id="histMsg" aria-live="polite"><\/p>/);
+  assert.match(read('src/ui/history-panel.js'), /store\.restoreHistory\(undo\)/);
+});
+
+test('avviso iniziale: il pulsante per accettare resta in fondo allo schermo', () => {
+  const {app} = buildPages();
+  assert.match(app, /<div class="actionbar"><button class="btn btn-primary" id="avvisoOk" type="button">Ho capito e accetto<\/button><\/div>/);
+  assert.match(app, /\.actionbar\{position:sticky; bottom:0/);
+});
+
+test('la pagina usa dvh (nel browser del telefono 100vh finisce sotto la barra degli indirizzi)', () => {
+  const {app} = buildPages();
+  assert.match(app, /\.app\{[^}]*min-height:100vh; min-height:100dvh\}/);
+  assert.match(app, /\.hud\{height:100vh; height:100dvh;/);
+  // riquadri senza la riga colorata solo a sinistra
+  assert.match(app, /\.note\{border:1\.5px solid var\(--warn\)/);
+  assert.ok(!/\.sec-detail\{[^}]*border-left/.test(app));
 });

@@ -5,19 +5,23 @@ import { $ } from './dom.js';
 import { THEMES, applyTheme } from './theme.js';
 
 export function createSettingsPanel({settings, save, onChange, say, go, back}){
+  // Limiti: pulsanti nella pagina Impostazioni e, in guida, una scelta che si apre dal pulsante "Limite 130" (chiusa,
+  // così non si cambia il limite con un tocco per sbaglio). Stesse scritte in tutti e due i posti ("110 pioggia").
+  const limBtn = $('#hudLimBtn'), limBox = $('#hudLimChoice');
+  function openLimits(open){ limBox.hidden = !open; limBtn.setAttribute('aria-expanded', String(open)); }
+  limBtn.addEventListener('click', () => openLimits(limBox.hidden));
   function renderLimitChips(){
-    const box = $('#setLimits'); box.innerHTML = '';
-    const hbox = $('#hudLimits'); hbox.querySelectorAll('.hchip').forEach(x => x.remove());
+    const box = $('#setLimits'); box.innerHTML = ''; limBox.innerHTML = '';
     LIMITS.forEach(([v, lab]) => {
+      const text = lab ? v + ' ' + lab : String(v);
       const b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
-      b.setAttribute('aria-pressed', String(settings.limit === v));
-      b.textContent = lab ? v + ' ' + lab : String(v);
+      b.setAttribute('aria-pressed', String(settings.limit === v)); b.textContent = text;
       b.addEventListener('click', () => setLimit(v));
       box.appendChild(b);
-      const h = document.createElement('button'); h.type = 'button'; h.className = 'hchip';
-      h.setAttribute('aria-pressed', String(settings.limit === v)); h.textContent = v;
-      h.addEventListener('click', () => { setLimit(v); say('Limite impostato a ' + v, null, true); });
-      hbox.appendChild(h);
+      const h = document.createElement('button'); h.type = 'button'; h.className = 'hchip lim'; h.dataset.v = v;
+      h.setAttribute('aria-pressed', String(settings.limit === v)); h.textContent = text;
+      h.addEventListener('click', () => { setLimit(v); openLimits(false); limBtn.focus(); say('Limite impostato a ' + v, null, true); });
+      limBox.appendChild(h);
     });
   }
   function setLimit(v){ settings.limit = v; save(); renderLimitChips(); renderColors(); onChange(); }
@@ -46,10 +50,12 @@ export function createSettingsPanel({settings, save, onChange, say, go, back}){
     if (kind === 'l') settings.redOff = +v; else { settings.margin = +v; delete settings.redOff; }
     save(); renderColors(); onChange();
   });
+  // Il pulsante dice lo stato ("Audio sì/no"), il suggerimento cosa succede toccandolo. Niente aria-pressed: con la
+  // scritta che cambia, "Audio no, premuto" si capiva al contrario
   function renderMute(){
     const on = settings.voice || settings.beep, b = $('#hudMute');
     b.textContent = on ? 'Audio sì' : 'Audio no';
-    b.setAttribute('aria-pressed', String(!on));
+    b.title = on ? 'Tocca per spegnere voce e suoni' : 'Tocca per riaccendere voce e suoni';
   }
   $('#setPre').value = String(settings.preAlert);
   $('#setPre').addEventListener('change', e => { settings.preAlert = +e.target.value; save(); });
