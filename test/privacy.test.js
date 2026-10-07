@@ -26,6 +26,9 @@ const terms = readFileSync(new URL('../termini.html', import.meta.url), 'utf8');
 test('i termini d\'uso dicono che le stime non sono misure ufficiali e che il limite vale sempre', () => {
   assert.ok(!/<script/i.test(terms));
   assert.match(terms, /non autorizza a superare il limite/);
+  // l'opzione che mostra il numero sopra il limite è dichiarata nei termini, con la responsabilità di chi la accende
+  assert.match(terms, /sopra il limite[\s\S]*?dopo aver letto e accettato un avviso[\s\S]*?nei limiti consentiti dalla legge/);
+  assert.ok(!/codice personale/.test(terms));
   assert.match(terms, /non garantisce di evitare sanzioni/);
   assert.match(terms, /articolo 173 del Codice della Strada/);
   assert.match(terms, /minori di 18 anni/);

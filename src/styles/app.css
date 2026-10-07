@@ -80,6 +80,7 @@ svg{flex:none}
 .pagebar{position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:6px; padding:14px 16px 8px 8px; background:var(--bg)}
 .pagebar h2{margin:0; font-size:22px; line-height:1.1; font-weight:800}
 .avviso .pagebar{padding-left:16px}
+.oltre .pagebar h2{color:var(--bad)}
 .page-body{padding:8px 16px 32px; display:grid; grid-template-columns:minmax(0,1fr); gap:16px}
 .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px}
 .fields{display:grid; gap:16px}
@@ -108,6 +109,9 @@ svg{flex:none}
 .btn:hover{border-color:var(--muted)}
 .btn-primary{background:var(--brand); border-color:var(--brand); color:var(--on-brand)}
 .btn-primary:hover{background:var(--brand-2); border-color:var(--brand-2)}
+/* rosso fisso con testo bianco: si legge in tutti e due i temi (avviso prima del numero sopra il limite) */
+.btn-danger{background:#B3261E; border-color:#B3261E; color:#FFFFFF}
+.btn-danger:hover{background:#8C1D18; border-color:#8C1D18}
 .btn-small{min-height:48px; padding:6px 11px; font-size:14px; border-radius:8px}
 .note{border-left:4px solid var(--warn); background:var(--panel); padding:10px 12px; border-radius:6px; font-size:14px; margin:0}
 .note.good{border-left-color:var(--ok)}

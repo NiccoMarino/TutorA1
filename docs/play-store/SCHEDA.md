@@ -19,7 +19,8 @@ COSA FA
 • Riconosce da sola l'autostrada, la direzione e il prossimo tratto controllato.
 • Ti avvisa prima del portale di inizio e ti dice quanto è lungo il tratto.
 • Nel tratto stima la media con il GPS, con lo stesso metodo del Tutor: strada percorsa dal portale di inizio diviso il tempo trascorso.
-• Ti indica la velocità da tenere fino al portale per chiudere il tratto con la media entro il limite.
+• Ti indica la velocità da tenere fino al portale per chiudere il tratto con la media entro il limite, mai più alta del limite.
+• Ti avvisa a 500 metri dalle postazioni fisse di autovelox dell'elenco pubblicato dalla Polizia Stradale.
 • Il cartello diventa giallo e poi rosso alle soglie che scegli tu; in rosso ti avvisa anche con voce, suoni e vibrazione.
 • Tiene lo storico dei tratti percorsi, con media ed esito.
 
@@ -37,12 +38,12 @@ La posizione resta sul telefono: l'app non la invia a nessuno e funziona anche s
 
 DA SAPERE
 • La soglia di sanzione tiene conto della riduzione del 5% prevista dalla legge (minimo 5 km/h): con limite 130 è 136,8 km/h. È una tolleranza per gli errori di misura, non un margine garantito.
-• Valgono sempre i cartelli e il limite indicato sulla strada. L'accensione dei Tutor dipende dalla Polizia Stradale: un tratto indicato può essere spento.
+• Valgono sempre i cartelli e il limite indicato sulla strada. L'accensione dei Tutor dipende dalla Polizia Stradale: un tratto indicato può essere spento. L'elenco degli autovelox può non essere aggiornato.
 • Media e velocità da tenere sono stime fatte con il GPS del telefono: possono differire da quelle del Tutor e non garantiscono di evitare sanzioni. Il limite vale in ogni momento, non solo come media.
 • La posizione dei portali è ricavata dal chilometro ufficiale, di solito entro 100 metri.
 • Non usare il telefono mentre guidi: fissalo a un supporto e lascia che ti avvisi con la voce.
 
-TutOK non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato, e non è collegata a loro. "Tutor" è un marchio dei rispettivi titolari. Fonti dei tratti: autostrade.it e infoviaggiando.it. Tracciato delle autostrade: © contributori OpenStreetMap.
+TutOK non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato, e non è collegata a loro. "Tutor" è un marchio dei rispettivi titolari. Fonti dei tratti: autostrade.it e infoviaggiando.it. Autovelox fissi: elenco della Polizia Stradale. Tracciato delle autostrade: © contributori OpenStreetMap.
 
 ## Note sulla versione 1.0.0 (max 500)
 <!-- campo: note -->

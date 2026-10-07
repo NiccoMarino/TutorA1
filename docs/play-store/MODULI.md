@@ -44,8 +44,9 @@ Risultato atteso: PEGI 3 / "Tutti".
 - Caso d'uso: **Navigazione** (se c'è solo un elenco, scegli quello più vicino a "navigazione" o "Altro").
 - Descrizione da incollare:
   > Durante la guida l'utente avvia il monitoraggio con "Avvia guida". Il servizio in primo piano legge la
-  > posizione GPS per seguire i tratti con controllo della velocità media (Tutor) e avvisare con la voce se la
-  > media supera la soglia, anche quando l'utente passa al navigatore o spegne lo schermo. Il servizio mostra
+  > posizione GPS per seguire i tratti con controllo della velocità media (Tutor), avvisare con la voce se la
+  > media supera la soglia e segnalare le postazioni fisse di autovelox dell'elenco della Polizia Stradale, anche
+  > quando l'utente passa al navigatore o spegne lo schermo. Il servizio mostra
   > una notifica fissa e si ferma con "Esci" o chiudendo il riquadro. Fuori dalla guida non è attivo.
 - **Video** (link YouTube "non in elenco", 30-60 secondi, registrato con la registrazione schermo del telefono):
   1. apri l'app e premi "Avvia guida" (o "Prova in simulazione" > "Avvia simulazione");

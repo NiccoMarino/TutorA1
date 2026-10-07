@@ -1,6 +1,6 @@
 {
   "name": "tutor-a1-a4",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "type": "module",
   "description": "App Android dei tratti Tutor in autostrada (TutOK), costruita con Capacitor a partire da src/",

@@ -4,7 +4,7 @@ import { LIMITS, thrText, colorLimits, YELLOW_CHOICES, RED_CHOICES } from '../co
 import { $ } from './dom.js';
 import { THEMES, applyTheme } from './theme.js';
 
-export function createSettingsPanel({settings, save, onChange, say}){
+export function createSettingsPanel({settings, save, onChange, say, go, back}){
   function renderLimitChips(){
     const box = $('#setLimits'); box.innerHTML = '';
     const hbox = $('#hudLimits'); hbox.querySelectorAll('.hchip').forEach(x => x.remove());
@@ -61,6 +61,16 @@ export function createSettingsPanel({settings, save, onChange, say}){
   const sv = $('#setVelox');
   sv.checked = !settings.veloxOff;
   sv.addEventListener('change', () => { if (sv.checked) delete settings.veloxOff; else settings.veloxOff = true; save(); onChange(); });
+  // Numero calcolato anche sopra il limite (settings.keepReal, facoltativa): per accenderlo si passa sempre
+  // dall'avviso #pOltre e lo si accetta; Annulla o Indietro lo lasciano spento. Spegnerlo non chiede niente.
+  const kr = $('#setKeepReal');
+  kr.checked = !!settings.keepReal;
+  kr.addEventListener('change', () => {
+    if (kr.checked){ kr.checked = false; go('pOltre'); return; }
+    delete settings.keepReal; save(); onChange();
+  });
+  $('#oltreOk').addEventListener('click', () => { settings.keepReal = true; kr.checked = true; save(); onChange(); back(); });
+  $('#oltreNo').addEventListener('click', () => back());
   $('#hudMute').addEventListener('click', () => {
     const on = settings.voice || settings.beep;
     settings.voice = !on; settings.beep = !on; save();

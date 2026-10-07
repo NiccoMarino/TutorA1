@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
+import { buildPages } from '../scripts/build.mjs';
 
 const read = p => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
 
@@ -41,4 +42,14 @@ test('niente permesso INTERNET nell\'app', () => {
   const manifest = read('android/app/src/main/AndroidManifest.xml');
   assert.match(manifest, /<uses-permission android:name="android\.permission\.INTERNET" tools:node="remove" \/>/);
   assert.ok(!/<uses-permission android:name="android\.permission\.INTERNET" \/>/.test(manifest));
+});
+
+// Il FileProvider di Capacitor serve solo a scegliere o fotografare file da un <input type="file">: l'app non ne ha,
+// e quello predefinito apriva a tutta la memoria esterna (path ".")
+test('niente FileProvider: l\'app non condivide file', () => {
+  const manifest = read('android/app/src/main/AndroidManifest.xml');
+  assert.ok(!/FileProvider|FILE_PROVIDER_PATHS/.test(manifest), 'FileProvider ancora nel manifest');
+  assert.ok(!existsSync(new URL('../android/app/src/main/res/xml/file_paths.xml', import.meta.url)), 'file_paths.xml ancora presente');
+  const {app} = buildPages();
+  assert.ok(!/<input[^>]*type="file"/.test(app), 'la pagina ha un campo per i file: serve di nuovo il FileProvider');
 });

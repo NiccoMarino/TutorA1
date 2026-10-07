@@ -119,6 +119,28 @@ test("avviso alla prima apertura: non invita a superare i limiti, possibili erro
   assert.ok(app.includes('data-go="pAvviso"'), "da Privacy e diritti non si rilegge l'avviso");
 });
 
+test('numero sopra il limite: interruttore per tutti, spento, e avviso a schermo intero prima di accenderlo', () => {
+  const {app, web} = buildPages();
+  for (const page of [app, web]){
+    const card = page.match(/<div class="card fields" id="oltreCard">[\s\S]*?<\/div>\s*<\/div>/);
+    assert.ok(card, "manca la sezione nelle impostazioni (o è nascosta)");
+    assert.match(card[0], /<label class="switch">Mostra la velocità calcolata anche sopra il limite <input type="checkbox" id="setKeepReal"><\/label>/);
+    assert.ok(!/setCodice|codiceCard|Per chi ha il codice/.test(page), 'è rimasto il codice personale');
+    const sec = page.match(/<section class="screen page avviso oltre" id="pOltre"[^>]*hidden>[\s\S]*?<\/section>/);
+    assert.ok(sec, "manca la schermata dell'avviso");
+    const text = sec[0].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ');
+    assert.match(text, /ATTENZIONE: LA RESPONSABILITÀ È TUA/);
+    assert.match(text, /anche quando è SOPRA IL LIMITE/);
+    assert.match(text, /Non è un consiglio né un permesso/);
+    assert.match(text, /Il limite vale in ogni momento/);
+    assert.match(text, /multe, punti della patente, incidenti e danni a te, ai passeggeri o ad altri sono solo tuoi/);
+    // senza "nei limiti consentiti dalla legge" la rinuncia non reggerebbe (art. 1229 c.c., Codice del Consumo)
+    assert.match(text, /nei limiti consentiti dalla legge, lo sviluppatore di TutOK non risponde delle conseguenze del superamento dei limiti e rinunci a chiedergli risarcimenti per questo/);
+    assert.match(sec[0], /<button class="btn btn-danger" id="oltreOk" type="button">Ho capito, attiva<\/button>/);
+    assert.match(sec[0], /<button class="btn" id="oltreNo" type="button">Annulla<\/button>/);
+  }
+});
+
 test('in guida niente più "Tieni il telefono con vista del cielo"', () => {
   const {app} = buildPages();
   assert.ok(!app.includes('vista del cielo'));
@@ -204,6 +226,20 @@ test('guida in verticale senza scorrimento: schermata alta quanto lo schermo, ce
   // schermi bassi o stretti: via la frase lunga sotto il cerchio e la parola "Limite", per lasciare spazio al cerchio
   assert.match(app, /@media \(max-height:640px\)\{\s*html:not\(\.pip\) body\.driving:not\(:has\(#simBar:not\(\[hidden\]\)\)\) \.plate \.sub\{display:none\}/, 'sugli schermi bassi resta la frase lunga');
   assert.match(app, /@media \(max-width:340px\)\{\s*\.hud-limits \.lab\{display:none\}/, 'sugli schermi stretti i limiti vanno a capo');
+  // schermi bassi: via anche il consiglio scritto, che ripete la velocità da tenere già nel cerchio
+  const low = app.match(/@media \(max-height:640px\)\{([\s\S]*?)\n\}/)[1];
+  assert.match(low, /body\.driving:not\(:has\(#simBar:not\(\[hidden\]\)\)\) \.advice\{display:none\}/, 'sugli schermi bassi resta il consiglio scritto');
+  // telefono piccolo in verticale (4"): numeri su due colonne senza "limite impostato" (è il limite evidenziato
+  // nei pulsanti sotto) e spazi più stretti
+  const tiny = app.match(/@media \(orientation:portrait\) and \(max-height:560px\)\{([\s\S]*?)\n\}/);
+  assert.ok(tiny, 'manca la regola per i telefoni piccoli');
+  assert.match(tiny[1], /\.stats\{grid-template-columns:repeat\(2, *1fr\)\}/);
+  assert.match(tiny[1], /\.stat-lim\{display:none\}/);
+  assert.match(tiny[1], /\.hud\{[^}]*gap:6px/);
+  // l'ultimo messaggio (lo stesso detto a voce) su una riga sola, con i puntini se non ci sta
+  assert.match(tiny[1], /\.toast\{white-space:nowrap; *overflow:hidden; *text-overflow:ellipsis\}/);
+  assert.match(app, /<div class="stat stat-lim"><b id="sLim">/);
+  assert.ok(!/html\.pip/.test(tiny[1]) && /html:not\(\.pip\)/.test(tiny[1]), 'la regola tocca anche il riquadro');
   // con il cerchio piccolo le scritte dentro non scendono sotto 11 px (non nel riquadro, disegnato a parte)
   assert.match(app, /html:not\(\.pip\) \.gauge \.big span\{font-size:max\(11px, *5\.2cqw\)\}/, '"km/h di media" diventa minuscolo');
   assert.match(app, /html:not\(\.pip\) \.keep-in \.kl\{font-size:max\(11px, *4\.4cqw\)\}/, '"per chiudere entro" diventa minuscolo');

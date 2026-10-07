@@ -64,7 +64,8 @@ function boot(){
   window.tutorBack = () => !document.body.classList.contains('driving') && nav.back();
 
   createSidebar({secs, settings, onSimulate: (id, v) => simControls.start(id, v)});
-  createSettingsPanel({settings, save: () => store.saveSettings(), onChange: () => { tracker.refresh(); render(); }, say});
+  createSettingsPanel({settings, save: () => store.saveSettings(), onChange: () => { tracker.refresh(); render(); }, say,
+    go: id => nav.go(id), back: () => nav.back()});
   // Privacy e diritti: cancella tutto quello che l'app conserva sul telefono e riparte come appena installata
   $('#dataClear').addEventListener('click', () => {
     if (!confirm('Cancellare lo storico dei tratti e tutte le impostazioni? Non si può annullare.')) return;

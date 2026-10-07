@@ -57,7 +57,7 @@
 
     <div class="stats">
       <div class="stat" id="stInst"><b id="sInst">–</b><span>km/h adesso</span></div>
-      <div class="stat"><b id="sLim">130</b><span>limite impostato</span></div>
+      <div class="stat stat-lim"><b id="sLim">130</b><span>limite impostato</span></div>
       <div class="stat"><b id="sThr">136,8</b><span id="sThrL">soglia con tolleranza</span></div>
     </div>
 
@@ -164,6 +164,12 @@
         <label class="switch">Avvisa anche se la velocità istantanea supera la soglia <input type="checkbox" id="setInst"></label>
         <label class="switch">Avvisi autovelox <input type="checkbox" id="setVelox"></label>
       </div>
+      <div class="card fields" id="oltreCard">
+        <div class="field">
+          <label class="switch">Mostra la velocità calcolata anche sopra il limite <input type="checkbox" id="setKeepReal"></label>
+          <small>Spenta, la velocità da tenere non va mai sopra il limite. Accesa, il cartello mostra il calcolo anche sopra il limite: prima di accenderla c'è un avviso da accettare.</small>
+        </div>
+      </div>
       <div class="card fields">
         <div class="field">
           <span>Tema</span>
@@ -171,6 +177,20 @@
           <small>"Come il telefono" segue il tema chiaro o scuro scelto nelle impostazioni del telefono.</small>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="screen page avviso oltre" id="pOltre" aria-labelledby="tOltre" hidden>
+    <header class="pagebar"><h2 id="tOltre"><span aria-hidden="true">⚠ </span>ATTENZIONE: LA RESPONSABILITÀ È TUA</h2></header>
+    <div class="page-body">
+      <div class="card prose">
+        <p>Con questa opzione il cartello mostra la velocità calcolata anche quando è <b>SOPRA IL LIMITE</b>.</p>
+        <p>Non è un consiglio né un permesso: è solo il risultato di un calcolo sulla media. <b>Il limite vale in ogni momento.</b> Superarlo è un'infrazione, anche se la media del Tutor resta in regola, e mette in pericolo te e gli altri.</p>
+        <p><b>Se superi il limite lo fai sotto la tua sola responsabilità</b>: multe, punti della patente, incidenti e danni a te, ai passeggeri o ad altri sono solo tuoi.</p>
+        <p>Attivando l'opzione accetti che, nei limiti consentiti dalla legge, lo sviluppatore di TutOK non risponde delle conseguenze del superamento dei limiti e rinunci a chiedergli risarcimenti per questo.</p>
+      </div>
+      <button class="btn btn-danger" id="oltreOk" type="button">Ho capito, attiva</button>
+      <button class="btn" id="oltreNo" type="button">Annulla</button>
     </div>
   </section>
 
@@ -217,8 +237,9 @@
         <p>Il Tutor fotografa il veicolo al portale di inizio e a quello di fine e divide la lunghezza del tratto per il tempo impiegato. L'app fa lo stesso con il GPS del telefono: dal momento in cui passi il primo portale somma la strada percorsa e la divide per il tempo trascorso.</p>
         <p>Sulla velocità misurata la legge applica una riduzione del 5%, e comunque non meno di 5 km/h. La sanzione scatta solo se la velocità ridotta supera il limite: con 130 km/h la soglia è quindi 136,8 km/h, con 110 è 115,7, con 90 è 95. È una tolleranza per gli errori di misura, non un margine garantito.</p>
         <p>Se entri in autostrada dopo il portale di inizio o esci prima di quello di fine, il Tutor non può abbinare i due passaggi: l'app mostra comunque la media, ma la segna come parziale.</p>
+        <p>Nel cerchio, sotto la media, c'è la velocità da tenere fino al portale per chiudere il tratto con la media entro il limite. Non è mai più alta del limite, che vale in ogni momento e non solo come media.</p>
         <p>L'accensione del Tutor dipende dalla Polizia Stradale: un tratto segnato qui può essere spento in quel momento.</p>
-        <p>Autovelox fissi: a 500 metri da una postazione dell'elenco della Polizia l'app avvisa con un segnale e con la voce, e mostra la distanza nella riga in alto e dentro il cerchio. Qui conta la velocità del momento, non la media: se in quel momento vai oltre il limite impostato l'avviso è più forte. Gli avvisi si spengono nelle Impostazioni di guida.</p>
+        <p>Autovelox fissi: a 500 metri da una postazione dell'elenco della Polizia l'app avvisa con un segnale e con la voce, e mostra la distanza nella riga in alto e dentro il cerchio. Qui conta la velocità del momento, non la media: se in quel momento vai oltre il limite impostato l'avviso è più forte. L'avviso non dice un limite, perché in quel punto può essere più basso di quello impostato (cantieri, pioggia): vale quello dei cartelli. Gli avvisi si spengono nelle Impostazioni di guida.</p>
       </div>
     </div>
   </section>

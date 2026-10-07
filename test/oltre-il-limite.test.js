@@ -18,13 +18,13 @@ const num = t => Number(t.replace(',', '.'));
 // Di solito Frosinone → Ceprano (A1 verso sud, km 622,5-640,8): nessun altro tratto subito prima o subito dopo,
 // così si vede anche il cartello "Tratto concluso"
 const SEC = 49, START = 620.5, END = 642;
-function drive(legs, {limit = 130, line = A01S, from = START, gapAt = null, gapSeconds = 0} = {}){
-  const settings = {...DEFAULT_SETTINGS, limit};
+function drive(legs, {limit = 130, line = A01S, from = START, gapAt = null, gapSeconds = 0, extra = {}} = {}){
+  const settings = {...DEFAULT_SETTINGS, limit, ...extra};
   const tracker = createTracker({secs, lines, settings});
-  const events = [], texts = [], plates = [], bigs = [];
+  const events = [], texts = [], plates = [], bigs = [], keeps = [];
   tracker.on(e => {
     if (e.type === 'position'){
-      if (tracker.st.active || tracker.st.result){ const v = hudView(tracker.st, settings); plates.push(v.plate.cls); bigs.push(v.plate.big); }
+      if (tracker.st.active || tracker.st.result){ const v = hudView(tracker.st, settings); plates.push(v.plate.cls); bigs.push(v.plate.big); keeps.push(v.keep.value); }
       return;
     }
     events.push(e);
@@ -44,7 +44,7 @@ function drive(legs, {limit = 130, line = A01S, from = START, gapAt = null, gapS
     t += ps.length*1000; km = to;
   }
   const fin = events.filter(e => e.type === 'section-finish').map(e => e.result);
-  return {tracker, settings, events, texts, plates, bigs, fin, types: events.map(e => e.type)};
+  return {tracker, settings, events, texts, plates, bigs, keeps, fin, types: events.map(e => e.type)};
 }
 const firstSec = r => r.fin.find(x => x.sec.id === SEC);
 
@@ -115,6 +115,22 @@ for (const kmh of [180, 250, 300]){
     assert.ok(inst.some(e => e.silentVoice));
   });
 }
+
+// La velocità da tenere sul cartello non supera mai il limite; solo chi accende l'opzione dopo l'avviso vede il numero calcolato
+const keepNums = r => r.keeps.filter(k => k.startsWith('≤ ')).map(k => num(k.slice(2)));
+for (const limit of [130, 110, 90]){
+  test('limite ' + limit + ', andando piano: il cartello non indica mai una velocità sopra il limite', () => {
+    const r = drive([[END, limit - 15]], {limit});
+    assert.ok(keepNums(r).length > 0);
+    assert.ok(keepNums(r).every(n => n <= limit), 'velocità da tenere sopra ' + limit + ': ' + Math.max(...keepNums(r)));
+    assert.ok(!r.texts.some(t => new RegExp('\b(1[3-9]\d|' + (limit + 1) + ')\b').test(t) && /tenere|resta sotto/.test(t)));
+  });
+}
+
+test('con l\'opzione accesa il cartello mostra il numero calcolato, anche sopra il limite', () => {
+  const r = drive([[END, 115]], {extra: {keepReal: true}});
+  assert.ok(keepNums(r).some(n => n > 130), 'mai sopra 130: ' + Math.max(...keepNums(r)));
+});
 
 test('accelerando da 260 a 300 km/h la velocità mostrata è 300, non quella di prima', () => {
   const r = drive([[617, 260], [619, 300]]);
