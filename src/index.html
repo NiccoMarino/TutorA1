@@ -23,7 +23,7 @@
     <div class="hud-top">
       <button class="hbtn" id="hudExit" type="button">Esci</button>
       <div class="road" id="hudRoad">In attesa del segnale GPS</div>
-      <button class="hbtn" id="hudMute" type="button" aria-pressed="false" title="Disattiva voce e suoni">Audio sì</button>
+      <button class="hbtn" id="hudMute" type="button">Audio sì</button>
     </div>
 
     <div class="plate" id="plate">
@@ -57,14 +57,15 @@
 
     <div class="stats">
       <div class="stat" id="stInst"><b id="sInst">–</b><span>km/h adesso</span></div>
-      <div class="stat stat-lim"><b id="sLim">130</b><span>limite impostato</span></div>
       <div class="stat"><b id="sThr">136,8</b><span id="sThrL">soglia con tolleranza</span></div>
     </div>
 
     <p class="advice" id="advice"></p>
 
-    <div class="hud-limits" id="hudLimits" role="group" aria-label="Limite di velocità">
-      <span class="lab">Limite</span>
+    <!-- Limite: un pulsante che apre la scelta, così in guida non si cambia per sbaglio (ui/settings-panel.js) -->
+    <div class="hud-limits" id="hudLimits">
+      <button class="hbtn hlim" id="hudLimBtn" type="button" aria-expanded="false" aria-controls="hudLimChoice">Limite <b id="sLim">130</b></button>
+      <div class="hlim-choice" id="hudLimChoice" role="group" aria-label="Scegli il limite di velocità" hidden></div>
     </div>
 
     <div class="simbar" id="simBar" hidden>
@@ -116,14 +117,14 @@
         <p>Non usare il telefono mentre guidi: imposta tutto prima di partire, l'app ti avvisa con la voce.</p>
         <p>Proseguendo accetti i <a href="https://niccomarino.github.io/TutorA1/termini.html" target="_blank" rel="noopener">Termini d'uso</a>.</p>
       </div>
-      <button class="btn btn-primary" id="avvisoOk" type="button">Ho capito e accetto</button>
+      <!-- fisso in fondo allo schermo: si vede senza dover scorrere il testo -->
+      <div class="actionbar"><button class="btn btn-primary" id="avvisoOk" type="button">Ho capito e accetto</button></div>
     </div>
   </section>
 
   <section class="screen page" id="menu" aria-labelledby="tMenu" hidden>
     <header class="pagebar"><button class="iconbtn" type="button" data-back aria-label="Torna alla schermata iniziale"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button><h2 id="tMenu">Menù</h2></header>
     <nav class="menu-list" aria-labelledby="tMenu">
-      <button class="mitem" type="button" data-go="home"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5.5 9.5V20h13V9.5M10 20v-6h4v6"/></svg></span><span class="mtx"><b>Home</b></span></button>
       <button class="mitem" type="button" data-go="pSettings"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 5v4M9 15v4"/></svg></span><span class="mtx"><b>Impostazioni di guida</b><small>Limite, avvisi e tema</small></span></button>
       <button class="mitem" type="button" data-go="pSim"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.2l5.6 3.8-5.6 3.8z"/></svg></span><span class="mtx"><b>Simulazione</b><small>Prova un tratto senza guidare, elenco dei tratti</small></span></button>
       <button class="mitem" type="button" data-go="pHist"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v5l3.5 2"/></svg></span><span class="mtx"><b>Storico</b><small>Tratti percorsi, media ed esito</small></span></button>
@@ -181,7 +182,7 @@
   </section>
 
   <section class="screen page avviso oltre" id="pOltre" aria-labelledby="tOltre" hidden>
-    <header class="pagebar"><h2 id="tOltre"><span aria-hidden="true">⚠ </span>ATTENZIONE: LA RESPONSABILITÀ È TUA</h2></header>
+    <header class="pagebar"><button class="iconbtn" type="button" data-back aria-label="Annulla e torna alle impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button><h2 id="tOltre"><span aria-hidden="true">⚠ </span>ATTENZIONE: LA RESPONSABILITÀ È TUA</h2></header>
     <div class="page-body">
       <div class="card prose">
         <p>Con questa opzione il cartello mostra la velocità calcolata anche quando è <b>SOPRA IL LIMITE</b>.</p>
@@ -189,8 +190,9 @@
         <p><b>Se superi il limite lo fai sotto la tua sola responsabilità</b>: multe, punti della patente, incidenti e danni a te, ai passeggeri o ad altri sono solo tuoi.</p>
         <p>Attivando l'opzione accetti che, nei limiti consentiti dalla legge, lo sviluppatore di TutOK non risponde delle conseguenze del superamento dei limiti e rinunci a chiedergli risarcimenti per questo.</p>
       </div>
+      <!-- la scelta prudente è quella in evidenza; attivare resta rosso ma secondario -->
+      <button class="btn btn-primary" id="oltreNo" type="button">Annulla</button>
       <button class="btn btn-danger" id="oltreOk" type="button">Ho capito, attiva</button>
-      <button class="btn" id="oltreNo" type="button">Annulla</button>
     </div>
   </section>
 
@@ -226,7 +228,9 @@
     <header class="pagebar"><button class="iconbtn" type="button" data-back aria-label="Torna al menù"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button><h2 id="tHist">Storico</h2></header>
     <div class="page-body">
       <ul class="hist" id="hist"></ul>
-      <div><button class="btn btn-small" id="histClear" type="button">Cancella lo storico</button></div>
+      <div class="row"><button class="btn btn-small" id="histClear" type="button">Cancella lo storico</button>
+        <button class="btn btn-small" id="histUndo" type="button" hidden>Annulla la cancellazione</button></div>
+      <p class="src" id="histMsg" aria-live="polite"></p>
     </div>
   </section>
 

@@ -35,7 +35,7 @@ export function createHud(){
       $('#sLim').textContent = v.stats.lim; $('#sThr').textContent = v.stats.thr; $('#sThrL').textContent = v.stats.thrLabel;
       $('#sInst').textContent = v.stats.inst;
       $('#stInst').classList.toggle('hot', v.stats.instHot);
-      $('#hudLimits').querySelectorAll('.hchip').forEach(h => h.setAttribute('aria-pressed', String(+h.textContent === v.stats.lim)));
+      $('#hudLimChoice').querySelectorAll('.hchip').forEach(h => h.setAttribute('aria-pressed', String(+h.dataset.v === v.stats.lim)));
       // con un autovelox entro 500 m la seconda riga dice quanto manca, al posto di direzione e precisione GPS
       const sub = v.velox ? '<small class="velox">' + esc(v.velox.text) + '</small>' : v.road.sub ? '<small>' + esc(v.road.sub) + '</small>' : '';
       $('#hudRoad').innerHTML = esc(v.road.title) + (v.road.sim ? '<span class="pill">Simulazione</span>' : '') + sub;

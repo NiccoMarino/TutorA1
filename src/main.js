@@ -105,9 +105,24 @@ function boot(){
     if (run.dog){ clearInterval(run.dog); run.dog = null; }
     try { if (run.wake) run.wake.release(); } catch(e){} run.wake = null;
     audio.cancel();
+    disarmExit();
     document.body.classList.remove('driving');
   }
-  $('#hudExit').addEventListener('click', stopDrive);
+  // Esci: dentro un tratto il primo tocco chiede conferma (il pulsante diventa "Esci davvero?" per 4 secondi), così un
+  // tocco per sbaglio non interrompe la misura. Solo per i tocchi veri: il clic dato da programma (riquadro chiuso con
+  // la X in native/tutor-native.js, collaudi) esce subito.
+  let exitArm = null;
+  function disarmExit(){ clearTimeout(exitArm); exitArm = null; const b = $('#hudExit'); b.textContent = 'Esci'; b.classList.remove('armed'); }
+  $('#hudExit').addEventListener('click', e => {
+    if (!document.body.classList.contains('driving')) return;
+    if (e.isTrusted && st.active && !exitArm){
+      const b = $('#hudExit'); b.textContent = 'Esci davvero?'; b.classList.add('armed');
+      hud.toast('Tocca di nuovo per uscire: la misura del tratto si interrompe.');
+      exitArm = setTimeout(disarmExit, 4000);
+      return;
+    }
+    stopDrive();
+  });
 
   function gpsNote(html, good){ const n = $('#gpsNote'); n.innerHTML = html; n.hidden = !html; n.classList.toggle('good', !!good); }
   $('#btnDrive').addEventListener('click', () => {

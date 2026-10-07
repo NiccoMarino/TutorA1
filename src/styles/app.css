@@ -7,6 +7,9 @@
   --sign-green:#00794C; --sign-blue:#0F5AA6;
   --sud:#C2185B; --nord:#1565C0;
   --focus:#0B57D0; --ok:#0E7A47; --warn:#8A5A00; --bad:#B3261E;
+  /* Schermata di guida: sempre scura (si guarda di notte e di giorno senza abbagliare), uguale nei due temi */
+  --hud-bg:#0A0F0D; --hud-ink:#F2F6F4; --hud-panel:#141C19; --hud-line:#34423C; --hud-line-2:#26312C;
+  --hud-muted:#A8BAB2; --hud-dim:#9FB2AA; --hud-soft:#C9D6D0; --hud-amber:#F2B21E; --hud-amber-ink:#1A1300; --hud-hot:#FF7A70;
   color-scheme:light;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -40,8 +43,9 @@ button,input,select{font:inherit; color:inherit}
 [hidden]{display:none !important}
 
 /* ---------- schermate: iniziale, menù, pagine; in guida c'è solo la schermata di guida ---------- */
-.app{max-width:680px; margin:0 auto; min-height:100vh}
-.screen{min-height:100vh}
+/* dvh: nel browser del telefono non conta la barra degli indirizzi (100vh la conta e il fondo finiva sotto) */
+.app{max-width:680px; margin:0 auto; min-height:100vh; min-height:100dvh}
+.screen{min-height:100vh; min-height:100dvh}
 body.driving .screen{display:none !important}
 svg{flex:none}
 .iconbtn{appearance:none; flex:none; width:48px; height:48px; display:flex; align-items:center; justify-content:center; border:0; border-radius:12px;
@@ -79,7 +83,7 @@ svg{flex:none}
 .page{background:var(--bg)}
 .pagebar{position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:6px; padding:14px 16px 8px 8px; background:var(--bg)}
 .pagebar h2{margin:0; font-size:22px; line-height:1.1; font-weight:800}
-.avviso .pagebar{padding-left:16px}
+.pagebar:not(:has([data-back])){padding-left:16px}
 .oltre .pagebar h2{color:var(--bad)}
 .page-body{padding:8px 16px 32px; display:grid; grid-template-columns:minmax(0,1fr); gap:16px}
 .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px}
@@ -113,8 +117,12 @@ svg{flex:none}
 .btn-danger{background:#B3261E; border-color:#B3261E; color:#FFFFFF}
 .btn-danger:hover{background:#8C1D18; border-color:#8C1D18}
 .btn-small{min-height:48px; padding:6px 11px; font-size:14px; border-radius:8px}
-.note{border-left:4px solid var(--warn); background:var(--panel); padding:10px 12px; border-radius:6px; font-size:14px; margin:0}
-.note.good{border-left-color:var(--ok)}
+/* Avviso sotto i cartelli della schermata iniziale: bordo intero del colore dello stato */
+.note{border:1.5px solid var(--warn); background:var(--panel); padding:10px 12px; border-radius:12px; font-size:14px; margin:0}
+.note.good{border-color:var(--ok)}
+/* Pulsante che resta in fondo allo schermo mentre il testo scorre (avviso iniziale) */
+.actionbar{position:sticky; bottom:0; display:grid; padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));
+  margin-bottom:-32px; background:linear-gradient(transparent, var(--bg) 14px)}
 
 .simsetup{display:grid; gap:12px}
 .simsetup label{display:grid; gap:5px; font-weight:600; font-size:14px}
@@ -123,7 +131,7 @@ svg{flex:none}
 
 /* ---------- tratti: filtri ed elenco (pagina Simulazione) ---------- */
 .tratti{display:grid; gap:10px}
-.sect{margin:6px 0 0; font-size:18px; font-weight:800}
+.sect{margin:6px 0 0; font-size:21px; font-weight:800}
 .lede{margin:0; color:var(--muted); font-size:14px; max-width:52ch}
 .filters{display:grid; gap:8px}
 .filter{display:flex; gap:6px; flex-wrap:wrap}
@@ -132,7 +140,7 @@ svg{flex:none}
 .dot{width:10px; height:10px; border-radius:50%; display:inline-block}
 .dot.sud{background:var(--sud)} .dot.nord{background:var(--nord)}
 .group{display:grid; gap:4px}
-.group h2{font-size:16px; margin:10px 0 2px; font-weight:800}
+.group h2{font-size:18px; margin:14px 0 2px; font-weight:800}
 .group h3{font-size:13.5px; margin:8px 0 2px; color:var(--muted); font-weight:600; display:flex; gap:7px; align-items:center}
 .sec{appearance:none; width:100%; text-align:left; border:1px solid var(--line); background:var(--panel); padding:9px 12px 9px 16px; border-radius:12px;
   display:grid; grid-template-columns:1fr auto; gap:2px 10px; cursor:pointer; position:relative; min-height:56px}
@@ -142,7 +150,7 @@ svg{flex:none}
 .sec .nm{font-weight:700}
 .sec .len{font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap}
 .sec .meta{grid-column:1 / -1; color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums}
-.sec-detail{margin:2px 0 8px 13px; padding:10px 12px; border-left:3px solid var(--line); font-size:14px; display:grid; gap:4px}
+.sec-detail{margin:2px 0 8px; padding:10px 12px; background:var(--panel-2); border-radius:12px; font-size:14px; display:grid; gap:4px}
 .sec-detail p{margin:0}
 .sec-detail .muted{color:var(--muted)}
 .sec-detail .btn{justify-self:start; margin-top:6px}
@@ -165,33 +173,41 @@ select.sel{padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); 
 
 /* ---------- drive HUD ---------- */
 .hud > *{flex-shrink:0}
-.hud{display:none; flex-direction:column; gap:12px; background:#0A0F0D; color:#F2F6F4; padding:14px 16px 16px; min-height:0; overflow:auto}
-body.driving .hud{display:flex; min-height:100vh}
+.hud{display:none; flex-direction:column; gap:12px; background:var(--hud-bg); color:var(--hud-ink); padding:14px 16px 16px; min-height:0; overflow:auto}
+body.driving .hud{display:flex; min-height:100vh; min-height:100dvh}
 body.driving .app{max-width:760px}
 .hud-top{display:flex; align-items:center; gap:10px}
 .hud-top .road{flex:1; min-width:0; font-weight:700; font-size:15px; line-height:1.25; font-variant-numeric:tabular-nums}
-.hud-top .road small{display:block; font-weight:600; color:#9FB2AA; font-size:12.5px}
+.hud-top .road small{display:block; font-weight:600; color:var(--hud-dim); font-size:12.5px}
 /* Una riga ciascuna, con i puntini se non ci stanno: sul telefono stretto, con tre pulsanti, andrebbero a capo
    e toglierebbero spazio al cerchio */
 .hud-top .road,.hud-top .road small{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-.hud-top .road small.velox{color:#F2B21E; font-weight:700}
-.hbtn{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; min-height:48px; white-space:nowrap}
-.hbtn[aria-pressed="true"]{background:#F2F6F4; color:#0A0F0D}
-.pill{display:inline-block; background:#F2B21E; color:#1a1300; border-radius:999px; padding:1px 8px; font-size:12px; font-weight:800; margin-left:6px; vertical-align:2px}
+.hud-top .road small.velox{color:var(--hud-amber); font-weight:700}
+.hbtn{appearance:none; border:1.5px solid var(--hud-line); background:var(--hud-panel); color:var(--hud-ink); border-radius:10px; padding:8px 12px; font-weight:700; cursor:pointer; min-height:48px; white-space:nowrap}
+.hbtn[aria-pressed="true"]{background:var(--hud-ink); color:var(--hud-bg)}
+/* Esci al primo tocco dentro un tratto: chiede conferma (main.js) */
+.hbtn.armed{background:var(--hud-amber); border-color:var(--hud-amber); color:var(--hud-amber-ink)}
+.pill{display:inline-block; background:var(--hud-amber); color:var(--hud-amber-ink); border-radius:999px; padding:1px 8px; font-size:12px; font-weight:800; margin-left:6px; vertical-align:2px}
 /* Il cartello (#plate) è in cartello.css, la guida col telefono in orizzontale in orizzontale.css */
 
-.stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
-.stat{background:#141C19; border:1px solid #26312C; border-radius:12px; padding:9px 10px; display:grid; gap:2px}
+.stats{display:grid; grid-template-columns:repeat(2,1fr); gap:8px}
+.stat{background:var(--hud-panel); border:1px solid var(--hud-line-2); border-radius:12px; padding:9px 10px; display:grid; gap:2px}
 .stat b{font-size:clamp(26px,6.5vw,36px); font-weight:900; font-variant-numeric:tabular-nums; line-height:1}
-.stat span{font-size:12.5px; color:#A8BAB2; font-weight:600; line-height:1.2}
-.stat.hot b{color:#FF7A70}
+.stat span{font-size:12.5px; color:var(--hud-muted); font-weight:600; line-height:1.2}
+.stat.hot b{color:var(--hud-hot)}
 .advice{margin:0; font-size:17px; font-weight:700; line-height:1.3; min-height:1.3em}
 .hud-limits{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
-.hud-limits .lab{font-size:13px; color:#A8BAB2; font-weight:600; margin-right:2px}
-.hchip{appearance:none; border:1.5px solid #34423C; background:#141C19; color:#F2F6F4; border-radius:999px; padding:6px 8px; font-weight:800; cursor:pointer; font-variant-numeric:tabular-nums; min-height:48px; min-width:48px; flex:1 1 0; max-width:72px}
-.hchip[aria-pressed="true"]{background:#F2F6F4; color:#0A0F0D; border-color:#F2F6F4}
-.toast{font-size:14px; color:#C9D6D0; min-height:1.3em; margin:0}
-.simbar{border:1.5px dashed #F2B21E; border-radius:12px; padding:10px 12px; display:grid; gap:8px}
+.hud-limits .hlim b{font-weight:900; font-variant-numeric:tabular-nums; margin-left:2px}
+.hud-limits .hlim::after{content:""; display:inline-block; width:7px; height:7px; margin:0 2px 3px 9px; border-right:2.2px solid currentColor;
+  border-bottom:2.2px solid currentColor; transform:rotate(45deg); vertical-align:middle}
+.hud-limits .hlim[aria-expanded="true"]::after{transform:rotate(-135deg); margin-bottom:-2px}
+.hlim-choice{display:flex; gap:6px; flex-wrap:wrap; flex:1 1 100%}
+.hchip{appearance:none; border:1.5px solid var(--hud-line); background:var(--hud-panel); color:var(--hud-ink); border-radius:999px; padding:6px 8px; font-weight:800; cursor:pointer; font-variant-numeric:tabular-nums; min-height:48px; min-width:48px; flex:1 1 0; max-width:72px}
+.hchip[aria-pressed="true"]{background:var(--hud-ink); color:var(--hud-bg); border-color:var(--hud-ink)}
+/* scelta del limite: stesse scritte delle impostazioni ("110 pioggia"), vanno a capo se non ci stanno */
+.hchip.lim{flex:0 1 auto; max-width:none; padding:6px 14px}
+.toast{font-size:14px; color:var(--hud-soft); min-height:1.3em; margin:0}
+.simbar{border:1.5px dashed var(--hud-amber); border-radius:12px; padding:10px 12px; display:grid; gap:8px}
 .simbar .row{justify-content:space-between}
 .simbar label{font-weight:700; font-size:14px}
 .simbar output{font-weight:900; font-variant-numeric:tabular-nums}

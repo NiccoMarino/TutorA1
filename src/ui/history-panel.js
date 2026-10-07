@@ -18,7 +18,22 @@ export function createHistoryPanel(store){
       ul.appendChild(li);
     });
   }
-  $('#histClear').addEventListener('click', () => { store.clearHistory(); render(); });
+  // Cancella subito (anche per i collaudi automatici, che toccano il pulsante una volta) e per 10 secondi si può
+  // annullare: lo storico tolto resta in memoria finché non scade o si esce dalla pagina
+  let undo = null, undoT = null;
+  function endUndo(){ clearTimeout(undoT); undo = null; $('#histUndo').hidden = true; $('#histMsg').textContent = ''; }
+  $('#histClear').addEventListener('click', () => {
+    const old = store.history.slice();
+    store.clearHistory(); render();
+    if (!old.length) return;
+    endUndo(); undo = old;
+    $('#histUndo').hidden = false; $('#histMsg').textContent = 'Storico cancellato.';
+    undoT = setTimeout(endUndo, 10000);
+  });
+  $('#histUndo').addEventListener('click', () => {
+    if (undo) store.restoreHistory(undo);
+    endUndo(); render(); $('#histMsg').textContent = 'Storico ripristinato.';
+  });
   render();
   return {render};
 }
