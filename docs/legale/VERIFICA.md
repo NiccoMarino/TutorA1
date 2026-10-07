@@ -115,12 +115,22 @@ Ai tester del test chiuso va chiesto un parere sincero, mai una recensione in ca
   (art. 142 del Codice della Strada). Ora il consiglio dice "Con il limite di 130 chiudi in regola".
 - Dal 7 ottobre 2026 neanche il cartello va sopra il limite: dove prima c'era "≤ 141" ora c'è "≤ 130", anche quando
   serve solo per restare in tolleranza. Il consiglio scritto non dice mai un numero sopra il limite.
-- Il numero calcolato, anche sopra il limite, lo vede solo chi riceve dallo sviluppatore un codice personale e lo
-  scrive in Impostazioni di guida (`npm run codice`, `src/core/codice.js`).
-  - Nell'app c'è solo l'impronta del codice (PBKDF2). Non è una cassaforte: chi sa programmare può aggirare il blocco.
-  - La sezione ha la sua avvertenza ("non è un invito a superarlo") e i termini d'uso ne parlano. Così la funzione è
-    dichiarata e non nascosta, come chiede Google.
-  - Se un giorno si vende l'abbonamento, va valutato con l'avvocato se tenerla.
+- Il numero calcolato, anche sopra il limite, si vede solo accendendo un'opzione in Impostazioni di guida, spenta
+  all'inizio. Ogni volta che la si accende compare a schermo intero l'avviso "ATTENZIONE: LA RESPONSABILITÀ È TUA"
+  (`#pOltre`): non è un consiglio né un permesso, il limite vale sempre, multe, incidenti e danni sono di chi guida, e,
+  nei limiti consentiti dalla legge, lo sviluppatore non risponde e l'utente rinuncia a chiedere risarcimenti. Si
+  accende solo con "Ho capito, attiva". I termini d'uso ne parlano, quindi la funzione è dichiarata.
+- **Cosa copre la rinuncia e cosa no.** Non è un parere legale.
+  - Copre bene il caso di chi accende l'opzione, supera il limite e prende una multa o fa un incidente: la causa è
+    la sua scelta, e la sua colpa riduce o esclude il risarcimento (art. 1227 c.c.). L'avviso accettato lo dimostra.
+  - Non vincola chi non l'ha accettata: passeggeri, altri utenti della strada, assicurazioni.
+  - Con i consumatori non si può escludere la responsabilità per dolo o colpa grave (art. 1229 c.c.) né per morte
+    o lesioni (art. 33, comma 2, lettera a, e art. 36 del Codice del Consumo): per questo resta "nei limiti
+    consentiti dalla legge", e lì conta che la colpa sia di chi guida.
+  - Non copre gli errori dell'app (un portale sbagliato, una media sbagliata).
+  - Con l'abbonamento: la nuova direttiva UE sui prodotti difettosi (2024/2853), dal 9 dicembre 2026, comprende
+    anche il software venduto. Prima di vendere: avvocato su termini e avviso, assicurazione di responsabilità civile
+    professionale, e con il commercialista se vendere tramite una società.
 
 **13. Testo alternativo.** L'app non ha immagini `<img>`: icone e loghi sono disegni con `aria-hidden`, e i
 pulsanti con solo l'icona hanno un nome (`aria-label`). Un test lo controlla a ogni build.

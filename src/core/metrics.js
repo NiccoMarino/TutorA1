@@ -33,7 +33,7 @@ export function adviceText(m){
   if (k.label === 'tratto ormai') return k.value === 'in regola' ? 'Rispettando il limite di ' + lim + ' chiudi il tratto in regola.'
     : 'Media sopra ' + lim + ' ma entro la tolleranza fino al portale.';
   // il consiglio non dice mai un numero sopra il limite, che vale in ogni momento e non solo come media
-  // (art. 142 del Codice della Strada): keepText(m) senza codice si ferma al limite
+  // (art. 142 del Codice della Strada): keepText(m) senza l'opzione si ferma al limite
   if (k.label === 'per restare in tolleranza') return +n >= lim ? 'Entro il limite non rientri più: rispettando il limite di ' + lim + ' resti in tolleranza.'
     : 'Entro il limite non rientri più: per restare in tolleranza resta sotto ' + n + ' km/h fino al portale.';
   if (+n >= lim) return 'Con il limite di ' + lim + ' chiudi in regola.';
@@ -45,7 +45,7 @@ export function adviceText(m){
 // tolleranza.
 // Sotto i 50 km/h non è un consiglio sensato in autostrada; da 200 in su vuol dire che la media è ormai al sicuro.
 const KEEP_MIN = 50, KEEP_SAFE = 200;
-// real: numero calcolato anche sopra il limite, solo per chi ha sbloccato l'impostazione col codice (core/codice.js).
+// real: numero calcolato anche sopra il limite, solo per chi ha acceso l'opzione dopo l'avviso (settings.keepReal).
 // Per tutti gli altri il numero si ferma al limite: l'app non indica mai una velocità oltre il limite.
 export function keepText(m, real = false){
   const lim = m.lim, num = v => '≤ ' + (real ? Math.floor(v) : Math.min(Math.floor(v), lim));

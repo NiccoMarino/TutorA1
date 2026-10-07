@@ -51,7 +51,7 @@ test('nel tratto: anello di avanzamento e velocità da tenere', () => {
   assert.deepEqual(v.keep, {label:'per chiudere entro 130', value:'≤ 126'});
 });
 
-test('nel tratto: il numero sopra il limite solo con l\'impostazione sbloccata col codice', () => {
+test('nel tratto: il numero sopra il limite solo con l\'opzione accesa dopo l\'avviso', () => {
   const st = {...emptyState, fix:{v:120/3.6, acc:5, t:150, odo:5000}, onRoad:true, ram:'A01', km:5, sign:1,
     active:{sec:sec10, tStart:0, odoStart:0, relStart:0, mid:false}};
   assert.equal(hudView(st, S130).keep.value, '≤ 130');

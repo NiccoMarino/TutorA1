@@ -116,7 +116,7 @@ for (const kmh of [180, 250, 300]){
   });
 }
 
-// La velocità da tenere sul cartello non supera mai il limite; solo chi ha sbloccato col codice vede il numero calcolato
+// La velocità da tenere sul cartello non supera mai il limite; solo chi accende l'opzione dopo l'avviso vede il numero calcolato
 const keepNums = r => r.keeps.filter(k => k.startsWith('≤ ')).map(k => num(k.slice(2)));
 for (const limit of [130, 110, 90]){
   test('limite ' + limit + ', andando piano: il cartello non indica mai una velocità sopra il limite', () => {
@@ -127,7 +127,7 @@ for (const limit of [130, 110, 90]){
   });
 }
 
-test('con il codice il cartello mostra il numero calcolato, anche sopra il limite', () => {
+test('con l\'opzione accesa il cartello mostra il numero calcolato, anche sopra il limite', () => {
   const r = drive([[END, 115]], {extra: {keepReal: true}});
   assert.ok(keepNums(r).some(n => n > 130), 'mai sopra 130: ' + Math.max(...keepNums(r)));
 });

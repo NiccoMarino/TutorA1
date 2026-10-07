@@ -3,10 +3,8 @@ import { nf1 } from '../core/format.js';
 import { LIMITS, thrText, colorLimits, YELLOW_CHOICES, RED_CHOICES } from '../core/rules.js';
 import { $ } from './dom.js';
 import { THEMES, applyTheme } from './theme.js';
-import { checkCode } from '../core/codice.js';
-import { CODICE } from '../core/codice-dati.js';
 
-export function createSettingsPanel({settings, save, onChange, say}){
+export function createSettingsPanel({settings, save, onChange, say, go, back}){
   function renderLimitChips(){
     const box = $('#setLimits'); box.innerHTML = '';
     const hbox = $('#hudLimits'); hbox.querySelectorAll('.hchip').forEach(x => x.remove());
@@ -63,28 +61,16 @@ export function createSettingsPanel({settings, save, onChange, say}){
   const sv = $('#setVelox');
   sv.checked = !settings.veloxOff;
   sv.addEventListener('change', () => { if (sv.checked) delete settings.veloxOff; else settings.veloxOff = true; save(); onChange(); });
-  // Numero calcolato anche sopra il limite: solo per chi ha il codice (core/codice.js). settings.keepReal è facoltativa;
-  // la sezione compare se un codice è impostato (npm run codice) o se l'impostazione è già sbloccata, per poterla spegnere
-  function renderCodice(){
-    $('#codiceCard').hidden = !CODICE && !settings.keepReal;
-    $('#codiceAsk').hidden = !!settings.keepReal;
-    $('#keepRealBox').hidden = !settings.keepReal;
-    $('#setKeepReal').checked = !!settings.keepReal;
-  }
-  async function unlock(){
-    const input = $('#setCodice'), ok = await checkCode(input.value, CODICE);
-    input.value = '';
-    if (!ok){ $('#codiceMsg').textContent = 'Codice non valido.'; return; }
-    settings.keepReal = true; save(); onChange(); renderCodice();
-  }
-  $('#setCodiceOk').addEventListener('click', unlock);
-  $('#setCodice').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
-  // spento si richiude: per riaccenderlo serve di nuovo il codice
-  $('#setKeepReal').addEventListener('change', e => {
-    if (e.target.checked) return;
+  // Numero calcolato anche sopra il limite (settings.keepReal, facoltativa): per accenderlo si passa sempre
+  // dall'avviso #pOltre e lo si accetta; Annulla o Indietro lo lasciano spento. Spegnerlo non chiede niente.
+  const kr = $('#setKeepReal');
+  kr.checked = !!settings.keepReal;
+  kr.addEventListener('change', () => {
+    if (kr.checked){ kr.checked = false; go('pOltre'); return; }
     delete settings.keepReal; save(); onChange();
-    $('#codiceMsg').textContent = 'Se lo sviluppatore ti ha dato un codice, scrivilo qui.'; renderCodice();
   });
+  $('#oltreOk').addEventListener('click', () => { settings.keepReal = true; kr.checked = true; save(); onChange(); back(); });
+  $('#oltreNo').addEventListener('click', () => back());
   $('#hudMute').addEventListener('click', () => {
     const on = settings.voice || settings.beep;
     settings.voice = !on; settings.beep = !on; save();
@@ -100,5 +86,5 @@ export function createSettingsPanel({settings, save, onChange, say}){
       box.appendChild(b);
     });
   }
-  renderLimitChips(); renderColors(); renderMute(); renderTheme(); renderCodice();
+  renderLimitChips(); renderColors(); renderMute(); renderTheme();
 }

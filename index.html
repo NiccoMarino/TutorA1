@@ -87,6 +87,7 @@ svg{flex:none}
 .pagebar{position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:6px; padding:14px 16px 8px 8px; background:var(--bg)}
 .pagebar h2{margin:0; font-size:22px; line-height:1.1; font-weight:800}
 .avviso .pagebar{padding-left:16px}
+.oltre .pagebar h2{color:var(--bad)}
 .page-body{padding:8px 16px 32px; display:grid; grid-template-columns:minmax(0,1fr); gap:16px}
 .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px}
 .fields{display:grid; gap:16px}
@@ -113,6 +114,8 @@ svg{flex:none}
 .btn:hover{border-color:var(--muted)}
 .btn-primary{background:var(--brand); border-color:var(--brand); color:var(--on-brand)}
 .btn-primary:hover{background:var(--brand-2); border-color:var(--brand-2)}
+.btn-danger{background:#B3261E; border-color:#B3261E; color:#FFFFFF}
+.btn-danger:hover{background:#8C1D18; border-color:#8C1D18}
 .btn-small{min-height:48px; padding:6px 11px; font-size:14px; border-radius:8px}
 .note{border-left:4px solid var(--warn); background:var(--panel); padding:10px 12px; border-radius:6px; font-size:14px; margin:0}
 .note.good{border-left-color:var(--ok)}
@@ -151,9 +154,6 @@ svg{flex:none}
 .seg .chip{font-variant-numeric:tabular-nums}
 .switch{display:flex; justify-content:space-between; align-items:center; gap:12px; font-weight:600; min-height:48px}
 .switch input{width:22px; height:22px; accent-color:var(--brand)}
-.codice-row{display:flex; gap:8px}
-.codice-row input{flex:1; min-width:0; min-height:48px; padding:9px 10px; border-radius:8px; border:1.5px solid var(--line);
-  background:var(--panel-2); color:var(--ink); font:inherit}
 input[type=range]{width:100%; height:48px; margin:0; accent-color:var(--brand)}
 select.sel{padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--panel-2); min-height:48px; max-width:100%}
 .hist{display:grid; gap:8px; margin:0; padding:0; list-style:none}
@@ -454,15 +454,10 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
         <label class="switch">Avvisa anche se la velocità istantanea supera la soglia <input type="checkbox" id="setInst"></label>
         <label class="switch">Avvisi autovelox <input type="checkbox" id="setVelox"></label>
       </div>
-      <div class="card fields" id="codiceCard" hidden>
-        <div class="field" id="codiceAsk">
-          <span>Per chi ha il codice</span>
-          <div class="codice-row"><input type="password" id="setCodice" autocomplete="off" aria-label="Codice"><button type="button" class="btn" id="setCodiceOk">Sblocca</button></div>
-          <small id="codiceMsg" role="status">Se lo sviluppatore ti ha dato un codice, scrivilo qui.</small>
-        </div>
-        <div class="field" id="keepRealBox" hidden>
+      <div class="card fields" id="oltreCard">
+        <div class="field">
           <label class="switch">Mostra la velocità calcolata anche sopra il limite <input type="checkbox" id="setKeepReal"></label>
-          <small>Il cartello mostra fin dove arriva il calcolo della media, anche sopra il limite. Non è un invito a superarlo: il limite vale in ogni momento, e lo controllano anche autovelox e pattuglie.</small>
+          <small>Spenta, la velocità da tenere non va mai sopra il limite. Accesa, il cartello mostra il calcolo anche sopra il limite: prima di accenderla c'è un avviso da accettare.</small>
         </div>
       </div>
       <div class="card fields">
@@ -472,6 +467,20 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
           <small>"Come il telefono" segue il tema chiaro o scuro scelto nelle impostazioni del telefono.</small>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="screen page avviso oltre" id="pOltre" aria-labelledby="tOltre" hidden>
+    <header class="pagebar"><h2 id="tOltre"><span aria-hidden="true">⚠ </span>ATTENZIONE: LA RESPONSABILITÀ È TUA</h2></header>
+    <div class="page-body">
+      <div class="card prose">
+        <p>Con questa opzione il cartello mostra la velocità calcolata anche quando è <b>SOPRA IL LIMITE</b>.</p>
+        <p>Non è un consiglio né un permesso: è solo il risultato di un calcolo sulla media. <b>Il limite vale in ogni momento.</b> Superarlo è un'infrazione, anche se la media del Tutor resta in regola, e mette in pericolo te e gli altri.</p>
+        <p><b>Se superi il limite lo fai sotto la tua sola responsabilità</b>: multe, punti della patente, incidenti e danni a te, ai passeggeri o ad altri sono solo tuoi.</p>
+        <p>Attivando l'opzione accetti che, nei limiti consentiti dalla legge, lo sviluppatore di TutOK non risponde delle conseguenze del superamento dei limiti e rinunci a chiedergli risarcimenti per questo.</p>
+      </div>
+      <button class="btn btn-danger" id="oltreOk" type="button">Ho capito, attiva</button>
+      <button class="btn" id="oltreNo" type="button">Annulla</button>
     </div>
   </section>
 
@@ -1888,26 +1897,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     else delete root.dataset.theme;
   }
 
-  // src/core/codice.js
-  var CODE_ITER = 21e4;
-  var hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
-  var bytes = (h) => new Uint8Array(h.match(/../g).map((x) => parseInt(x, 16)));
-  async function codeHash(code, salt, iter = CODE_ITER) {
-    const subtle = globalThis.crypto.subtle;
-    const key = await subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveBits"]);
-    return hex(await subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: bytes(salt), iterations: iter }, key, 256));
-  }
-  async function checkCode(code, ref) {
-    const c = String(code || "").trim();
-    if (!ref || !c) return false;
-    return await codeHash(c, ref.salt, ref.iter) === ref.hash;
-  }
-
-  // src/core/codice-dati.js
-  var CODICE = null;
-
   // src/ui/settings-panel.js
-  function createSettingsPanel({ settings, save, onChange, say }) {
+  function createSettingsPanel({ settings, save, onChange, say, go, back }) {
     function renderLimitChips() {
       const box = $("#setLimits");
       box.innerHTML = "";
@@ -2004,36 +1995,26 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       save();
       onChange();
     });
-    function renderCodice() {
-      $("#codiceCard").hidden = !CODICE && !settings.keepReal;
-      $("#codiceAsk").hidden = !!settings.keepReal;
-      $("#keepRealBox").hidden = !settings.keepReal;
-      $("#setKeepReal").checked = !!settings.keepReal;
-    }
-    async function unlock() {
-      const input = $("#setCodice"), ok = await checkCode(input.value, CODICE);
-      input.value = "";
-      if (!ok) {
-        $("#codiceMsg").textContent = "Codice non valido.";
+    const kr = $("#setKeepReal");
+    kr.checked = !!settings.keepReal;
+    kr.addEventListener("change", () => {
+      if (kr.checked) {
+        kr.checked = false;
+        go("pOltre");
         return;
       }
-      settings.keepReal = true;
-      save();
-      onChange();
-      renderCodice();
-    }
-    $("#setCodiceOk").addEventListener("click", unlock);
-    $("#setCodice").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") unlock();
-    });
-    $("#setKeepReal").addEventListener("change", (e) => {
-      if (e.target.checked) return;
       delete settings.keepReal;
       save();
       onChange();
-      $("#codiceMsg").textContent = "Se lo sviluppatore ti ha dato un codice, scrivilo qui.";
-      renderCodice();
     });
+    $("#oltreOk").addEventListener("click", () => {
+      settings.keepReal = true;
+      kr.checked = true;
+      save();
+      onChange();
+      back();
+    });
+    $("#oltreNo").addEventListener("click", () => back());
     $("#hudMute").addEventListener("click", () => {
       const on = settings.voice || settings.beep;
       settings.voice = !on;
@@ -2066,7 +2047,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     renderColors();
     renderMute();
     renderTheme();
-    renderCodice();
   }
 
   // src/ui/history-panel.js
@@ -2402,10 +2382,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     });
     window.tutorBack = () => !document.body.classList.contains("driving") && nav.back();
     createSidebar({ secs, settings, onSimulate: (id, v) => simControls.start(id, v) });
-    createSettingsPanel({ settings, save: () => store.saveSettings(), onChange: () => {
-      tracker.refresh();
-      render();
-    }, say });
+    createSettingsPanel({
+      settings,
+      save: () => store.saveSettings(),
+      onChange: () => {
+        tracker.refresh();
+        render();
+      },
+      say,
+      go: (id) => nav.go(id),
+      back: () => nav.back()
+    });
     $("#dataClear").addEventListener("click", () => {
       if (!confirm("Cancellare lo storico dei tratti e tutte le impostazioni? Non si può annullare.")) return;
       store.clearAll();

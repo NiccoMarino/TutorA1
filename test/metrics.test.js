@@ -50,13 +50,13 @@ test('subito dopo il portale si mostra la velocità istantanea, o niente se manc
 });
 
 // Velocità da non superare nei km che mancano per chiudere il tratto con la media entro il limite. Per tutti non va
-// mai sopra il limite; il numero calcolato (che può superarlo) lo vede solo chi ha sbloccato l'impostazione col codice.
+// mai sopra il limite; il numero calcolato (che può superarlo) lo vede solo chi accende l'opzione dopo l'avviso.
 const keep = m => keepText(m);
 test('velocità da tenere: per tutti mai sopra il limite', () => {
   assert.deepEqual(keep(at(5, 150, 120)), {label:'per chiudere entro 130', value:'≤ 130'});
 });
 
-test('velocità da tenere: con il codice si vede il numero calcolato, anche sopra il limite', () => {
+test('velocità da tenere: con l\'opzione accesa si vede il numero calcolato, anche sopra il limite', () => {
   assert.deepEqual(keepText(at(5, 150, 120), true), {label:'per chiudere entro 130', value:'≤ 141'});
   assert.deepEqual(keepText(at(5, 135, 133.3), true), {label:'per chiudere entro 130', value:'≤ 126'});
   assert.deepEqual(keepText(at(9.8, 259, 120), true), {label:'per restare in tolleranza', value:'≤ 176'});

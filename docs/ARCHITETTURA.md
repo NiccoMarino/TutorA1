@@ -78,10 +78,9 @@ Un solo markup (`#plate` in `src/index.html`) per tre forme, scelte solo dallo s
   - Non va mai sopra il limite ("≤ 130" anche quando il calcolo darebbe 141), perché il limite vale in ogni momento
     (`docs/legale/VERIFICA.md`, punto 12). Il consiglio scritto (`adviceText`) usa lo stesso numero, e sopra il
     limite dice "Con il limite di 130 chiudi in regola".
-  - Il numero calcolato anche sopra il limite si vede solo con `settings.keepReal`, che si accende in Impostazioni di
-    guida con il codice personale. Il codice si imposta con `npm run codice` (`tools/codice.mjs`), che scrive solo
-    l'impronta in `core/codice-dati.js`; il controllo è `checkCode` in `core/codice.js`. Senza codice impostato la
-    sezione non compare.
+  - Il numero calcolato anche sopra il limite si vede solo con `settings.keepReal`: l'opzione in Impostazioni di guida
+    è spenta, e per accenderla si passa sempre dall'avviso `#pOltre` ("la responsabilità è tua"), da accettare con
+    "Ho capito, attiva" (`ui/settings-panel.js`).
 - Riquadro trasparente: `MainActivity` rende trasparenti finestra, vista principale e WebView nel riquadro, e lo
   rifà a ogni cambio di configurazione perché il plugin SystemBars di Capacitor rimette lo sfondo pieno.
 - Nella pagina lo stile arriva senza commenti (`stripCssComments` in `scripts/build.mjs`): nei sorgenti restano.

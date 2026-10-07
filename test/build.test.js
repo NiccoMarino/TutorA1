@@ -119,15 +119,25 @@ test("avviso alla prima apertura: non invita a superare i limiti, possibili erro
   assert.ok(app.includes('data-go="pAvviso"'), "da Privacy e diritti non si rilegge l'avviso");
 });
 
-test('impostazione per chi ha il codice: casella nascosta, pulsante, interruttore; la sezione parte nascosta', () => {
+test('numero sopra il limite: interruttore per tutti, spento, e avviso a schermo intero prima di accenderlo', () => {
   const {app, web} = buildPages();
   for (const page of [app, web]){
-    const card = page.match(/<div class="card fields" id="codiceCard" hidden>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/);
-    assert.ok(card, 'manca la sezione del codice');
-    assert.match(card[0], /<input type="password" id="setCodice" autocomplete="off" aria-label="Codice">/);
-    assert.match(card[0], /<button type="button" class="btn" id="setCodiceOk">Sblocca<\/button>/);
+    const card = page.match(/<div class="card fields" id="oltreCard">[\s\S]*?<\/div>\s*<\/div>/);
+    assert.ok(card, "manca la sezione nelle impostazioni (o è nascosta)");
     assert.match(card[0], /<label class="switch">Mostra la velocità calcolata anche sopra il limite <input type="checkbox" id="setKeepReal"><\/label>/);
-    assert.match(card[0], /il limite vale in ogni momento/);
+    assert.ok(!/setCodice|codiceCard|Per chi ha il codice/.test(page), 'è rimasto il codice personale');
+    const sec = page.match(/<section class="screen page avviso oltre" id="pOltre"[^>]*hidden>[\s\S]*?<\/section>/);
+    assert.ok(sec, "manca la schermata dell'avviso");
+    const text = sec[0].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ');
+    assert.match(text, /ATTENZIONE: LA RESPONSABILITÀ È TUA/);
+    assert.match(text, /anche quando è SOPRA IL LIMITE/);
+    assert.match(text, /Non è un consiglio né un permesso/);
+    assert.match(text, /Il limite vale in ogni momento/);
+    assert.match(text, /multe, punti della patente, incidenti e danni a te, ai passeggeri o ad altri sono solo tuoi/);
+    // senza "nei limiti consentiti dalla legge" la rinuncia non reggerebbe (art. 1229 c.c., Codice del Consumo)
+    assert.match(text, /nei limiti consentiti dalla legge, lo sviluppatore di TutOK non risponde delle conseguenze del superamento dei limiti e rinunci a chiedergli risarcimenti per questo/);
+    assert.match(sec[0], /<button class="btn btn-danger" id="oltreOk" type="button">Ho capito, attiva<\/button>/);
+    assert.match(sec[0], /<button class="btn" id="oltreNo" type="button">Annulla<\/button>/);
   }
 });
 

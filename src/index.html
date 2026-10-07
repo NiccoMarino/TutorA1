@@ -164,15 +164,10 @@
         <label class="switch">Avvisa anche se la velocità istantanea supera la soglia <input type="checkbox" id="setInst"></label>
         <label class="switch">Avvisi autovelox <input type="checkbox" id="setVelox"></label>
       </div>
-      <div class="card fields" id="codiceCard" hidden>
-        <div class="field" id="codiceAsk">
-          <span>Per chi ha il codice</span>
-          <div class="codice-row"><input type="password" id="setCodice" autocomplete="off" aria-label="Codice"><button type="button" class="btn" id="setCodiceOk">Sblocca</button></div>
-          <small id="codiceMsg" role="status">Se lo sviluppatore ti ha dato un codice, scrivilo qui.</small>
-        </div>
-        <div class="field" id="keepRealBox" hidden>
+      <div class="card fields" id="oltreCard">
+        <div class="field">
           <label class="switch">Mostra la velocità calcolata anche sopra il limite <input type="checkbox" id="setKeepReal"></label>
-          <small>Il cartello mostra fin dove arriva il calcolo della media, anche sopra il limite. Non è un invito a superarlo: il limite vale in ogni momento, e lo controllano anche autovelox e pattuglie.</small>
+          <small>Spenta, la velocità da tenere non va mai sopra il limite. Accesa, il cartello mostra il calcolo anche sopra il limite: prima di accenderla c'è un avviso da accettare.</small>
         </div>
       </div>
       <div class="card fields">
@@ -182,6 +177,20 @@
           <small>"Come il telefono" segue il tema chiaro o scuro scelto nelle impostazioni del telefono.</small>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="screen page avviso oltre" id="pOltre" aria-labelledby="tOltre" hidden>
+    <header class="pagebar"><h2 id="tOltre"><span aria-hidden="true">⚠ </span>ATTENZIONE: LA RESPONSABILITÀ È TUA</h2></header>
+    <div class="page-body">
+      <div class="card prose">
+        <p>Con questa opzione il cartello mostra la velocità calcolata anche quando è <b>SOPRA IL LIMITE</b>.</p>
+        <p>Non è un consiglio né un permesso: è solo il risultato di un calcolo sulla media. <b>Il limite vale in ogni momento.</b> Superarlo è un'infrazione, anche se la media del Tutor resta in regola, e mette in pericolo te e gli altri.</p>
+        <p><b>Se superi il limite lo fai sotto la tua sola responsabilità</b>: multe, punti della patente, incidenti e danni a te, ai passeggeri o ad altri sono solo tuoi.</p>
+        <p>Attivando l'opzione accetti che, nei limiti consentiti dalla legge, lo sviluppatore di TutOK non risponde delle conseguenze del superamento dei limiti e rinunci a chiedergli risarcimenti per questo.</p>
+      </div>
+      <button class="btn btn-danger" id="oltreOk" type="button">Ho capito, attiva</button>
+      <button class="btn" id="oltreNo" type="button">Annulla</button>
     </div>
   </section>
 
