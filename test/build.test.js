@@ -119,6 +119,18 @@ test("avviso alla prima apertura: non invita a superare i limiti, possibili erro
   assert.ok(app.includes('data-go="pAvviso"'), "da Privacy e diritti non si rilegge l'avviso");
 });
 
+test('impostazione per chi ha il codice: casella nascosta, pulsante, interruttore; la sezione parte nascosta', () => {
+  const {app, web} = buildPages();
+  for (const page of [app, web]){
+    const card = page.match(/<div class="card fields" id="codiceCard" hidden>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/);
+    assert.ok(card, 'manca la sezione del codice');
+    assert.match(card[0], /<input type="password" id="setCodice" autocomplete="off" aria-label="Codice">/);
+    assert.match(card[0], /<button type="button" class="btn" id="setCodiceOk">Sblocca<\/button>/);
+    assert.match(card[0], /<label class="switch">Mostra la velocità calcolata anche sopra il limite <input type="checkbox" id="setKeepReal"><\/label>/);
+    assert.match(card[0], /il limite vale in ogni momento/);
+  }
+});
+
 test('in guida niente più "Tieni il telefono con vista del cielo"', () => {
   const {app} = buildPages();
   assert.ok(!app.includes('vista del cielo'));

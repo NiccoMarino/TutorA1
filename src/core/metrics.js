@@ -32,24 +32,27 @@ export function adviceText(m){
   if (k.value === 'rallenta') return 'Media oltre la soglia: rallenta, più tempo resti sotto il limite più la media scende.';
   if (k.label === 'tratto ormai') return k.value === 'in regola' ? 'Rispettando il limite di ' + lim + ' chiudi il tratto in regola.'
     : 'Media sopra ' + lim + ' ma entro la tolleranza fino al portale.';
-  if (k.label === 'per restare in tolleranza') return 'Entro il limite non rientri più: per restare in tolleranza resta sotto ' + n + ' km/h fino al portale.';
-  // sopra il limite il numero resta sul cartello (≤ 141), ma il consiglio non invita a superare il limite, che vale
-  // in ogni momento e non solo come media (art. 142 del Codice della Strada)
+  // il consiglio non dice mai un numero sopra il limite, che vale in ogni momento e non solo come media
+  // (art. 142 del Codice della Strada): keepText(m) senza codice si ferma al limite
+  if (k.label === 'per restare in tolleranza') return +n >= lim ? 'Entro il limite non rientri più: rispettando il limite di ' + lim + ' resti in tolleranza.'
+    : 'Entro il limite non rientri più: per restare in tolleranza resta sotto ' + n + ' km/h fino al portale.';
   if (+n >= lim) return 'Con il limite di ' + lim + ' chiudi in regola.';
   if (m.status === 'alarm') return 'Media oltre la soglia: rallenta e resta sotto ' + n + ' km/h fino al portale.';
   return 'Per chiudere entro il limite resta sotto ' + n + ' km/h fino al portale.';
 }
 
 // Velocità da tenere fino al portale per chiudere il tratto con la media entro il limite; se non si può più, entro la
-// tolleranza. Può essere sopra il limite: dice fin dove si può andare senza rischiare la multa del Tutor.
+// tolleranza.
 // Sotto i 50 km/h non è un consiglio sensato in autostrada; da 200 in su vuol dire che la media è ormai al sicuro.
 const KEEP_MIN = 50, KEEP_SAFE = 200;
-export function keepText(m){
-  const lim = m.lim;
+// real: numero calcolato anche sopra il limite, solo per chi ha sbloccato l'impostazione col codice (core/codice.js).
+// Per tutti gli altri il numero si ferma al limite: l'app non indica mai una velocità oltre il limite.
+export function keepText(m, real = false){
+  const lim = m.lim, num = v => '≤ ' + (real ? Math.floor(v) : Math.min(Math.floor(v), lim));
   if (!m.settled) return {label:'per chiudere entro ' + lim, value:'≤ ' + lim};
   if (m.vLimRest >= KEEP_SAFE) return {label:'tratto ormai', value:'in regola'};
-  if (m.vLimRest >= KEEP_MIN) return {label:'per chiudere entro ' + lim, value:'≤ ' + Math.floor(m.vLimRest)};
+  if (m.vLimRest >= KEEP_MIN) return {label:'per chiudere entro ' + lim, value:num(m.vLimRest)};
   if (m.vThrRest >= KEEP_SAFE) return {label:'tratto ormai', value:'in tolleranza'};
-  if (m.vThrRest >= KEEP_MIN) return {label:'per restare in tolleranza', value:'≤ ' + Math.floor(m.vThrRest)};
+  if (m.vThrRest >= KEEP_MIN) return {label:'per restare in tolleranza', value:num(m.vThrRest)};
   return {label:'non rientri più', value:'rallenta'};
 }

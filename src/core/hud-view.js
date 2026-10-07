@@ -33,7 +33,7 @@ export function hudView(st, settings){
     view.progress = {from:'km ' + nfKm.format(s.ka), to:'mancano ' + fmtDist(m.remKm)};
     view.advice = adviceText(m);
     view.gauge = {frac: m.rel / s.L};
-    view.keep = keepText(m);
+    view.keep = keepText(m, !!settings.keepReal);
   } else if (st.result && f && f.t < st.result.until){
     const r = st.result, [vt, vc] = verdictOf(r.avg, r.lim);
     plate(vc === 'ok' ? 'done-ok' : vc === 'tol' ? 'done-tol' : 'done-bad', 'Tratto concluso' + (r.partial ? ', misura parziale' : ''), r.sec.name,

@@ -1,6 +1,6 @@
 {
   "name": "tutor-a1-a4",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "type": "module",
   "description": "App Android dei tratti Tutor in autostrada (TutOK), costruita con Capacitor a partire da src/",
@@ -14,7 +14,8 @@
     "android": "npm run sync && npx cap open android",
     "apk": "npm run sync && cd android && gradlew assembleDebug",
     "bundle": "npm run sync && cd android && gradlew bundleRelease",
-    "grafica": "node tools/make-icons.mjs && npm run build && node tools/store-screenshots.mjs"
+    "grafica": "node tools/make-icons.mjs && npm run build && node tools/store-screenshots.mjs",
+    "codice": "node tools/codice.mjs"
   },
   "dependencies": {
     "@capacitor-community/background-geolocation": "^1.2.26",

@@ -72,11 +72,16 @@ Un solo markup (`#plate` in `src/index.html`) per tre forme, scelte solo dallo s
   340px di larghezza la parola "Limite". In simulazione la pagina scorre, per i comandi sotto. Misure diverse dal
   telefono di prova: `npm run schermi` (`tools/schermi.mjs`, casi e giudizio in `tools/schermi-casi.mjs`).
 - Testi e numeri: `core/hud-view.js` (`plate`, `keep`, `gauge`, `progress`); `ui/hud.js` (`renderPlate`) li scrive.
-- Velocità da tenere: `keepText` in `core/metrics.js`. È la velocità che fa chiudere il tratto con la media entro il
-  limite, anche se sopra il limite (il numero dice entro quale velocità la media del tratto resta sotto il limite); se non basta più, quella
-  per restare in tolleranza; da 200 km/h in su il tratto è "ormai in regola". Il consiglio scritto (`adviceText`)
-  usa lo stesso numero, tranne quando è sopra il limite: allora dice "Con il limite di 130 chiudi in regola",
-  perché il limite vale in ogni momento (scelta presa in `docs/legale/VERIFICA.md`, punto 12).
+- Velocità da tenere: `keepText` in `core/metrics.js`.
+  - È la velocità che fa chiudere il tratto con la media entro il limite; se non basta più, quella per restare in
+    tolleranza; da 200 km/h in su il tratto è "ormai in regola".
+  - Non va mai sopra il limite ("≤ 130" anche quando il calcolo darebbe 141), perché il limite vale in ogni momento
+    (`docs/legale/VERIFICA.md`, punto 12). Il consiglio scritto (`adviceText`) usa lo stesso numero, e sopra il
+    limite dice "Con il limite di 130 chiudi in regola".
+  - Il numero calcolato anche sopra il limite si vede solo con `settings.keepReal`, che si accende in Impostazioni di
+    guida con il codice personale. Il codice si imposta con `npm run codice` (`tools/codice.mjs`), che scrive solo
+    l'impronta in `core/codice-dati.js`; il controllo è `checkCode` in `core/codice.js`. Senza codice impostato la
+    sezione non compare.
 - Riquadro trasparente: `MainActivity` rende trasparenti finestra, vista principale e WebView nel riquadro, e lo
   rifà a ogni cambio di configurazione perché il plugin SystemBars di Capacitor rimette lo sfondo pieno.
 - Nella pagina lo stile arriva senza commenti (`stripCssComments` in `scripts/build.mjs`): nei sorgenti restano.

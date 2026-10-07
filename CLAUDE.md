@@ -15,6 +15,8 @@ Struttura e flusso dei dati: `docs/ARCHITETTURA.md`. Difetti noti e idee: `NOTE-
 - `npm run schermi`: senza telefono, prova la pagina in Chrome su 8 misure (dal 4" al tablet), dritta e girata, con il
   testo normale e ingrandito al 130%; resoconto con le schermate in `device-check/schermi/index.html`.
 - Autovelox fissi: elenco della Polizia in `tools/autovelox.json`, come aggiornarlo in `tools/autovelox.md`.
+- `npm run codice`: imposta il codice personale che mostra la velocità da tenere anche sopra il limite (per tutti si
+  ferma al limite). Lo scrive l'utente nel suo terminale; in git va solo l'impronta (`src/core/codice-dati.js`).
 - Cartello di guida: tre forme (verticale, orizzontale, riquadro), vedi "Il cartello di guida" in `docs/ARCHITETTURA.md`.
 - `npm run bundle`: AAB firmato per il Play Store (chiave in `android/keystore.properties`, mai in git).
 - `npm run grafica`: icona, avvio e immagini dello store (`tools/make-icons.mjs`, `tools/store-screenshots.mjs`).

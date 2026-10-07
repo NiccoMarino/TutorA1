@@ -1,6 +1,7 @@
 # Verifica legale e di correttezza (20 punti)
 
-Controllo fatto il 5 ottobre 2026 sulla versione del ramo `tutte-le-autostrade`. Per ogni punto: cosa vuol dire
+Controllo fatto il 5 ottobre 2026 sul ramo `tutte-le-autostrade`, ripassato il 7 ottobre 2026 (versione 1.0.6, nome
+TutOK, autovelox, velocità da tenere mai sopra il limite, codice personale, permessi Android). Per ogni punto: cosa vuol dire
 per TutOK, cosa c'è e cosa manca. Non è un parere legale: prima di vendere l'abbonamento è consigliata
 una lettura di un avvocato (termini, abbonamento) e di un commercialista (tasse, partita IVA).
 
@@ -43,9 +44,27 @@ superare i limiti, portali e dati possono contenere errori, chi guida è l'unico
 l'app non risponde di multe e danni. Va accettato per usare l'app; si rilegge da Privacy e diritti. Se il testo
 cambia, si aumenta `DISCLAIMER_VERSION` in `src/core/store.js` e ricompare una volta.
 Autovelox: l'app segnala le postazioni fisse dell'elenco pubblico della Polizia Stradale (pagina articolo/175,
-elenco del 7 ottobre 2025). Segnalarle è lecito: la Polizia le pubblica perché si rispettino i limiti, e il Codice
-della Strada (art. 142, comma 6-bis) chiede che le postazioni siano segnalate e ben visibili. Avviso iniziale,
-termini e Fonti dicono che l'elenco può non essere aggiornato; l'avviso iniziale è alla versione 2.
+elenco del 7 ottobre 2025). Avviso iniziale, termini e Fonti dicono che l'elenco può non essere aggiornato; l'avviso
+iniziale è alla versione 2.
+- **Art. 45, commi 9-bis e 9-ter del Codice della Strada.** Vietano di produrre, vendere e usare dispositivi che
+  segnalano la presenza e consentono la localizzazione degli apparecchi di rilevamento della velocità (sanzione da
+  825 a 3.305 €). È la norma che qualcuno potrebbe contestare.
+- **Perché TutOK resta fuori dal divieto.** Il divieto, secondo la lettura prevalente (Cassazione compresa), riguarda
+  i rilevatori, cioè gli apparecchi che captano i segnali degli strumenti di misura. I navigatori e le app che
+  avvisano delle postazioni fisse da un elenco sono considerati assistenti alla guida e sono leciti: è quello che
+  fanno anche Google Maps, Waze e TomTom. TutOK non rileva niente: usa solo la posizione del telefono e un elenco
+  pubblicato dalla Polizia perché si rispettino i limiti. Inoltre il Codice (art. 142, comma 6-bis) chiede che le
+  postazioni siano segnalate e ben visibili.
+- **Come restarci.**
+  - Mai postazioni mobili, segnalazioni degli utenti o la ricerca di apparecchi.
+  - Nei testi parlare di "postazioni fisse pubblicate dalla Polizia Stradale", mai di "evitare" o "scovare" gli
+    autovelox.
+- **Limite detto dalla voce.** L'avviso vocale non dice più "limite 130": era il limite impostato dall'utente, mentre
+  nel punto dell'autovelox il limite può essere più basso (cantieri, pioggia). Ora dice solo "Autovelox tra 500 metri"
+  (con "rallenta" se si va oltre il limite impostato); vale il limite dei cartelli.
+- **Uso dell'elenco.** La fonte è citata nell'app (Fonti). Molti siti pubblici permettono di riusare i contenuti
+  solo citando la fonte, alcuni solo per usi non commerciali: prima dell'abbonamento vanno lette le note legali di
+  poliziadistato.it.
 
 **3. Rimborsi.** Oggi non si vende niente, quindi pubblicare una politica di rimborso confonderebbe. La bozza è
 pronta per l'abbonamento da 2 € all'anno: prezzo IVA inclusa, rinnovo, disdetta, recesso e rimborso entro 14 giorni.
@@ -58,9 +77,16 @@ che la pagina non scriva cookie. Se un giorno arrivano statistiche o pubblicità
 **6. Consenso.** La posizione e le notifiche le chiede Android con le sue finestre, al primo "Avvia guida". Fuori
 dalla guida la posizione non viene letta.
 
-**7. Niente dati inutili.** L'app non raccoglie dati. Tolto il permesso INTERNET, che restava da Capacitor ma non
-serviva: l'app non si collega a nessun server, e ora lo garantisce anche Android. Restano posizione, servizio in
-primo piano per la posizione, notifica e vibrazione, tutti usati. Non chiede la posizione in background.
+**7. Niente dati inutili.**
+- L'app non raccoglie dati.
+- Tolto il permesso INTERNET, che restava da Capacitor ma non serviva: l'app non si collega a nessun server, e ora lo
+  garantisce anche Android.
+- Restano posizione, servizio in primo piano per la posizione, notifica e vibrazione, tutti usati. Non chiede la
+  posizione in background. Controllato il 7 ottobre 2026 sul manifest della versione per il Play Store.
+- Tolto anche il provider di file di Capacitor: apriva a tutta la memoria esterna, e l'app non sceglie né condivide
+  file.
+- **Prima di caricare sul Play Store va rifatto il file con `npm run bundle`.** L'`app-release.aab` del 1° ottobre
+  è di prima di questi cambi: chiede ancora INTERNET e ha il vecchio nome.
 
 **8. Librerie di terzi.** Nessuna libreria di statistiche, pubblicità o crash report.
 
@@ -86,8 +112,15 @@ Ai tester del test chiuso va chiesto un parere sincero, mai una recensione in ca
 - Aggiunto che le stime non garantiscono di evitare sanzioni e che il limite vale sempre.
 - La precisione dei portali ora dice "di solito entro 100 metri".
 - Il consiglio "Fino al portale puoi tenere 141 km/h" invitava a superare il limite, che vale in ogni momento
-  (art. 142 del Codice della Strada). Ora il cartello mostra ancora "≤ 141", ma il consiglio dice "Con il limite di
-  130 chiudi in regola". I termini d'uso dicono che la velocità da tenere non autorizza a superare il limite.
+  (art. 142 del Codice della Strada). Ora il consiglio dice "Con il limite di 130 chiudi in regola".
+- Dal 7 ottobre 2026 neanche il cartello va sopra il limite: dove prima c'era "≤ 141" ora c'è "≤ 130", anche quando
+  serve solo per restare in tolleranza. Il consiglio scritto non dice mai un numero sopra il limite.
+- Il numero calcolato, anche sopra il limite, lo vede solo chi riceve dallo sviluppatore un codice personale e lo
+  scrive in Impostazioni di guida (`npm run codice`, `src/core/codice.js`).
+  - Nell'app c'è solo l'impronta del codice (PBKDF2). Non è una cassaforte: chi sa programmare può aggirare il blocco.
+  - La sezione ha la sua avvertenza ("non è un invito a superarlo") e i termini d'uso ne parlano. Così la funzione è
+    dichiarata e non nascosta, come chiede Google.
+  - Se un giorno si vende l'abbonamento, va valutato con l'avvocato se tenerla.
 
 **13. Testo alternativo.** L'app non ha immagini `<img>`: icone e loghi sono disegni con `aria-hidden`, e i
 pulsanti con solo l'icona hanno un nome (`aria-label`). Un test lo controlla a ogni build.

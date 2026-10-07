@@ -151,6 +151,9 @@ svg{flex:none}
 .seg .chip{font-variant-numeric:tabular-nums}
 .switch{display:flex; justify-content:space-between; align-items:center; gap:12px; font-weight:600; min-height:48px}
 .switch input{width:22px; height:22px; accent-color:var(--brand)}
+.codice-row{display:flex; gap:8px}
+.codice-row input{flex:1; min-width:0; min-height:48px; padding:9px 10px; border-radius:8px; border:1.5px solid var(--line);
+  background:var(--panel-2); color:var(--ink); font:inherit}
 input[type=range]{width:100%; height:48px; margin:0; accent-color:var(--brand)}
 select.sel{padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--panel-2); min-height:48px; max-width:100%}
 .hist{display:grid; gap:8px; margin:0; padding:0; list-style:none}
@@ -417,7 +420,7 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
       <button class="mitem" type="button" data-go="pHow"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.5"/></svg></span><span class="mtx"><b>Come funziona</b><small>Il calcolo della media e la tolleranza</small></span></button>
       <button class="mitem" type="button" data-go="pInfo"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8-8 9-4.6-1-8-4.4-8-9V6z"/></svg></span><span class="mtx"><b>Privacy e diritti</b><small>Dati, fonti e informativa</small></span></button>
     </nav>
-    <p class="src menu-foot">Versione 1.0.5</p>
+    <p class="src menu-foot">Versione 1.0.6</p>
   </section>
 
   <section class="screen page" id="pSettings" aria-labelledby="tSettings" hidden>
@@ -450,6 +453,17 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
         <label class="switch">Segnali acustici <input type="checkbox" id="setBeep"></label>
         <label class="switch">Avvisa anche se la velocità istantanea supera la soglia <input type="checkbox" id="setInst"></label>
         <label class="switch">Avvisi autovelox <input type="checkbox" id="setVelox"></label>
+      </div>
+      <div class="card fields" id="codiceCard" hidden>
+        <div class="field" id="codiceAsk">
+          <span>Per chi ha il codice</span>
+          <div class="codice-row"><input type="password" id="setCodice" autocomplete="off" aria-label="Codice"><button type="button" class="btn" id="setCodiceOk">Sblocca</button></div>
+          <small id="codiceMsg" role="status">Se lo sviluppatore ti ha dato un codice, scrivilo qui.</small>
+        </div>
+        <div class="field" id="keepRealBox" hidden>
+          <label class="switch">Mostra la velocità calcolata anche sopra il limite <input type="checkbox" id="setKeepReal"></label>
+          <small>Il cartello mostra fin dove arriva il calcolo della media, anche sopra il limite. Non è un invito a superarlo: il limite vale in ogni momento, e lo controllano anche autovelox e pattuglie.</small>
+        </div>
       </div>
       <div class="card fields">
         <div class="field">
@@ -504,8 +518,9 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
         <p>Il Tutor fotografa il veicolo al portale di inizio e a quello di fine e divide la lunghezza del tratto per il tempo impiegato. L'app fa lo stesso con il GPS del telefono: dal momento in cui passi il primo portale somma la strada percorsa e la divide per il tempo trascorso.</p>
         <p>Sulla velocità misurata la legge applica una riduzione del 5%, e comunque non meno di 5 km/h. La sanzione scatta solo se la velocità ridotta supera il limite: con 130 km/h la soglia è quindi 136,8 km/h, con 110 è 115,7, con 90 è 95. È una tolleranza per gli errori di misura, non un margine garantito.</p>
         <p>Se entri in autostrada dopo il portale di inizio o esci prima di quello di fine, il Tutor non può abbinare i due passaggi: l'app mostra comunque la media, ma la segna come parziale.</p>
+        <p>Nel cerchio, sotto la media, c'è la velocità da tenere fino al portale per chiudere il tratto con la media entro il limite. Non è mai più alta del limite, che vale in ogni momento e non solo come media.</p>
         <p>L'accensione del Tutor dipende dalla Polizia Stradale: un tratto segnato qui può essere spento in quel momento.</p>
-        <p>Autovelox fissi: a 500 metri da una postazione dell'elenco della Polizia l'app avvisa con un segnale e con la voce, e mostra la distanza nella riga in alto e dentro il cerchio. Qui conta la velocità del momento, non la media: se in quel momento vai oltre il limite impostato l'avviso è più forte. Gli avvisi si spengono nelle Impostazioni di guida.</p>
+        <p>Autovelox fissi: a 500 metri da una postazione dell'elenco della Polizia l'app avvisa con un segnale e con la voce, e mostra la distanza nella riga in alto e dentro il cerchio. Qui conta la velocità del momento, non la media: se in quel momento vai oltre il limite impostato l'avviso è più forte. L'avviso non dice un limite, perché in quel punto può essere più basso di quello impostato (cantieri, pioggia): vale quello dei cartelli. Gli avvisi si spengono nelle Impostazioni di guida.</p>
       </div>
     </div>
   </section>
@@ -1269,20 +1284,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     const k = keepText(m), n = k.value.replace("≤ ", "");
     if (k.value === "rallenta") return "Media oltre la soglia: rallenta, più tempo resti sotto il limite più la media scende.";
     if (k.label === "tratto ormai") return k.value === "in regola" ? "Rispettando il limite di " + lim + " chiudi il tratto in regola." : "Media sopra " + lim + " ma entro la tolleranza fino al portale.";
-    if (k.label === "per restare in tolleranza") return "Entro il limite non rientri più: per restare in tolleranza resta sotto " + n + " km/h fino al portale.";
+    if (k.label === "per restare in tolleranza") return +n >= lim ? "Entro il limite non rientri più: rispettando il limite di " + lim + " resti in tolleranza." : "Entro il limite non rientri più: per restare in tolleranza resta sotto " + n + " km/h fino al portale.";
     if (+n >= lim) return "Con il limite di " + lim + " chiudi in regola.";
     if (m.status === "alarm") return "Media oltre la soglia: rallenta e resta sotto " + n + " km/h fino al portale.";
     return "Per chiudere entro il limite resta sotto " + n + " km/h fino al portale.";
   }
   var KEEP_MIN = 50;
   var KEEP_SAFE = 200;
-  function keepText(m) {
-    const lim = m.lim;
+  function keepText(m, real = false) {
+    const lim = m.lim, num = (v) => "≤ " + (real ? Math.floor(v) : Math.min(Math.floor(v), lim));
     if (!m.settled) return { label: "per chiudere entro " + lim, value: "≤ " + lim };
     if (m.vLimRest >= KEEP_SAFE) return { label: "tratto ormai", value: "in regola" };
-    if (m.vLimRest >= KEEP_MIN) return { label: "per chiudere entro " + lim, value: "≤ " + Math.floor(m.vLimRest) };
+    if (m.vLimRest >= KEEP_MIN) return { label: "per chiudere entro " + lim, value: num(m.vLimRest) };
     if (m.vThrRest >= KEEP_SAFE) return { label: "tratto ormai", value: "in tolleranza" };
-    if (m.vThrRest >= KEEP_MIN) return { label: "per restare in tolleranza", value: "≤ " + Math.floor(m.vThrRest) };
+    if (m.vThrRest >= KEEP_MIN) return { label: "per restare in tolleranza", value: num(m.vThrRest) };
     return { label: "non rientri più", value: "rallenta" };
   }
 
@@ -1629,10 +1644,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
         return { text: "Media rientrata sotto la soglia.", tone: "soft" };
       case "instant-over":
         return { text: "Velocità oltre " + ev.limit, tone: "inst", silentVoice: ev.silentVoice };
+      // senza numero: il limite nel punto dell'autovelox può essere diverso da quello impostato (cantieri, pioggia, 110)
       case "velox-alert":
-        return ev.over ? { text: "Autovelox tra " + speakDist(ev.dist) + ", rallenta: limite " + ev.limit + ".", tone: "alarm", vibrate: ALARM_VIBRATION } : { text: "Autovelox tra " + speakDist(ev.dist) + ", limite " + ev.limit + ".", tone: "pre" };
+        return ev.over ? { text: "Autovelox tra " + speakDist(ev.dist) + ", rallenta.", tone: "alarm", vibrate: ALARM_VIBRATION } : { text: "Autovelox tra " + speakDist(ev.dist) + ".", tone: "pre" };
       case "velox-over":
-        return { text: "Autovelox vicino, rallenta: limite " + ev.limit + ".", tone: "alarm", vibrate: ALARM_VIBRATION };
+        return { text: "Autovelox vicino, rallenta.", tone: "alarm", vibrate: ALARM_VIBRATION };
       default:
         return null;
     }
@@ -1684,7 +1700,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       view.progress = { from: "km " + nfKm.format(s.ka), to: "mancano " + fmtDist(m.remKm) };
       view.advice = adviceText(m);
       view.gauge = { frac: m.rel / s.L };
-      view.keep = keepText(m);
+      view.keep = keepText(m, !!settings.keepReal);
     } else if (st.result && f && f.t < st.result.until) {
       const r = st.result, [vt, vc] = verdictOf(r.avg, r.lim);
       plate(
@@ -1872,6 +1888,24 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     else delete root.dataset.theme;
   }
 
+  // src/core/codice.js
+  var CODE_ITER = 21e4;
+  var hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  var bytes = (h) => new Uint8Array(h.match(/../g).map((x) => parseInt(x, 16)));
+  async function codeHash(code, salt, iter = CODE_ITER) {
+    const subtle = globalThis.crypto.subtle;
+    const key = await subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveBits"]);
+    return hex(await subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: bytes(salt), iterations: iter }, key, 256));
+  }
+  async function checkCode(code, ref) {
+    const c = String(code || "").trim();
+    if (!ref || !c) return false;
+    return await codeHash(c, ref.salt, ref.iter) === ref.hash;
+  }
+
+  // src/core/codice-dati.js
+  var CODICE = null;
+
   // src/ui/settings-panel.js
   function createSettingsPanel({ settings, save, onChange, say }) {
     function renderLimitChips() {
@@ -1970,6 +2004,36 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       save();
       onChange();
     });
+    function renderCodice() {
+      $("#codiceCard").hidden = !CODICE && !settings.keepReal;
+      $("#codiceAsk").hidden = !!settings.keepReal;
+      $("#keepRealBox").hidden = !settings.keepReal;
+      $("#setKeepReal").checked = !!settings.keepReal;
+    }
+    async function unlock() {
+      const input = $("#setCodice"), ok = await checkCode(input.value, CODICE);
+      input.value = "";
+      if (!ok) {
+        $("#codiceMsg").textContent = "Codice non valido.";
+        return;
+      }
+      settings.keepReal = true;
+      save();
+      onChange();
+      renderCodice();
+    }
+    $("#setCodiceOk").addEventListener("click", unlock);
+    $("#setCodice").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") unlock();
+    });
+    $("#setKeepReal").addEventListener("change", (e) => {
+      if (e.target.checked) return;
+      delete settings.keepReal;
+      save();
+      onChange();
+      $("#codiceMsg").textContent = "Se lo sviluppatore ti ha dato un codice, scrivilo qui.";
+      renderCodice();
+    });
     $("#hudMute").addEventListener("click", () => {
       const on = settings.voice || settings.beep;
       settings.voice = !on;
@@ -2002,6 +2066,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     renderColors();
     renderMute();
     renderTheme();
+    renderCodice();
   }
 
   // src/ui/history-panel.js

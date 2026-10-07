@@ -51,15 +51,19 @@ test('gli altri eventi non si annunciano', () => {
   assert.equal(announcementFor({type:'section-finish', result:{}}), null);
 });
 
-test('autovelox: avviso a 500 metri con il limite', () => {
+// L'app non sa il limite nel punto dell'autovelox (cantieri, pioggia, tratti a 110): la voce non dice mai un numero,
+// che sarebbe il limite impostato dall'utente e potrebbe essere sbagliato. Corta: sul telefono da 4" va su una riga
+test('autovelox: avviso a 500 metri, senza dire un limite che potrebbe essere sbagliato', () => {
   assert.deepEqual(announcementFor({type:'velox-alert', velox:{comune:'Meolo'}, dist:0.5, limit:130, over:false}),
-    {text:'Autovelox tra 500 metri, limite 130.', tone:'pre'});
-  assert.equal(announcementFor({type:'velox-alert', velox:{}, dist:0.28, limit:110, over:false}).text, 'Autovelox tra 300 metri, limite 110.');
+    {text:'Autovelox tra 500 metri.', tone:'pre'});
+  assert.equal(announcementFor({type:'velox-alert', velox:{}, dist:0.28, limit:110, over:false}).text, 'Autovelox tra 300 metri.');
 });
 
-test('autovelox oltre il limite: avviso forte con vibrazione', () => {
+test('autovelox oltre il limite impostato: avviso forte con vibrazione, sempre senza numero', () => {
   assert.deepEqual(announcementFor({type:'velox-alert', velox:{}, dist:0.5, limit:130, over:true}),
-    {text:'Autovelox tra 500 metri, rallenta: limite 130.', tone:'alarm', vibrate:[220,100,220]});
+    {text:'Autovelox tra 500 metri, rallenta.', tone:'alarm', vibrate:[220,100,220]});
   assert.deepEqual(announcementFor({type:'velox-over', velox:{}, limit:130}),
-    {text:'Autovelox vicino, rallenta: limite 130.', tone:'alarm', vibrate:[220,100,220]});
+    {text:'Autovelox vicino, rallenta.', tone:'alarm', vibrate:[220,100,220]});
+  for (const ev of [{type:'velox-alert', dist:0.5, limit:110, over:true}, {type:'velox-alert', dist:0.5, limit:90, over:false}, {type:'velox-over', limit:80}])
+    assert.ok(!/limite \d/.test(announcementFor({velox:{}, ...ev}).text));
 });
