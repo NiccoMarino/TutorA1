@@ -5,7 +5,7 @@ qui sotto li rispettano (`node tools/check-scheda.mjs` li conta).
 
 ## Nome dell'app (max 30)
 <!-- campo: nome -->
-MediaVelocità
+TutOK
 
 ## Descrizione breve (max 80)
 <!-- campo: breve -->
@@ -13,7 +13,7 @@ La tua velocità media nei tratti Tutor in autostrada, con avvisi vocali
 
 ## Descrizione completa (max 4000)
 <!-- campo: completa -->
-MediaVelocità ti dice qual è la tua velocità media nei tratti controllati dal Tutor in autostrada, mentre guidi, e ti avvisa prima che superi la soglia.
+TutOK ti dice qual è la tua velocità media nei tratti controllati dal Tutor in autostrada, mentre guidi, e ti avvisa prima che superi la soglia.
 
 COSA FA
 • Riconosce da sola l'autostrada, la direzione e il prossimo tratto controllato.
@@ -24,7 +24,7 @@ COSA FA
 • Tiene lo storico dei tratti percorsi, con media ed esito.
 
 USALA INSIEME AL NAVIGATORE
-Durante la guida puoi passare al tuo navigatore: MediaVelocità resta visibile in un piccolo riquadro sopra le altre app, con il cartello del tratto e la media, e continua a funzionare anche a schermo spento.
+Durante la guida puoi passare al tuo navigatore: TutOK resta visibile in un piccolo riquadro sopra le altre app, con il cartello del tratto e la media, e continua a funzionare anche a schermo spento.
 
 186 TRATTI SU 14 AUTOSTRADE
 A1 da Milano a Napoli (con le diramazioni di Roma e la Variante di Valico), A4 tra Milano e Brescia e tra Venezia e Trieste, A7, A8, A9, A10, A11, A13, A14, A16, A23, A26, A27 e A30: tutti i tratti indicati da Autostrade per l'Italia. Si impostano il limite (130, 110, 100, 90, 80 km/h) e le soglie del giallo e del rosso.
@@ -42,7 +42,7 @@ DA SAPERE
 • La posizione dei portali è ricavata dal chilometro ufficiale, di solito entro 100 metri.
 • Non usare il telefono mentre guidi: fissalo a un supporto e lascia che ti avvisi con la voce.
 
-MediaVelocità non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato. Fonti dei tratti: autostrade.it e infoviaggiando.it. Tracciato delle autostrade: © contributori OpenStreetMap.
+TutOK non è un'app ufficiale di Autostrade per l'Italia, di Autostrade Alto Adriatico né della Polizia di Stato, e non è collegata a loro. "Tutor" è un marchio dei rispettivi titolari. Fonti dei tratti: autostrade.it e infoviaggiando.it. Tracciato delle autostrade: © contributori OpenStreetMap.
 
 ## Note sulla versione 1.0.0 (max 500)
 <!-- campo: note -->

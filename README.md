@@ -1,4 +1,4 @@
-# MediaVelocità: Tutor A1, A4 e altre autostrade
+# TutOK: Tutor A1, A4 e altre autostrade
 
 Pagina web e app Android che seguono i tratti con controllo della velocità media (Tutor) su 14 autostrade
 e calcolano la tua media nel tratto, come fa il Tutor.
@@ -22,7 +22,7 @@ e calcolano la tua media nel tratto, come fa il Tutor.
 ## Come si usa
 - **Dal browser del telefono:** apri il link qui sopra e premi "Avvia guida". Il GPS funziona solo
   sulle pagine https, quindi non aprendo il file dalla memoria del telefono.
-- **App Android (MediaVelocità):** si compila da questo repository (vedi sotto). La pubblicazione sul Play Store
+- **App Android (TutOK):** si compila da questo repository (vedi sotto). La pubblicazione sul Play Store
   è in preparazione: guida in [docs/play-store/PUBBLICAZIONE.md](docs/play-store/PUBBLICAZIONE.md).
 
 ## Come calcola

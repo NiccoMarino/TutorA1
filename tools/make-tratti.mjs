@@ -87,7 +87,7 @@ async function cached(name, url, body){
   mkdirSync(CACHE, {recursive:true});
   const f = new URL(name, CACHE);
   if (existsSync(f)) return JSON.parse(readFileSync(f, 'utf8'));
-  const r = await fetch(url, body ? {method:'POST', headers:{'User-Agent':'MediaVelocita-dati/1.0', 'Content-Type':'application/x-www-form-urlencoded'}, body:'data=' + encodeURIComponent(body)} : {});
+  const r = await fetch(url, body ? {method:'POST', headers:{'User-Agent':'TutOK-dati/1.0', 'Content-Type':'application/x-www-form-urlencoded'}, body:'data=' + encodeURIComponent(body)} : {});
   if (!r.ok) throw new Error(url + ': ' + r.status);
   const j = await r.json(); writeFileSync(f, JSON.stringify(j)); return j;
 }

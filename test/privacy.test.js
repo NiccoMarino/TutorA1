@@ -9,7 +9,7 @@ test("l'informativa dice dove resta la posizione e chi contattare", () => {
   assert.match(html, /<title>[^<]+<\/title>/);
   assert.match(html, /posizione/i);
   assert.match(html, /mailto:niccofantini2000@gmail\.com/);
-  assert.match(html, /MediaVelocità/);
+  assert.match(html, /TutOK/);
 });
 
 test("l'informativa è una pagina statica senza script esterni", () => {

@@ -29,4 +29,4 @@ Struttura e flusso dei dati: `docs/ARCHITETTURA.md`. Difetti noti e idee: `NOTE-
 - Non cambiare le chiavi di localStorage né gli id usati da `native/tutor-native.js`.
 - Testi, commenti e commit in italiano.
 - La versione è solo in `package.json` (pagina e app la leggono da lì): `npm version patch` per ogni aggiornamento.
-- Nome dell'app: MediaVelocità, in `strings.xml`, `capacitor.config.json` e `APP_NAME` di `src/platform.js`.
+- Nome dell'app: TutOK, in `strings.xml`, `capacitor.config.json` e `APP_NAME` di `src/platform.js`.

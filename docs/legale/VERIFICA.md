@@ -1,7 +1,7 @@
 # Verifica legale e di correttezza (20 punti)
 
 Controllo fatto il 5 ottobre 2026 sulla versione del ramo `tutte-le-autostrade`. Per ogni punto: cosa vuol dire
-per MediaVelocità, cosa c'è e cosa manca. Non è un parere legale: prima di vendere l'abbonamento è consigliata
+per TutOK, cosa c'è e cosa manca. Non è un parere legale: prima di vendere l'abbonamento è consigliata
 una lettura di un avvocato (termini, abbonamento) e di un commercialista (tasse, partita IVA).
 
 Stato: **Fatto**, **Non serve** (con il motivo), **Da fare** (serve una tua decisione o un tuo dato).
