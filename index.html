@@ -433,7 +433,7 @@ html.pip .velox-in strong,html.pip .velox-in em,html.pip .velox-in svg{font-size
       <button class="mitem" type="button" data-go="pHow"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.5"/></svg></span><span class="mtx"><b>Come funziona</b><small>Il calcolo della media e la tolleranza</small></span></button>
       <button class="mitem" type="button" data-go="pInfo"><span class="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.6-3.4 8-8 9-4.6-1-8-4.4-8-9V6z"/></svg></span><span class="mtx"><b>Privacy e diritti</b><small>Dati, fonti e informativa</small></span></button>
     </nav>
-    <p class="src menu-foot">Versione 1.0.7</p>
+    <p class="src menu-foot">Versione 1.0.8</p>
   </section>
 
   <section class="screen page" id="pSettings" aria-labelledby="tSettings" hidden>
@@ -994,6 +994,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
     s = Math.max(0, Math.round(s));
     const m = Math.floor(s / 60), r = s % 60;
     return m ? m + " min " + String(r).padStart(2, "0") + " s" : r + " s";
+  }
+  function fmtEta(s) {
+    s = Math.max(0, Math.round(s));
+    if (s < 60) return s + " s";
+    const m = Math.round(s / 60);
+    return m < 60 ? m + " min" : Math.floor(m / 60) + " h " + String(m % 60).padStart(2, "0") + " min";
   }
   function fmtDist(km) {
     return km < 0.95 ? nf0.format(Math.max(10, Math.round(km * 100) * 10)) + " m" : nf1.format(km) + " km";
@@ -1755,7 +1761,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre></details>
       keep("cerco la direzione");
     } else if (st.next) {
       const n = st.next, near = n.dist <= settings.preAlert + 0.05;
-      const eta = vNow && vNow > 20 ? ", circa " + fmtDur(n.dist / vNow * 3600) : "";
+      const eta = vNow && vNow > 20 ? ", ci arrivi tra circa " + fmtEta(n.dist / vNow * 3600) : "";
       const meters = n.dist < 0.95;
       const big = meters ? nf0.format(Math.max(10, Math.round(n.dist * 100) * 10)) : nf1.format(n.dist);
       plate(

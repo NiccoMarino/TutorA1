@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { clamp, fmtDur, fmtDist, speakDist, spk, esc, nfKm, nfL } from '../src/core/format.js';
+import { clamp, fmtDur, fmtEta, fmtDist, speakDist, spk, esc, nfKm, nfL } from '../src/core/format.js';
 
 test('clamp', () => {
   assert.equal(clamp(5, 0, 3), 3);
@@ -13,6 +13,14 @@ test('fmtDur: secondi e minuti', () => {
   assert.equal(fmtDur(59.4), '59 s');
   assert.equal(fmtDur(61), '1 min 01 s');
   assert.equal(fmtDur(-5), '0 s');
+});
+
+test('fmtEta: tempo per arrivare al portale, senza secondi oltre il minuto e con le ore', () => {
+  assert.equal(fmtEta(42.4), '42 s');
+  assert.equal(fmtEta(126), '2 min');
+  assert.equal(fmtEta(3599), '1 h 00 min');
+  assert.equal(fmtEta(6123), '1 h 42 min');
+  assert.equal(fmtEta(-5), '0 s');
 });
 
 test('fmtDist: metri sotto 950 m, poi km con un decimale', () => {

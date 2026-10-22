@@ -65,6 +65,13 @@ test('prima del Tutor: niente anello, il limite al posto della velocità da tene
   assert.deepEqual(v.keep, {label:'limite', value:'130'});
 });
 
+test('prima del Tutor: il tempo è quello per arrivare al portale, non per fare il tratto', () => {
+  const far = {...emptyState, fix:{v:120/3.6, acc:4, t:0}, onRoad:true, ram:'A04', km:224.4, sign:1, next:{sec:sec10, dist:204.5}};
+  assert.equal(hudView(far, S130).plate.sub, 'Tratto di 10 km, ci arrivi tra circa 1 h 42 min');
+  const slow = {...far, fix:{...far.fix, v:10/3.6}};
+  assert.equal(hudView(slow, S130).plate.sub, 'Tratto di 10 km', 'da fermo o in coda niente stima');
+});
+
 test('tratto concluso: anello pieno e verdetto breve', () => {
   const st = {...emptyState, fix:{v:120/3.6, acc:5, t:10}, onRoad:true, ram:'A01', km:11, sign:1,
     result:{sec:sec10, avg:133, lim:130, dur:271, until:60}};
