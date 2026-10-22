@@ -1,6 +1,6 @@
 // Cosa mostrare nella schermata di guida, calcolato dallo stato del tracker. Non tocca la pagina:
 // ui/hud.js applica la vista.
-import { nf0, nf1, nf12, nfKm, nfL, fmtDur, fmtDist } from './format.js';
+import { nf0, nf1, nf12, nfKm, nfL, fmtDur, fmtEta, fmtDist } from './format.js';
 import { thresholdFor, thrText, verdictOf, avgValue, colorLimits } from './rules.js';
 import { RAMS } from './network.js';
 import { computeMetrics, adviceText, keepText } from './metrics.js';
@@ -52,7 +52,7 @@ export function hudView(st, settings){
     keep('cerco la direzione');
   } else if (st.next){
     const n = st.next, near = n.dist <= settings.preAlert + 0.05;
-    const eta = vNow && vNow > 20 ? ', circa ' + fmtDur(n.dist/vNow*3600) : '';
+    const eta = vNow && vNow > 20 ? ', ci arrivi tra circa ' + fmtEta(n.dist/vNow*3600) : '';
     const meters = n.dist < 0.95;
     const big = meters ? nf0.format(Math.max(10, Math.round(n.dist*100)*10)) : nf1.format(n.dist);
     plate(near ? 'go' : '', near ? 'Il Tutor sta per iniziare' : 'Prossimo Tutor', n.sec.name, big, meters ? 'm al portale' : 'km al portale',
